@@ -9,6 +9,7 @@
 <body>
 <!-- 张帅用来测试的-->
 <!-- 马寅达用测试-->
+<!--  徐富勇测试-->
 	<form action="index.do">
 		<input id="name"  name="name" type="text">
 		<input id="name1"  name="name" type="text"> 
