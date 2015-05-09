@@ -31,13 +31,13 @@ public class User {
 	private String password;
 	/** 性别 */
 	@Column(name = "sex", nullable = false)
-	private boolean sex;
+	private byte sex;
 	/** 电话 */
 	@Column(name = "phone", nullable = true)
-	private Integer phone;
+	private String phone;
 	/** OICQ */
 	@Column(name = "QQ", nullable = true)
-	private Integer QQ;
+	private String QQ;
 	/** 联系地址 */
 	@Column(name = "addr", nullable = true)
 	private String addr;
@@ -87,28 +87,12 @@ public class User {
 		this.password = password;
 	}
 
-	public boolean isSex() {
+	public byte getSex() {
 		return sex;
 	}
 
-	public void setSex(boolean sex) {
+	public void setSex(byte sex) {
 		this.sex = sex;
-	}
-
-	public Integer getPhone() {
-		return phone;
-	}
-
-	public void setPhone(Integer phone) {
-		this.phone = phone;
-	}
-
-	public Integer getQQ() {
-		return QQ;
-	}
-
-	public void setQQ(Integer qQ) {
-		QQ = qQ;
 	}
 
 	public String getAddr() {
@@ -141,6 +125,22 @@ public class User {
 
 	public void setIP(String iP) {
 		IP = iP;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getQQ() {
+		return QQ;
+	}
+
+	public void setQQ(String qQ) {
+		QQ = qQ;
 	}
 
 }

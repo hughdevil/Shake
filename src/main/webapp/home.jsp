@@ -11,6 +11,8 @@
 	<h1>
 		<c:out value="${serverTime }"></c:out>
 	</h1>
-	<a href="user/login">登录</a>
+	<a href="user/tologin.do">登录</a>
+	<br>
+	<a href="user/toregister.do">注册</a>
 </body>
 </html>

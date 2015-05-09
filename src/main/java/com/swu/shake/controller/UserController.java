@@ -69,11 +69,10 @@ public class UserController {
 				mav.setViewName("/comm/success");// 返回到success.jsp中
 				mav.addObject("user", user);
 			} else {
-				mav.setViewName("/user/login");
+				mav.setViewName("/comm/failure");
 			}
-
 		} catch (IndexOutOfBoundsException e) {
-			mav.setViewName("index");
+			e.printStackTrace();
 		}
 		return mav;
 	}
@@ -91,35 +90,40 @@ public class UserController {
 		String uname = request.getParameter("uname");
 		String upwd = request.getParameter("psw").equals(
 				request.getParameter("repsw")) ? md5Util.getMD5(request
-				.getParameter("pwd")) : null;
+				.getParameter("psw")) : null;
 		if (null == upwd) {
 			request.setAttribute("message", "两次密码不一致");
-			mav.setViewName("/user/register.jsp");
-		} else if (null == userService.login(uname, upwd)) {
-			request.setAttribute("message", "用户名已经存在");
-			mav.setViewName("/user/register.jsp");
+			mav.setViewName("/comm/failure");
 		} else {
 			User user = new User();
 			user.setName(uname);
 			user.setPassword(upwd);
 			String sexString = request.getParameter("sex");
-			Boolean sex = null;
+			byte sex = 0;
 			if ("secret".equals(sexString)) {
+				user.setSex((byte) 0);
 			} else if ("male".equals(sexString)) {
-				user.setSex(true);
+				user.setSex((byte) -1);
 			} else if ("female".equals(sexString)) {
-				user.setSex(false);
+				user.setSex((byte) 1);
 			} else {
 				// 如果没有勾选默认是保密
 				user.setSex(sex);
 			}
+			user.setIP(request.getRemoteAddr());
 			user.setRegDate(new Date());
+			user.setQQ(request.getParameter("qq"));
+			user.setAddr(request.getParameter("addr"));
+			user.setEmail(request.getParameter("mail"));
+			user.setPhone(request.getParameter("phone"));
 			try {
 				userService.register(user);
 			} catch (MsgException e) {
-				e.printStackTrace();
+				request.setAttribute("message", "用户名已经存在");
+				mav.setViewName("/comm/failure");
+				return mav;
 			}
-			mav.setViewName("/user/tologin");
+			mav.setViewName("/comm/success");
 		}
 		return mav;
 	}

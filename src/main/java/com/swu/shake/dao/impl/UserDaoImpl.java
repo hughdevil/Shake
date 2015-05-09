@@ -1,6 +1,5 @@
 package com.swu.shake.dao.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -8,7 +7,6 @@ import javax.annotation.Resource;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.swu.shake.dao.UserDao;
@@ -103,7 +101,10 @@ public class UserDaoImpl implements UserDao {
 		String hql = "from User where name='" + name + "' and password='"
 				+ password + "'";
 		try {
-			u = (User) hibernateUtil.exeQuery(hql).get(0);
+			List list = hibernateUtil.exeQuery(hql);
+			if (list.size() != 0) {
+				u = (User) list.get(0);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
