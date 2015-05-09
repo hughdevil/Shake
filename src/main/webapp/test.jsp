@@ -7,7 +7,8 @@
 <title>Insert title here</title>
 </head>
 <body>
-<!-- 用来测试的-->
+<!-- 马寅达用测试-->
+<--------->
 	<form action="index.do">
 		<input id="name"  name="name" type="text">
 		<input id="name1"  name="name" type="text"> 
