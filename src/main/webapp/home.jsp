@@ -14,5 +14,7 @@
 	<a href="user/tologin.do">登录</a>
 	<br>
 	<a href="user/toregister.do">注册</a>
+	<br>
+	<a href="item/topublish.do">发布商品</a>
 </body>
 </html>

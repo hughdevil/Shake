@@ -10,12 +10,6 @@ import org.springframework.stereotype.Component;
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class MD5Util {
 
-	// main测试类
-	public static void main(String[] args) {
-		String result = getMD5("aaa");
-		System.err.println(result);
-	}
-
 	/**
 	 * 生成md5
 	 * 

@@ -7,15 +7,13 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
 
+import com.swu.shake.model.Item;
 import com.swu.shake.model.User;
 import com.swu.shake.service.UserService;
 import com.swu.shake.util.MD5Util;
@@ -84,7 +82,7 @@ public class UserController {
 	}
 
 	@RequestMapping("/user/register")
-	public ModelAndView userRegisterDo(HttpServletRequest request,
+	public ModelAndView userRegisterDo( HttpServletRequest request,
 			HttpSession session) {
 		ModelAndView mav = new ModelAndView();
 		String uname = request.getParameter("uname");

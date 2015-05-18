@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Component;
 
 import com.swu.shake.dao.UserDao;
@@ -37,7 +38,6 @@ public class UserDaoImpl implements UserDao {
 			transaction = session.beginTransaction();
 			u = (User) session.load(User.class, session.save(user));
 			transaction.commit();
-			hibernateUtil.closeSession(session);
 		} catch (HibernateException e) {
 			e.printStackTrace();
 			hibernateUtil.rollbackTransaction(transaction);

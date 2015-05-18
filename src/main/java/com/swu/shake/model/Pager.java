@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.hibernate.transform.ToListResultTransformer;
 
 public class Pager implements Serializable {
-	private int totalRows; // 总行数
+	private long totalRows; // 总行数
 	private int pageSize; // 每页显示的行数
 	private int currentPage; // 当前页号
 	private int totalPages; // 总页数
@@ -19,17 +19,23 @@ public class Pager implements Serializable {
 		this.currentPage = _currentPage;
 	}
 
-	public Pager(int _totalRows, int _pageSize, int _current) {
+	/**
+	 * 
+	 * @param _totalRows
+	 * @param _pageSize
+	 * @param _currentPage
+	 */
+	public Pager(long _totalRows, int _pageSize, int _currentPage) {
 		this.totalRows = _totalRows;
 		this.pageSize = _pageSize;
-		this.totalPages = totalRows / pageSize;
-		this.totalPages = (totalRows % pageSize) > 0 ? ++this.totalPages
-				: this.totalPages;
-		this.currentPage = 1;
-		this.startRow = 0;
+		this.currentPage = _currentPage;
+
+		this.totalPages = (int) (totalRows / pageSize);
+		this.totalPages += (totalRows % pageSize) > 0 ? 1 : 0;
+		this.startRow = (_currentPage - 1) * _pageSize;
 	}
 
-	public int getTotalRows() {
+	public long getTotalRows() {
 		return totalRows;
 	}
 

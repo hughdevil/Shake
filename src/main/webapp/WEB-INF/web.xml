@@ -24,6 +24,8 @@
 		<display-name>encodeFilter</display-name>
 		<filter-name>encodeFilter</filter-name>
 		<filter-class>com.swu.shake.util.EncodeFilter</filter-class>
+		<!--Spring -->
+		<!-- <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class> -->
 		<init-param>
 			<param-name>encoding</param-name>
 			<param-value>UTF-8</param-value>

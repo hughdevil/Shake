@@ -135,4 +135,24 @@ public class HibernateUtil {
 
 	}
 
+	public long exeCount(String hql) {
+		Session session = null;
+		Transaction transaction = null;
+		long count = 0;
+		try {
+			session = getSession();
+			transaction = session.beginTransaction();
+			count = (Long) session.createQuery(hql).uniqueResult();
+			transaction.commit();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			rollbackTransaction(transaction);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeSession(session);
+		}
+		return count;
+	}
+
 }

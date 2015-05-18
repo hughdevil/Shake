@@ -15,8 +15,6 @@ public class ItemImage {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	// “upload/pic/" + new Date().getTime(）+
-	// this.getUploadFileName().HashCode();
 	private int iiid;
 	@Column(nullable = false)
 	private String iiname;

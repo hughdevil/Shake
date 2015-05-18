@@ -7,21 +7,22 @@
 <title>Insert title here</title>
 </head>
 <body>
-<!-- 张帅用来测试的-->
-<!-- 马寅达用测试-->
-<!--  徐富勇测试-->
+	<!-- 张帅用来测试的-->
+	<!-- 马寅达用测试-->
+	<!--  徐富勇测试-->
 	<form action="index.do">
-		<input id="name"  name="name" type="text">
-		<input id="name1"  name="name" type="text"> 
-		<input id="password"  name="pwd" type="password"> 
-		<input type="submit">
+		<input id="name" name="name" type="text"> <input id="name1"
+			name="name" type="text"> <input id="password" name="pwd"
+			type="password"> <input type="submit">
 	</form>
-	
-		<form action="index.do" method="p">
-		<input id="name"  name="name" type="text">
-		<input id="name1"  name="name" type="text"> 
-		<input id="password"  name="pwd" type="password"> 
-		<input type="submit">
+
+	<form action="index.do" method="p">
+		<input id="name" name="name" type="text"> <input id="name1"
+			name="name" type="text"> <input id="password" name="pwd"
+			type="password"> <input type="submit">
 	</form>
+	<div class="easyui-dialog" style="width: 400px; height: 200px"
+		data-options="title:'My Dialog',collapsible:true,iconCls:'icon-ok',onOpen:function(){}">
+		dialog content.</div>
 </body>
 </html>
