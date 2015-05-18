@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -25,13 +26,17 @@ public class Item {
 	@Column(nullable = false)
 	private double iprice;
 	@Column(nullable = false)
-	private Integer iNumber;
+	private int iNumber;
 	@Column(nullable = false)
 	private String idesc;
 	@Column(nullable = false)
 	private Date onshelfdate;
 	@Column(nullable = false)
 	private boolean isValid;
+	
+	//如果用ItemImage的话，每查一个都会查询一下itemimage表(每次查询User这个没办法，因为以后可能扩展)，用string直接解决,
+	@Column(nullable = false)
+	private String postImage;
 
 	@Column(nullable = false)
 	private User user;
@@ -41,8 +46,21 @@ public class Item {
 	private Set<ItemImage> itemImages = new HashSet<ItemImage>();
 	private Set<Comment> comments = new HashSet<Comment>();
 
-	public String getIdesc() {
-		return idesc;
+	public Item() {
+
+	}
+
+	public Item(int iid, String iname, double iprice, boolean isvalid,
+			Date onshelfdate,String postImage, int uid,String name ) {
+		this.iid = iid;
+		this.iname = iname;
+		this.iprice = iprice;
+		this.isValid = isvalid;
+		this.onshelfdate = onshelfdate;
+		this.user = new User();
+		user.setUid(uid);
+		user.setName(name);
+		this.postImage = postImage;
 	}
 
 	@OneToMany(mappedBy = "item", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
@@ -50,27 +68,15 @@ public class Item {
 		return comments;
 	}
 
+	public String getIdesc() {
+		return idesc;
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "iid", nullable = false)
 	public int getIid() {
 		return iid;
-	}
-
-	public void setIid(int iid) {
-		this.iid = iid;
-	}
-
-	public void setComments(Set<Comment> comments) {
-		this.comments = comments;
-	}
-
-	public boolean isValid() {
-		return isValid;
-	}
-
-	public void setValid(boolean isValid) {
-		this.isValid = isValid;
 	}
 
 	public String getIname() {
@@ -101,18 +107,39 @@ public class Item {
 		return onshelfdate;
 	}
 
+	
+	public String getPostImage() {
+		return postImage;
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "uid")
 	public User getUser() {
 		return user;
 	}
 
+	public boolean isValid() {
+		return isValid;
+	}
+
+	public void setComments(Set<Comment> comments) {
+		this.comments = comments;
+	}
+
 	public void setIdesc(String idesc) {
 		this.idesc = idesc;
 	}
 
+	public void setIid(int iid) {
+		this.iid = iid;
+	}
+
 	public void setIname(String iname) {
 		this.iname = iname;
+	}
+
+	public void setiNumber(int iNumber) {
+		this.iNumber = iNumber;
 	}
 
 	public void setiNumber(Integer iNumber) {
@@ -135,7 +162,15 @@ public class Item {
 		this.onshelfdate = onshelfdate;
 	}
 
+	public void setPostImage(String postImage) {
+		this.postImage = postImage;
+	}
+
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public void setValid(boolean isValid) {
+		this.isValid = isValid;
 	}
 }

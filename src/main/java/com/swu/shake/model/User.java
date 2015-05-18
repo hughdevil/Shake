@@ -52,8 +52,15 @@ public class User {
 	@ManyToOne
 	@JoinColumn(name = "rid")
 	private Role role;
-
-	// 设置唯一主键，自增长
+	
+	public User(){
+		
+	}
+	
+	public User(int id,String name){
+		this.uid=id;
+		this.name=name;
+	}
 
 	public String getName() {
 		return name;

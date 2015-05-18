@@ -14,9 +14,9 @@
 	<table>
 		<c:forEach items="${itemList}" var="item">
 			<tr>
-					<td>${item.iname }<img alt="${item.iname }" src="<%=request.getContextPath() %>/${item.itemimages[0].iiname }"></td>
-					<td></td>
-					<td></td>				
+					<td>${item.iname }<img alt="${item.iname }" src="<%=request.getContextPath() %>/${item.postImage}"  width="50" height="50"></td>
+					<td>${item.user.name}</td>
+					<td>${item.onshelfdate }</td>				
 			</tr>
 		</c:forEach>
 	</table>

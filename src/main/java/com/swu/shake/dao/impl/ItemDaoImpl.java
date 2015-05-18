@@ -117,7 +117,15 @@ public class ItemDaoImpl implements ItemDao {
 	@Override
 	public List<Item> getItems(int start, int end) {
 		// TODO Auto-generated method stub
-		String hql = "select i.iid,i.iname,i.iprice,i.isValid,i.onshelfdate,i.itemImages,i.user from Item i order by iid desc";
+		String hql = "select new com.swu.shake.model.Item(i.iid,i.iname,i.iprice,i.valid,i.onshelfdate,i.postImage,u.uid,u.name)  from Item i join i.user u order by i.iid desc";
+		/*
+		 * 成功的把商品展示压缩成一条sql Hibernate: select item0_.iid as col_0_0_,
+		 * item0_.iname as col_1_0_, item0_.iprice as col_2_0_, item0_.valid as
+		 * col_3_0_, item0_.onshelfdate as col_4_0_, item0_.postImage as
+		 * col_5_0_, user1_.uid as col_6_0_, user1_.name as col_7_0_ from T_Item
+		 * item0_ inner join T_User user1_ on item0_.uid=user1_.uid order by
+		 * item0_.iid desc limit ?
+		 */
 		return hibernateUtil.exeQueryPage(hql, start, end);
 	}
 

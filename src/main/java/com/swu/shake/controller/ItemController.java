@@ -60,18 +60,26 @@ public class ItemController {
 	}
 
 	@RequestMapping("/topost")
-	public String post() {
+	public String post(ModelMap mm) {
+		Long count = itemService.getCount();
+		Pager pager = new Pager(count, PAGE_SIZE, 1);
+		mm.addAttribute(
+				"itemList",
+				itemService.getItems(pager.getStartRow(), pager.getStartRow()
+						+ PAGE_SIZE));
+		mm.addAttribute("pager", pager);
 		return "item/post";
 	}
 
 	@RequestMapping("/post?page={page}")
 	public String postDo(@PathVariable("page") int curpage,
 			HttpServletRequest request, HttpSession session, ModelMap mm) {
-		ModelAndView mav = new ModelAndView();
 		Long count = itemService.getCount();
 		Pager pager = new Pager(count, PAGE_SIZE, curpage);
-		mm.addAttribute("itemList", itemService.getItems(pager.getStartRow(),
-				pager.getStartRow() + PAGE_SIZE));
+		mm.addAttribute(
+				"itemList",
+				itemService.getItems(pager.getStartRow(), pager.getStartRow()
+						+ PAGE_SIZE));
 		mm.addAttribute("pager", pager);
 		return "item/post";
 	}
@@ -93,6 +101,7 @@ public class ItemController {
 		ModelAndView mav = new ModelAndView();
 		User curUser = (User) session.getAttribute("user");
 		Set<ItemImage> itemImages = new HashSet();
+		String postImage = null;
 		if (null != curUser) {
 			try {
 				if (mFiles != null) {
@@ -109,10 +118,11 @@ public class ItemController {
 							String curpath = session.getServletContext()
 									.getRealPath("/");
 							Date uploadDate = new Date();
-							String fileName = "WEB-INF/upload/pic/"
+							String fileName = "upload/pic/"
 									+ dateformat.format(uploadDate)
-									+ MD5Util.getMD5(mFile
-											.getOriginalFilename()) + suffix;
+									+ MD5Util.getMD5(uploadDate.toString()
+											+ mFile.getOriginalFilename())
+									+ suffix;
 							String path = curpath + fileName;
 							logger.info("path:" + path);
 							FileUtility.saveUploadFile(mFile.getInputStream(),
@@ -122,6 +132,8 @@ public class ItemController {
 							ii.setIiname(fileName);
 							ii.setUploadDate(uploadDate);
 							itemImages.add(ii);
+							if (null == postImage)
+								postImage = fileName;
 							logger.info("=======文件上传成功=======");
 						}
 					}
@@ -137,6 +149,7 @@ public class ItemController {
 
 				item.setOnshelfdate(new Date());
 				item.setUser(curUser);
+				item.setPostImage(postImage);
 				item.setItemImages(itemImages);
 				Item rei = itemService.register(item);
 				mav.addObject("item", rei);
