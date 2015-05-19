@@ -22,6 +22,9 @@ public interface ItemDao {
 	/** 查询所有产品 */
 	public List<Item> findall();
 
+	/** 根据ID查找单个产品 */
+	public Item findById(int id);
+
 	/** 检测产品是否存在,存在返回true，否则返回false */
 	public List<Item> getItemsByName(String str);
 

@@ -1,14 +1,10 @@
 package com.swu.shake.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -54,12 +50,7 @@ public class ItemController {
 		this.itemService = itemService;
 	}
 
-	@RequestMapping("/topublish")
-	public String publish() {
-		return "item/publish";
-	}
-
-	@RequestMapping("/topost")
+	@RequestMapping(value = "/post", method = RequestMethod.GET)
 	public String post(ModelMap mm) {
 		Long count = itemService.getCount();
 		Pager pager = new Pager(count, PAGE_SIZE, 1);
@@ -71,8 +62,9 @@ public class ItemController {
 		return "item/post";
 	}
 
-	@RequestMapping(value="/post", params="page",method=RequestMethod.GET)
-	public String postDo(HttpServletRequest request, HttpSession session, ModelMap mm) {
+	@RequestMapping(value = "/post", params = "page", method = RequestMethod.GET)
+	public String postDo(HttpServletRequest request, HttpSession session,
+			ModelMap mm) {
 		int curpage = Integer.parseInt(request.getParameter("page"));
 		Long count = itemService.getCount();
 		Pager pager = new Pager(count, PAGE_SIZE, curpage);
@@ -84,6 +76,11 @@ public class ItemController {
 		return "item/post";
 	}
 
+	@RequestMapping(value = "/publish", method = RequestMethod.GET)
+	public String publish() {
+		return "item/publish";
+	}
+
 	/**
 	 * 发布商品
 	 * 
@@ -93,17 +90,17 @@ public class ItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/publish", method = RequestMethod.POST)
-	public ModelAndView publishDo(
+	public ModelAndView publish(
 			@RequestParam("itemImages") CommonsMultipartFile[] mFiles,
 			HttpServletRequest request, HttpSession session) {
 
 		SimpleDateFormat dateformat = new SimpleDateFormat("yyyyMMddHH");
 		ModelAndView mav = new ModelAndView();
 		User curUser = (User) session.getAttribute("user");
-		Set<ItemImage> itemImages = new HashSet();
 		String postImage = null;
 		if (null != curUser) {
 			try {
+				Set<ItemImage> itemImages = new HashSet<ItemImage>();
 				if (mFiles != null) {
 					for (CommonsMultipartFile mFile : mFiles) {
 						if (!mFile.isEmpty()) {
@@ -168,5 +165,20 @@ public class ItemController {
 			mav.setViewName("comm/failure");
 		}
 		return mav;
+	}
+
+	@RequestMapping(value = "/{iid}/detail", method = RequestMethod.GET)
+	public String showDetail(@PathVariable(value = "iid") Integer iid,
+			Model model, HttpServletRequest request, HttpSession session) {
+		String viewName = "";
+		Item item = this.itemService.getItem(iid);
+		if (null == item) {
+			viewName = "comm/failure";
+			request.setAttribute("message", "童鞋，你确定有这个编号？");
+		} else {
+			viewName = "item/detail";
+			model.addAttribute("item", item);
+		}
+		return viewName;
 	}
 }

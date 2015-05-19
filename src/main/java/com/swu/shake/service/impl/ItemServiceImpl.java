@@ -69,6 +69,12 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
+	public Item getItem(int id) {
+		// TODO Auto-generated method stub
+		return itemDao.findById(id);
+	}
+
+	@Override
 	public List<Item> getItems(int start, int end) {
 		// TODO Auto-generated method stub
 		return itemDao.getItems(start, end);

@@ -10,7 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.swu.shake.model.Item;
@@ -50,29 +52,21 @@ public class UserController {
 			HttpSession session) throws Exception {
 		ModelAndView mav = new ModelAndView();// 新建视图
 		mav.setViewName("/user/login");
+		mav.addObject("user", new User());
 		return mav;
 	}
 
 	@RequestMapping("/user/login")
-	public ModelAndView userLoginDo(HttpServletRequest request,
-			HttpSession session) throws Exception {
-		String name = request.getParameter("uname");
-		String unPassword = request.getParameter("psw");
+	public @ResponseBody User userLoginDo(HttpServletRequest request,
+			HttpSession session, @RequestBody User user) throws Exception {
+		String name = user.getName();
+		String unPassword = user.getPassword();
 		String password = MD5Util.getMD5(unPassword);
-		ModelAndView mav = new ModelAndView();// 新建视图
-		try {
-			User user = userService.login(name, password);
-			if (null != user) {
-				session.setAttribute("user", user);
-				mav.setViewName("/comm/success");// 返回到success.jsp中
-				mav.addObject("user", user);
-			} else {
-				mav.setViewName("/comm/failure");
-			}
-		} catch (IndexOutOfBoundsException e) {
-			e.printStackTrace();
+		User u = userService.login(name, password);
+		if (null != u) {
+			session.setAttribute("user", u);
 		}
-		return mav;
+		return u;
 	}
 
 	@RequestMapping("/user/toregister")
@@ -82,7 +76,7 @@ public class UserController {
 	}
 
 	@RequestMapping("/user/register")
-	public ModelAndView userRegisterDo( HttpServletRequest request,
+	public ModelAndView userRegisterDo(HttpServletRequest request,
 			HttpSession session) {
 		ModelAndView mav = new ModelAndView();
 		String uname = request.getParameter("uname");

@@ -6,7 +6,6 @@ import java.util.List;
  * @author 王伟杰
  */
 
-
 import com.swu.shake.model.Item;
 import com.swu.shake.model.ItemImage;
 import com.swu.shake.util.MsgException;
@@ -23,7 +22,10 @@ public interface ItemService {
 
 	/** 查询所有商品 */
 	public List<Item> getItems();
-	
+
+	/** 通过ID查找单个商品 */
+	public Item getItem(int id);
+
 	/** 查询所有商品分页 */
 	public List<Item> getItems(int start, int end);
 

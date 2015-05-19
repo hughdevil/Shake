@@ -32,8 +32,9 @@ public class Pager implements Serializable {
 		this.totalPages = (int) (totalRows / pageSize);
 		this.totalPages += (totalRows % pageSize) > 0 ? 1 : 0;
 		this.startRow = (_currentPage - 1) * _pageSize;
-		this.prePage = currentPage > 1 ? --currentPage : 1;
-		this.nextPage = currentPage < totalPages ? ++currentPage : totalPages;
+		this.prePage = (currentPage > 1 ? currentPage - 1 : currentPage);
+		this.nextPage = (currentPage < totalPages ? currentPage + 1
+				: currentPage);
 	}
 
 	public long getTotalRows() {

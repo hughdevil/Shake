@@ -92,6 +92,13 @@ public class ItemDaoImpl implements ItemDao {
 	}
 
 	@Override
+	public Item findById(int id) {
+		// TODO Auto-generated method stub
+		String hql = "from Item i where i.iid=" + id;
+		return (Item) hibernateUtil.exeQuery(hql).get(0);
+	}
+
+	@Override
 	public List<Item> findall() {
 		// TODO Auto-generated method stub
 		String hql = "from Item order by iid desc";

@@ -20,11 +20,11 @@
 			</tr>
 		</c:forEach>
 		<tr>
-			<td><a href="<%=request.getContextPath() %>/item/post.do?page=1" >1</a></td>
-			<td><a href="<%=request.getContextPath() %>/item/post.do?page=${pager.prePage}" >上一页</a></td>
-			<td>当前页：${pager.currentPage }</td>
-			<td><a href="<%=request.getContextPath() %>/item/post.do?page=${pager.nextPage}" >下一页</a></td>
-			<td>总页数：<a href="<%=request.getContextPath() %>/item/post.do?page=${pager.totalPages}" >${pager.totalPages }</a></td>
+			<td><a href="<%=request.getContextPath() %>/item/post.do?page=1" >1</a>
+			<a href="<%=request.getContextPath() %>/item/post.do?page=${pager.prePage}" >上一页</a>
+			当前页：${pager.currentPage }
+			<a href="<%=request.getContextPath() %>/item/post.do?page=${pager.nextPage}" >下一页</a>
+			总页数：<a href="<%=request.getContextPath() %>/item/post.do?page=${pager.totalPages}" >${pager.totalPages }</a></td>
 		</tr>
 	</table>
 </body>

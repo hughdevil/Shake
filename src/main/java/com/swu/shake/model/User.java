@@ -10,8 +10,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Pattern;
 
-import org.hibernate.annotations.GeneratorType;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Range;
 
 //实体类，注解
 @Entity
@@ -33,6 +35,7 @@ public class User {
 	@Column(name = "sex", nullable = false)
 	private byte sex;
 	/** 电话 */
+	@Pattern(regexp="^\\d{11}$",message="")
 	@Column(name = "phone", nullable = true)
 	private String phone;
 	/** OICQ */
@@ -42,6 +45,7 @@ public class User {
 	@Column(name = "addr", nullable = true)
 	private String addr;
 	/** 邮箱 */
+	@Email(message="")
 	@Column(name = "email", nullable = true)
 	private String email;
 	@Column(name = "regDate", nullable = false)
@@ -52,14 +56,14 @@ public class User {
 	@ManyToOne
 	@JoinColumn(name = "rid")
 	private Role role;
-	
-	public User(){
-		
+
+	public User() {
+
 	}
-	
-	public User(int id,String name){
-		this.uid=id;
-		this.name=name;
+
+	public User(int id, String name) {
+		this.uid = id;
+		this.name = name;
 	}
 
 	public String getName() {
