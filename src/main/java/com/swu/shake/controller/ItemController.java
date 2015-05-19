@@ -71,9 +71,9 @@ public class ItemController {
 		return "item/post";
 	}
 
-	@RequestMapping("/post?page={page}")
-	public String postDo(@PathVariable("page") int curpage,
-			HttpServletRequest request, HttpSession session, ModelMap mm) {
+	@RequestMapping(value="/post", params="page",method=RequestMethod.GET)
+	public String postDo(HttpServletRequest request, HttpSession session, ModelMap mm) {
+		int curpage = Integer.parseInt(request.getParameter("page"));
 		Long count = itemService.getCount();
 		Pager pager = new Pager(count, PAGE_SIZE, curpage);
 		mm.addAttribute(

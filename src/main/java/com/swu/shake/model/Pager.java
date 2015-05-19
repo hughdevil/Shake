@@ -8,15 +8,14 @@ public class Pager implements Serializable {
 	private long totalRows; // 总行数
 	private int pageSize; // 每页显示的行数
 	private int currentPage; // 当前页号
-	private int totalPages; // 总页数
+
 	private int startRow; // 当前页在数据库中的起始行
 
-	public Pager() {
-	}
+	private int totalPages; // 总页数
+	private int nextPage; // 下一页
+	private int prePage; // 上一页
 
-	public Pager(int _pageSize, int _currentPage) {
-		this.pageSize = _pageSize;
-		this.currentPage = _currentPage;
+	public Pager() {
 	}
 
 	/**
@@ -33,6 +32,8 @@ public class Pager implements Serializable {
 		this.totalPages = (int) (totalRows / pageSize);
 		this.totalPages += (totalRows % pageSize) > 0 ? 1 : 0;
 		this.startRow = (_currentPage - 1) * _pageSize;
+		this.prePage = currentPage > 1 ? --currentPage : 1;
+		this.nextPage = currentPage < totalPages ? ++currentPage : totalPages;
 	}
 
 	public long getTotalRows() {
@@ -75,58 +76,24 @@ public class Pager implements Serializable {
 		this.startRow = startRow;
 	}
 
-	/**
-	 * 第一页
-	 */
-	public void first() {
-		currentPage = 1;
-		startRow = 0;
+	public int getNextPage() {
+		return nextPage;
 	}
 
-	/**
-	 * 前一页
-	 */
-	public void previous() {
-		if (currentPage == 1) {
-			return;
-		}
-		currentPage--;
-		startRow = (currentPage - 1) * pageSize;
+	public void setNextPage(int nextPage) {
+		this.nextPage = nextPage;
 	}
 
-	/**
-	 * 下一页
-	 */
-	public void next() {
-		if (currentPage < totalPages) {
-			currentPage++;
-		}
-		startRow = (currentPage - 1) * pageSize;
+	public int getPrePage() {
+		return prePage;
 	}
 
-	/**
-	 * 尾页
-	 */
-	public void last() {
-		currentPage = totalPages;
-		startRow = (currentPage - 1) * pageSize;
+	public void setPrePage(int prePage) {
+		this.prePage = prePage;
 	}
 
-	/**
-	 * 跳转
-	 * 
-	 * @param _currentPage
-	 */
-	public void refresh(int _currentPage) {
-		currentPage = _currentPage;
-		if (currentPage < 1) {
-			first();
-			return;
-		}
-		if (currentPage > totalPages) {
-			last();
-			return;
-		}
-
+	public void setTotalRows(long totalRows) {
+		this.totalRows = totalRows;
 	}
+
 }
