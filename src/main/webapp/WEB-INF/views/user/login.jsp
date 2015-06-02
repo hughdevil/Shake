@@ -8,7 +8,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script type="text/javascript"
 	src=" <%=request.getContextPath()%>/js/jquery-2.1.4.min.js"></script>
-<title>Insert title here</title>
+<title>User login</title>
 </head>
 <body>
 	<form:form modelAttribute="user" method="post" action="login.do">     

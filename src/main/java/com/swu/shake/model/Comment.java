@@ -17,16 +17,27 @@ public class Comment {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	// UUID
 	private int cid;
 	@Column(nullable = false)
 	private String content;
 	@Column(nullable = false)
 	private Date markDate;
 
-	@ManyToOne()
+	@ManyToOne
 	@JoinColumn(name = "iid")
 	private Item item;
+
+	@ManyToOne
+	@JoinColumn(name = "uid")
+	private User user;
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
 
 	public Item getItem() {
 		return item;

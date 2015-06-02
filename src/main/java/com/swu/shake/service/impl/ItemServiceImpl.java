@@ -1,14 +1,18 @@
 package com.swu.shake.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.swu.shake.dao.CommentDao;
 import com.swu.shake.dao.ItemDao;
 import com.swu.shake.dao.ItemImageDao;
+import com.swu.shake.model.Comment;
 import com.swu.shake.model.Item;
 import com.swu.shake.model.ItemImage;
+import com.swu.shake.model.ItemType;
 import com.swu.shake.service.ItemService;
 import com.swu.shake.util.MsgException;
 
@@ -16,6 +20,16 @@ import com.swu.shake.util.MsgException;
 public class ItemServiceImpl implements ItemService {
 	ItemDao itemDao;
 	ItemImageDao itemImageDao;
+	CommentDao commentDao;
+
+	public CommentDao getCommentDao() {
+		return commentDao;
+	}
+
+	@Autowired
+	public void setCommentDao(CommentDao commentDao) {
+		this.commentDao = commentDao;
+	}
 
 	public ItemDao getItemDao() {
 		return itemDao;
@@ -37,7 +51,6 @@ public class ItemServiceImpl implements ItemService {
 
 	@Override
 	public Item register(Item item) throws MsgException {
-		// TODO Auto-generated method stub
 		Item i = itemDao.save(item);
 		if (null == i) {
 			throw new MsgException("商品发布失败了！");
@@ -47,7 +60,6 @@ public class ItemServiceImpl implements ItemService {
 
 	@Override
 	public boolean remove(int[] ids) {
-		// TODO Auto-generated method stub
 		boolean flag = true;
 		for (int id : ids) {
 			if (!this.itemDao.delete(id))
@@ -58,43 +70,67 @@ public class ItemServiceImpl implements ItemService {
 
 	@Override
 	public boolean modify(Item item) {
-		// TODO Auto-generated method stub
 		return itemDao.update(item);
 	}
 
 	@Override
 	public List<Item> getItems() {
-		// TODO Auto-generated method stub
 		return this.itemDao.findall();
 	}
 
 	@Override
 	public Item getItem(int id) {
-		// TODO Auto-generated method stub
 		return itemDao.findById(id);
 	}
 
 	@Override
+	public Item getDetail(int id) {
+		Item item = itemDao.findById(id);
+		List<ItemImage> images = itemImageDao.findall(id);
+		List<Comment> comments = commentDao.findall(id);
+		item.setItemImages(new HashSet<ItemImage>(images));
+		item.setComments(comments);
+
+		return item;
+	}
+
+	@Override
+	public List<ItemImage> getImgs(int id) {
+		return itemImageDao.findall(id);
+	}
+
+	@Override
 	public List<Item> getItems(int start, int end) {
-		// TODO Auto-generated method stub
 		return itemDao.getItems(start, end);
 	}
 
 	@Override
+	public List<Item> getItems(int tid, int start, int end) {
+		return itemDao.getItems(tid, start, end);
+	}
+
+	@Override
+	public long getCount(int tid) {
+		return itemDao.getCount(tid);
+	}
+
+	@Override
+	public List<Item> getItemsByType(int tid) {
+		return this.itemDao.getItemsByType(tid);
+	}
+
+	@Override
 	public List<Item> getItemsByName(String name) {
-		// TODO Auto-generated method stub
 		return this.itemDao.getItemsByName(name);
 	}
 
 	@Override
 	public List<Item> getItemsByName(String name, int start, int end) {
-		// TODO Auto-generated method stub
 		return this.itemDao.getItemsByName(name, start, end);
 	}
 
 	@Override
 	public long getCount() {
-		// TODO Auto-generated method stub
 		return itemDao.getCount();
 	}
 

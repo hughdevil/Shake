@@ -25,16 +25,25 @@ public interface ItemDao {
 	/** 根据ID查找单个产品 */
 	public Item findById(int id);
 
-	/** 检测产品是否存在,存在返回true，否则返回false */
+	/** 根据商品种类查找商品 */
+	public List<Item> getItemsByType(int tid);
+	
+	/** 根据姓名查找商品 */
 	public List<Item> getItemsByName(String str);
 
-	/** 检测产品是否存在,存在返回true，否则返回false */
+	/** 根据姓名查找商品 分页 */
 	public List<Item> getItemsByName(String str, int start, int end);
 
 	/** 分页显示所有产品 */
 	public List<Item> getItems(int start, int end);
+	
+	/** 分页显示某类所有产品 */
+	public List<Item> getItems(int tid ,int start, int end);
 
 	/** 获得商品总数 */
 	public long getCount();
+	
+	/** 获得某类商品总数 */
+	public long getCount(int tid);
 
 }

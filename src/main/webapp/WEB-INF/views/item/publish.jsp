@@ -6,7 +6,7 @@
 <head>
 <script type="text/javascript" src=" <%=request.getContextPath()%>/js/jquery-2.1.4.min.js"></script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>Item publish</title>
 <script type="text/javascript">
 	i = 1;
 	j = 1;
@@ -38,8 +38,8 @@
 		有效：是<input type="radio" name="isvalid"  value="true"/>否<input type="radio" name="isvalid"  value="false"/><br>
 		商品类型：
 		<select name="itemtype">
-		<c:forEach items="${itemTypes }">
-			<option value="${itemTypes.tid}">${itemTypes.tname}</option>
+		<c:forEach items="${itemtypes }" var="itemtype">
+			<option value="${itemtype.tid}">${itemtype.tname}</option>
 		</c:forEach>
 		</select><br>
 		上传图片：

@@ -19,6 +19,7 @@ public interface ItemTypeDao {
 	/** 修改产品类型 */
 	public boolean update(ItemType itemType);
 
+	/** 通过ID查询单个类型*/
 	public ItemType getItemTypeById(int id);
 
 	/** 查询所有产品类型 */
@@ -26,5 +27,8 @@ public interface ItemTypeDao {
 
 	/** 检测产品是否存在,存在返回true，否则返回false */
 	public List<ItemType> getItemTypesByName(String str, int start, int end);
+	
+	/** 获得商品种类总数*/
+	public int getCount();
 
 }

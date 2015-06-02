@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import com.swu.shake.dao.CommentDao;
 import com.swu.shake.model.Comment;
-import com.swu.shake.model.Item;
 import com.swu.shake.util.HibernateUtil;
 
 @Repository(value = "commentDao")
@@ -34,7 +33,7 @@ public class CommentDaoImpl implements CommentDao {
 		Comment c = null;
 		try {
 			session = hibernateUtil.getSession();
-			transaction = session.getTransaction();
+			transaction = session.beginTransaction();
 			c = (Comment) session.load(Comment.class, session.save(comment));
 			transaction.commit();
 		} catch (HibernateException e) {
@@ -82,16 +81,23 @@ public class CommentDaoImpl implements CommentDao {
 	}
 
 	@Override
-	public List<Item> findall(int iid) {
-		String hql = "from Comment";
+	public List<Comment> findall(int iid) {
+		String hql = "from Comment c where c.item.iid= "+iid;
 		return hibernateUtil.exeQuery(hql);
 	}
 
 	@Override
-	public List<Item> getComments(int iid, int start, int end) {
+	public List<Comment> getComments(int iid, int start, int end) {
 		// TODO Auto-generated method stub
 		String hql = "from Comment";
 		return hibernateUtil.exeQueryPage(hql, start, end);
+	}
+
+	@Override
+	public long getCount(int iid) {
+		// TODO Auto-generated method stub
+		String hql = "select count(*) from Comment c";
+		return this.hibernateUtil.exeCount(hql);
 	}
 
 }

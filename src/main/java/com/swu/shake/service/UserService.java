@@ -3,7 +3,6 @@ package com.swu.shake.service;
 import java.util.List;
 /**
  * 用户业务服务类
- * @author 王伟杰
  */
 
 
@@ -26,9 +25,10 @@ public interface UserService {
 	public User login (String name,String password);
 	/**检测用户名是否存在*/
 	public boolean checkUserName(String username);
+	/**检测用户id是否存在*/
+	public boolean checkUserId(int uid);
 	/**分页显示所有用户*/
 	public List<User> getPersons(int start, int end);
+	/**获得用户数量*/
 	public int getCount();
-	
-
 }

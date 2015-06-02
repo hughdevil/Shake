@@ -35,7 +35,7 @@ public class User {
 	@Column(name = "sex", nullable = false)
 	private byte sex;
 	/** 电话 */
-	@Pattern(regexp="^\\d{11}$",message="")
+//	@Pattern(regexp="^\\d{11}$",message="")
 	@Column(name = "phone", nullable = true)
 	private String phone;
 	/** OICQ */
@@ -45,7 +45,7 @@ public class User {
 	@Column(name = "addr", nullable = true)
 	private String addr;
 	/** 邮箱 */
-	@Email(message="")
+//	@Email(message="")
 	@Column(name = "email", nullable = true)
 	private String email;
 	@Column(name = "regDate", nullable = false)

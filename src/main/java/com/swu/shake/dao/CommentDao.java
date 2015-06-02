@@ -3,7 +3,6 @@ package com.swu.shake.dao;
 import java.util.List;
 
 import com.swu.shake.model.Comment;
-import com.swu.shake.model.Item;
 
 /**
  * 用户访问数据对象接口
@@ -21,9 +20,12 @@ public interface CommentDao {
 	public boolean update(Comment comment);
 
 	/** 查询某商品所有评论 */
-	public List<Item> findall(int iid);
+	public List<Comment> findall(int iid);
 
 	/** 分页显示某商品所有评论 */
-	public List<Item> getComments(int iid, int start, int end);
+	public List<Comment> getComments(int iid, int start, int end);
+	
+	/** 获得某商品的评论总数*/
+	public long getCount(int iid);
 
 }

@@ -11,12 +11,16 @@
 	<h1>
 		<c:out value="${serverTime }"></c:out>
 	</h1>
-	<a href="user/tologin.do">登录</a>
+	<a href="user/register.do">注册</a>
 	<br>
-	<a href="user/toregister.do">注册</a>
+	<a href="user/login.do">登录</a>
 	<br>
 	<a href="item/publish.do">发布商品</a>
 	<br>
 	<a href="item/post.do">查看商品</a>
+	<br>
+	<a href="role/add.do">添加角色</a>
+	<br>
+	<a href="item/type/add.do">添加商品种类</a>
 </body>
 </html>

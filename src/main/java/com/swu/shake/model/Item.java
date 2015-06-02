@@ -1,7 +1,9 @@
 package com.swu.shake.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -33,8 +35,8 @@ public class Item {
 	private Date onshelfdate;
 	@Column(nullable = false)
 	private boolean isValid;
-	
-	//如果用ItemImage的话，每查一个都会查询一下itemimage表(每次查询User这个没办法，因为以后可能扩展)，用string直接解决,
+
+	// 如果用ItemImage的话，每查一个都会查询一下itemimage表(每次查询User这个没办法，因为以后可能扩展)，用string直接解决,
 	@Column(nullable = false)
 	private String postImage;
 
@@ -44,14 +46,15 @@ public class Item {
 	private ItemType itemtype;
 
 	private Set<ItemImage> itemImages = new HashSet<ItemImage>();
-	private Set<Comment> comments = new HashSet<Comment>();
+
+	private List<Comment> comments = new ArrayList<Comment>();
 
 	public Item() {
 
 	}
 
 	public Item(int iid, String iname, double iprice, boolean isvalid,
-			Date onshelfdate,String postImage, int uid,String name ) {
+			Date onshelfdate, String postImage, int uid, String name) {
 		this.iid = iid;
 		this.iname = iname;
 		this.iprice = iprice;
@@ -61,11 +64,6 @@ public class Item {
 		user.setUid(uid);
 		user.setName(name);
 		this.postImage = postImage;
-	}
-
-	@OneToMany(mappedBy = "item", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-	public Set<Comment> getComments() {
-		return comments;
 	}
 
 	public String getIdesc() {
@@ -91,12 +89,6 @@ public class Item {
 		return iprice;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "iid")
-	public Set<ItemImage> getItemImages() {
-		return itemImages;
-	}
-
 	@ManyToOne
 	@JoinColumn(name = "tid")
 	public ItemType getItemtype() {
@@ -107,7 +99,6 @@ public class Item {
 		return onshelfdate;
 	}
 
-	
 	public String getPostImage() {
 		return postImage;
 	}
@@ -120,10 +111,6 @@ public class Item {
 
 	public boolean isValid() {
 		return isValid;
-	}
-
-	public void setComments(Set<Comment> comments) {
-		this.comments = comments;
 	}
 
 	public void setIdesc(String idesc) {
@@ -150,10 +137,6 @@ public class Item {
 		this.iprice = iprice;
 	}
 
-	public void setItemImages(Set<ItemImage> itemImages) {
-		this.itemImages = itemImages;
-	}
-
 	public void setItemtype(ItemType itemtype) {
 		this.itemtype = itemtype;
 	}
@@ -173,4 +156,24 @@ public class Item {
 	public void setValid(boolean isValid) {
 		this.isValid = isValid;
 	}
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "iid")
+	public Set<ItemImage> getItemImages() {
+		return itemImages;
+	}
+
+	public void setItemImages(Set<ItemImage> itemImages) {
+		this.itemImages = itemImages;
+	}
+
+	@OneToMany(mappedBy = "item", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+	public List<Comment> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<Comment> comments) {
+		this.comments = comments;
+	}
+
 }

@@ -1,16 +1,25 @@
 package com.swu.shake.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
+
+/**
+ * 注意User,没有Role就是普通用户
+ * 
+ * @author Hugh
+ *
+ */
 
 @Entity
 @Table(name = "T_Role")
 public class Role {
 	@Id
+	@GeneratedValue(generator = "system-uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "uuid")
 	// uuid
 	private String rid;
 	private String rname;

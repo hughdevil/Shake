@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -47,35 +48,48 @@ public class UserController {
 	}
 
 	// 加to来访问到jsp页面，不允许直接访问jsp
-	@RequestMapping("/user/tologin")
-	public ModelAndView userLogin(HttpServletRequest request,
-			HttpSession session) throws Exception {
-		ModelAndView mav = new ModelAndView();// 新建视图
-		mav.setViewName("/user/login");
-		mav.addObject("user", new User());
-		return mav;
-	}
+	// @RequestMapping(value = "/user/login", method = RequestMethod.GET)
+	// public ModelAndView userLogin(HttpServletRequest request,
+	// HttpSession session) throws Exception {
+	// ModelAndView mav = new ModelAndView();// 新建视图
+	// mav.setViewName("/user/login");
+	// mav.addObject("user", new User());
+	// return mav;
+	// }
+	//
+	// @RequestMapping(value = "/user/login", method = RequestMethod.POST)
+	// public @ResponseBody User userLoginDo(HttpServletRequest request,
+	// HttpSession session, @RequestBody User user) throws Exception {
+	// String name = user.getName();
+	// String unPassword = user.getPassword();
+	// String password = MD5Util.getMD5(unPassword);
+	// User u = userService.login(name, password);
+	// if (null != u) {
+	// session.setAttribute("user", u);
+	// }
+	// return u;
+	// }
 
-	@RequestMapping("/user/login")
-	public @ResponseBody User userLoginDo(HttpServletRequest request,
-			HttpSession session, @RequestBody User user) throws Exception {
-		String name = user.getName();
-		String unPassword = user.getPassword();
+	@RequestMapping(value = "/user/login", method = RequestMethod.POST)
+	public String userLoginDo(HttpServletRequest request, HttpSession session)
+			throws Exception {
+		String name = request.getParameter("name");
+		String unPassword = request.getParameter("password");
 		String password = MD5Util.getMD5(unPassword);
 		User u = userService.login(name, password);
 		if (null != u) {
 			session.setAttribute("user", u);
 		}
-		return u;
+		return "redirect:/item/post.do";
 	}
 
-	@RequestMapping("/user/toregister")
+	@RequestMapping(value = "/user/register", method = RequestMethod.GET)
 	public String userRegister(HttpServletRequest quest, HttpSession session)
 			throws Exception {
 		return "/user/register";
 	}
 
-	@RequestMapping("/user/register")
+	@RequestMapping(value = "/user/register", method = RequestMethod.POST)
 	public ModelAndView userRegisterDo(HttpServletRequest request,
 			HttpSession session) {
 		ModelAndView mav = new ModelAndView();
@@ -118,5 +132,13 @@ public class UserController {
 			mav.setViewName("/comm/success");
 		}
 		return mav;
+	}
+
+	@RequestMapping(value = "/user/logout")
+	public String logout(HttpSession session) {
+		String viewName = "";
+		session.removeAttribute("user");
+		viewName = "redirect:/item/post.do";
+		return viewName;
 	}
 }

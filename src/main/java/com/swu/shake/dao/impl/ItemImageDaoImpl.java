@@ -1,6 +1,10 @@
 package com.swu.shake.dao.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.HibernateException;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +25,30 @@ public class ItemImageDaoImpl implements ItemImageDao {
 	@Autowired
 	public void setHibernateUtil(HibernateUtil hibernateUtil) {
 		this.hibernateUtil = hibernateUtil;
+	}
+
+	
+	
+	@Override
+	public List<ItemImage> findall(int iid) {
+		List<ItemImage> list =null;
+		Session session  =  null;
+		Transaction transaction = null;
+		try{
+			session = hibernateUtil.getSession();
+			transaction = session.beginTransaction();
+			String sql = "select * from t_itemimage where iid="+iid;
+			SQLQuery sqlQuery= session.createSQLQuery(sql);
+			sqlQuery.addEntity(ItemImage.class);
+			list = sqlQuery.list();
+//			list = new ArrayList<ItemImage>();
+		}catch(HibernateException e){
+			e.printStackTrace();
+			hibernateUtil.rollbackTransaction(transaction);
+		}finally{
+			hibernateUtil.closeSession(session);
+		}
+		return list;
 	}
 
 	@Override

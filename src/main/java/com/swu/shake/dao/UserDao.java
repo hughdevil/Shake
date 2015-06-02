@@ -28,6 +28,9 @@ public interface UserDao {
 	/** 检测用户名是否存在,存在返回true，否则返回false */
 	public boolean checkUserName(String username);
 
+	/** 检测用户id是否存在,存在返回true，否则返回false */
+	public boolean checkUserId(int  uid);
+
 	/** 分页显示所有用户 */
 	public List<User> getPersons(int start, int end);
 

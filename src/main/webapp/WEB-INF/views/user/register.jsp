@@ -8,7 +8,7 @@
 <head>
 <!-- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> -->
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>User register</title>
 </head>
 <body>
 	<form action="register.do" method="post">

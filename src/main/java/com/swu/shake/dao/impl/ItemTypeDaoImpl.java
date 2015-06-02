@@ -9,6 +9,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -33,7 +34,10 @@ public class ItemTypeDaoImpl extends HibernateTemplate implements ItemTypeDao {
 		// TODO Auto-generated method stub
 		ItemType it = null;
 		try {
+			Session session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
 			it = super.load(ItemType.class, super.save(itemType));
+			session.getTransaction().commit();
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -46,7 +50,10 @@ public class ItemTypeDaoImpl extends HibernateTemplate implements ItemTypeDao {
 	public boolean delete(int id) {
 		// TODO Auto-generated method stub
 		try {
+			Session session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
 			super.delete(getItemTypeById(id));
+			session.getTransaction().commit();
 			return true;
 		} catch (DataAccessException e) {
 			e.printStackTrace();
@@ -58,10 +65,13 @@ public class ItemTypeDaoImpl extends HibernateTemplate implements ItemTypeDao {
 	public boolean update(ItemType itemType) {
 		// TODO Auto-generated method stub
 		try {
+			Session session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
 			ItemType it = getItemTypeById(itemType.getTid());
 			it.setTname(itemType.getTname());
 
 			super.update(it);
+			session.getTransaction().commit();
 			return true;
 		} catch (DataAccessException e) {
 			e.printStackTrace();
@@ -108,7 +118,29 @@ public class ItemTypeDaoImpl extends HibernateTemplate implements ItemTypeDao {
 	@Override
 	public ItemType getItemTypeById(int id) {
 		// TODO Auto-generated method stub
-		return super.get(ItemType.class, id);
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+		ItemType itemType = super.get(ItemType.class, id);
+		session.getTransaction().commit();
+		return itemType;
+	}
+
+	@Override
+	public int getCount() {
+		// TODO Auto-generated method stub
+		Session session = null;
+		Transaction transaction = null;
+		List<ItemType> its = null;
+		int sum = 0;
+		try {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			String hql = "select count(*) from ItemType";
+			sum = (Integer) session.createQuery(hql).uniqueResult();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return sum;
 	}
 
 }

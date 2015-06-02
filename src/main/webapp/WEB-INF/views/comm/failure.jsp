@@ -5,10 +5,11 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>F</title>
 </head>
 <body>
 	<h1>失败</h1>
-	<br> ${message}
+	<br> ${message}<br>
+	<h3><a href="<%=request.getContextPath()%>/home.jsp">首页</a></h3>
 </body>
 </html>

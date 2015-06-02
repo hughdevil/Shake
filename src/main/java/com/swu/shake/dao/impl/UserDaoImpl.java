@@ -120,6 +120,13 @@ public class UserDaoImpl implements UserDao {
 		return false;
 	}
 
+	@Override
+	public boolean checkUserId(int uid) {
+		// TODO Auto-generated method stub
+		String hql = "from User u where u.uid=" + uid;
+		return !hibernateUtil.exeQuery(hql).isEmpty();
+	}
+
 	public List<User> getPersons(int start, int end) {
 		// TODO Auto-generated method stub
 		String hql = "from User";

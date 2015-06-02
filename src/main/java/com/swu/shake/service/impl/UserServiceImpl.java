@@ -66,6 +66,12 @@ public class UserServiceImpl implements UserService {
 		return userDao.checkUserName(username);
 	}
 
+	@Override
+	public boolean checkUserId(int uid) {
+		// TODO Auto-generated method stub
+		return userDao.checkUserId(uid);
+	}
+
 	public List<User> getPersons(int start, int end) {
 		// TODO Auto-generated method stub
 		return userDao.getPersons(start, end);

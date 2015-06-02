@@ -15,5 +15,8 @@ public interface ItemImageDao {
 
 	/** 删除产品图片 */
 	public boolean delete(int id);
+	
+	/** 查找产品图片*/
+	public List<ItemImage> findall(int iid);
 
 }

@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.swu.shake.dao.ItemDao;
@@ -32,7 +33,6 @@ public class ItemDaoImpl implements ItemDao {
 
 	@Override
 	public Item save(Item item) {
-		// TODO Auto-generated method stub
 		Item i = null;
 		Transaction transaction = null;
 		Session session = null;
@@ -60,7 +60,6 @@ public class ItemDaoImpl implements ItemDao {
 
 	@Override
 	public boolean update(Item item) {
-		// TODO Auto-generated method stub
 		Transaction transaction = null;
 		Session session = null;
 		boolean flag = false;
@@ -75,6 +74,7 @@ public class ItemDaoImpl implements ItemDao {
 			i.setComments(item.getComments());
 			i.setItemImages(item.getItemImages());
 			i.setItemtype(item.getItemtype());
+			i.setPostImage(item.getPostImage());
 			i.setValid(item.isValid());
 
 			transaction.commit();
@@ -93,21 +93,25 @@ public class ItemDaoImpl implements ItemDao {
 
 	@Override
 	public Item findById(int id) {
-		// TODO Auto-generated method stub
 		String hql = "from Item i where i.iid=" + id;
 		return (Item) hibernateUtil.exeQuery(hql).get(0);
 	}
 
 	@Override
 	public List<Item> findall() {
-		// TODO Auto-generated method stub
 		String hql = "from Item order by iid desc";
 		return hibernateUtil.exeQuery(hql);
 	}
 
 	@Override
+	public List<Item> getItemsByType(int tid) {
+		String hql = "from Item i where i.itemtype.tid =" + tid
+				+ " order by iid desc";
+		return hibernateUtil.exeQuery(hql);
+	}
+
+	@Override
 	public List<Item> getItemsByName(String str) {
-		// TODO Auto-generated method stub
 		String hql = "from Item where iname like '%" + str
 				+ "%' order by iid desc";
 		return hibernateUtil.exeQuery(hql);
@@ -115,7 +119,6 @@ public class ItemDaoImpl implements ItemDao {
 
 	@Override
 	public List<Item> getItemsByName(String str, int start, int end) {
-		// TODO Auto-generated method stub
 		String hql = "from Item where iname like '%" + str
 				+ "%' order by iid desc";
 		return hibernateUtil.exeQueryPage(hql, start, end);
@@ -123,7 +126,6 @@ public class ItemDaoImpl implements ItemDao {
 
 	@Override
 	public List<Item> getItems(int start, int end) {
-		// TODO Auto-generated method stub
 		String hql = "select new com.swu.shake.model.Item(i.iid,i.iname,i.iprice,i.valid,i.onshelfdate,i.postImage,u.uid,u.name)  from Item i join i.user u order by i.iid desc";
 		/*
 		 * 成功的把商品展示压缩成一条sql Hibernate: select item0_.iid as col_0_0_,
@@ -137,9 +139,21 @@ public class ItemDaoImpl implements ItemDao {
 	}
 
 	@Override
+	public List<Item> getItems(int tid, int start, int end) {
+		String hql = "select new com.swu.shake.model.Item(i.iid,i.iname,i.iprice,i.valid,i.onshelfdate,i.postImage,u.uid,u.name)  from Item i join i.user u  where i.itemtype.tid="
+				+ tid + " order by i.iid desc";
+		return hibernateUtil.exeQueryPage(hql, start, end);
+	}
+
+	@Override
 	public long getCount() {
-		// TODO Auto-generated method stub
 		String hql = "select count(*) from Item i";
+		return hibernateUtil.exeCount(hql);
+	}
+
+	@Override
+	public long getCount(int tid) {
+		String hql = "select count(*) from Item i where i.itemtype.tid=" + tid;
 		return hibernateUtil.exeCount(hql);
 	}
 

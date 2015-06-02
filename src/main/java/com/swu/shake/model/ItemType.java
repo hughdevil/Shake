@@ -53,4 +53,12 @@ public class ItemType {
 		this.set = set;
 	}
 
+	public String getTdesc() {
+		return tdesc;
+	}
+
+	public void setTdesc(String tdesc) {
+		this.tdesc = tdesc;
+	}
+
 }

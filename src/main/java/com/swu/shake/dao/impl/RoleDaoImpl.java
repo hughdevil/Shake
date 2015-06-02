@@ -31,7 +31,6 @@ public class RoleDaoImpl implements RoleDao {
 
 	@Override
 	public Role save(Role role) {
-		// TODO Auto-generated method stub
 		Session session = null;
 		Transaction transaction = null;
 		Role r = null;
@@ -52,14 +51,13 @@ public class RoleDaoImpl implements RoleDao {
 	}
 
 	@Override
-	public boolean delete(int id) {
-		// TODO Auto-generated method stub
+	public boolean delete(String rid) {
 		Session session = null;
 		Transaction transaction = null;
 		try {
 			session = sessionFactory.getCurrentSession();
 			transaction = session.beginTransaction();
-			Role role = getRoleById(id);
+			Role role = getRoleById(rid);
 			session.delete(role);
 			transaction.commit();
 			return true;
@@ -72,7 +70,6 @@ public class RoleDaoImpl implements RoleDao {
 
 	@Override
 	public boolean update(Role role) {
-		// TODO Auto-generated method stub
 		Session session = null;
 		Transaction transaction = null;
 		boolean flag = false;
@@ -92,7 +89,7 @@ public class RoleDaoImpl implements RoleDao {
 	}
 
 	@Override
-	public Role getRoleById(int id) {
+	public Role getRoleById(String rid) {
 		Session session = null;
 		Transaction transaction = null;
 		Role role = null;
@@ -102,8 +99,8 @@ public class RoleDaoImpl implements RoleDao {
 				session = sessionFactory.openSession();
 			}
 			transaction = session.beginTransaction();
-			// load好不到时返回错误，这与save的不一样
-			role = (Role) session.load(Role.class, id);
+			// load找不到时返回错误，这与save的不一样
+			role = (Role) session.load(Role.class, rid);
 		} catch (ObjectNotFoundException e) {
 			return null;
 		} catch (HibernateException e) {
@@ -115,14 +112,12 @@ public class RoleDaoImpl implements RoleDao {
 
 	@Override
 	public List<Role> findall() {
-		// TODO Auto-generated method stub
 		// 试试可以用-1来表示无限，如果不可以在对-1做特殊判断
-		return findallByPage(-1, -1);
+		return findall(-1, -1);
 	}
 
 	@Override
-	public List<Role> findallByPage(int start, int end) {
-		// TODO Auto-generated method stub
+	public List<Role> findall(int start, int end) {
 		Session session = null;
 		Transaction transaction = null;
 		List<Role> list = null;
@@ -150,14 +145,12 @@ public class RoleDaoImpl implements RoleDao {
 
 	@Override
 	public List<Role> getRolesByName(String str) {
-		// TODO Auto-generated method stub
 		// 还是-1的问题
 		return getRolesByName(str, -1, -1);
 	}
 
 	@Override
 	public List<Role> getRolesByName(String str, int start, int end) {
-		// TODO Auto-generated method stub
 		Session session = null;
 		Transaction transaction = null;
 		List<Role> list = null;
@@ -182,4 +175,51 @@ public class RoleDaoImpl implements RoleDao {
 		}
 		return list;
 	}
+
+	@Override
+	public int getCount() {
+		// TODO Auto-generated method stub
+		Session session = null;
+		Transaction transaction = null;
+		boolean isNeed = false;
+		int sum = 0;
+		try {
+			session = sessionFactory.getCurrentSession();
+			if (null == session) {
+				session = sessionFactory.openSession();
+				isNeed = true;
+			}
+			transaction = session.beginTransaction();
+			Criteria c = session.createCriteria(Role.class);
+			sum = c.list().size();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			transaction.rollback();
+		} finally {
+			if (isNeed)
+				session.close();
+		}
+		return sum;
+	}
+
+	@Override
+	public List<Role> getRolesByLevel(int rlevel) {
+		Session session = null;
+		Transaction transaction = null;
+		List<Role> roles = null;
+		try {
+			session = sessionFactory.getCurrentSession();
+			transaction = session.beginTransaction();
+			Criteria c = session.createCriteria(Role.class);
+			c.add(Restrictions.lt("rlevel", rlevel));
+			roles = c.list();
+
+			transaction.commit();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			transaction.rollback();
+		}
+		return roles;
+	}
+
 }

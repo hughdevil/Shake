@@ -6,48 +6,34 @@
 <head>
 <script type="text/javascript" src=" <%=request.getContextPath()%>/js/jquery-2.1.4.min.js"></script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
-<script type="text/javascript">
-	i = 1;
-	j = 1;
-	$(document)
-			.ready(
-					function() {
-						$("#btn_add")
-								.click(
-										function() {
-											document
-													.getElementById("newUpload").innerHTML += '<div id="div_'+j+'"><input  name="itemImages" type="file"  /><input type="button" value="删除"  onclick="del('
-													+ j + ')"/></div>';
-											j = j + 1;
-										});
-					});
+<title>Item Detail</title>
 
-	function del(o) {
-		document.getElementById("newUpload").removeChild(
-				document.getElementById("div_" + o));
-	}
-</script>
 </head>
 <body>
-	<form  id="itemfrom" enctype="multipart/form-data" action="<c:url value="/item/publish.do" />"  method="post" >
-		标题 ：<input type="text" name="title" /><br> 
-		价格 ： <input type="text" name="price" /><br>
-		数量：<input type="text" name="number" /><br>
-		描述：<textarea rows="5" cols="50" name="desc"></textarea><br>
-		有效：是<input type="radio" name="isvalid"  value="true"/>否<input type="radio" name="isvalid"  value="false"/><br>
-		商品类型：
-		<select name="itemtype">
-		<c:forEach items="${itemTypes }">
-			<option value="${itemTypes.tid}">${itemTypes.tname}</option>
+		标题 ：${item.iname }<br> 
+		发布人：${item.user.name}<br>
+		价格 ：${item.iprice }<br>
+		数量：${item.iNumber }<br>
+		描述：${item.idesc }<br>
+		有效：${item.valid }<br>
+		上架日期：${item.onshelfdate }<br>
+		商品类型：${item.itemtype.tname}<br>
+		<h2>图片：</h2><br>
+		<c:forEach items="${item.itemImages }"  var="img">
+			<img alt="${img.iiname }" src=" <%=request.getContextPath()%>/${img.iiname}"><br>
 		</c:forEach>
-		</select><br>
-		上传图片：
-		<div id="newUpload">
-			<input type="file" name="itemImages">
-		</div>
-		<input type="button" id="btn_add" value="增加一行"> <br>
-		<input type="submit"  id ="submit"  value="提交">
-	</form>
+		
+		<h2>评论：</h2><br>
+		<c:forEach items="${item.comments }"  var="comment">
+			${comment.markDate }:${comment.user.name } :${comment.content }<br> 
+		</c:forEach>
+		
+		<h2>发表评论：</h2><br>
+		<form action="<c:url value="/comment/remark.do" />" method="post">
+			<input type="hidden"  name ="itemid" value="${item.iid }">
+			<textarea rows="5" cols="50" name="content"></textarea><br>
+			<input type="submit"  id ="submit"  value="提交">
+		</form>
+		
 </body>
 </html>
