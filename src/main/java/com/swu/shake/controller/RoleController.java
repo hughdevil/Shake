@@ -21,6 +21,7 @@ import com.swu.shake.util.RlevelUtil;
 @Controller
 @RequestMapping(value = "/role")
 public class RoleController {
+	private static final int AUTHORISE_ADMIN = 4;
 	private RoleService roleService;
 
 	public RoleService getRoleService() {
@@ -36,7 +37,12 @@ public class RoleController {
 	public String add(HttpSession session, Model model) {
 		User curuser = (User) session.getAttribute("user");
 		String viewName = "";
-		if (null != curuser) {
+		String message = null;
+		if (null == curuser) {
+			message = "未登录";
+			viewName = "/comm/failure";
+		} else if (curuser.getRole() != null
+				&& curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
 			int rlevel = curuser.getRole().getRlevel();
 			Map<String, String> rlevels = null;
 			try {
@@ -50,8 +56,9 @@ public class RoleController {
 			viewName = "role/add";
 		} else {
 			viewName = "comm/failure";
-			model.addAttribute("message", "未登录");
+			message = "权限不够";
 		}
+		model.addAttribute("message", message);
 		return viewName;
 	}
 
@@ -60,11 +67,24 @@ public class RoleController {
 			@RequestParam(value = "rlevelcode", required = true) String rlevelcode,
 			HttpServletRequest request, HttpSession session, Model model,
 			Role role) {
-
-		int rlevel = RlevelUtil.getLevel(rlevelcode);
-		role.setRlevel(rlevel);
-		roleService.register(role);
-		return "comm/success";
+		User curuser = (User) session.getAttribute("user");
+		String viewName = "";
+		String message = null;
+		if (null == curuser) {
+			message = "未登录";
+			viewName = "/comm/failure";
+		} else if (curuser.getRole() != null
+				&& curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
+			int rlevel = RlevelUtil.getLevel(rlevelcode);
+			role.setRlevel(rlevel);
+			roleService.register(role);
+			viewName = "comm/success";
+		} else {
+			viewName = "comm/failure";
+			message = "权限不够";
+		}
+		model.addAttribute("message", message);
+		return viewName;
 	}
 
 }

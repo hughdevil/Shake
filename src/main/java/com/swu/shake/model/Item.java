@@ -36,6 +36,12 @@ public class Item {
 	@Column(nullable = false)
 	private boolean isValid;
 
+	// 入手时间
+	private String hasdate;
+
+	// 成色（全新100，99，90，85，80，70，以下 ）
+	private int newly;
+
 	// 如果用ItemImage的话，每查一个都会查询一下itemimage表(每次查询User这个没办法，因为以后可能扩展)，用string直接解决,
 	@Column(nullable = false)
 	private String postImage;
@@ -79,6 +85,22 @@ public class Item {
 
 	public String getIname() {
 		return iname;
+	}
+
+	public String getHasdate() {
+		return hasdate;
+	}
+
+	public void setHasdate(String hasdate) {
+		this.hasdate = hasdate;
+	}
+
+	public int getNewly() {
+		return newly;
+	}
+
+	public void setNewly(int newly) {
+		this.newly = newly;
 	}
 
 	public Integer getiNumber() {
@@ -167,7 +189,7 @@ public class Item {
 		this.itemImages = itemImages;
 	}
 
-	@OneToMany(mappedBy = "item", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
 	public List<Comment> getComments() {
 		return comments;
 	}

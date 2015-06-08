@@ -26,7 +26,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public User register(User user) throws MsgException {
-		// TODO Auto-generated method stub
 		User u = null;
 		if (!checkUserName(user.getName())) {
 			u = userDao.save(user);
@@ -37,7 +36,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public boolean remove(String[] ids) {
-		// TODO Auto-generated method stub
 		boolean flag = false;
 		for (int i = 0; i < ids.length; i++) {
 			return userDao.delete(Integer.parseInt(ids[i]));
@@ -47,38 +45,31 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public boolean modify(User p) {
-		// TODO Auto-generated method stub
 		return userDao.update(p);
 	}
 
 	public List<User> getPersons() {
-		// TODO Auto-generated method stub
 		return userDao.findall();
 	}
 
 	public User login(String name, String password) {
-		// TODO Auto-generated method stub
 		return userDao.login(name, password);
 	}
 
 	public boolean checkUserName(String username) {
-		// TODO Auto-generated method stub
 		return userDao.checkUserName(username);
 	}
 
 	@Override
 	public boolean checkUserId(int uid) {
-		// TODO Auto-generated method stub
 		return userDao.checkUserId(uid);
 	}
 
 	public List<User> getPersons(int start, int end) {
-		// TODO Auto-generated method stub
 		return userDao.getPersons(start, end);
 	}
 
 	public int getCount() {
-		// TODO Auto-generated method stub
 		return this.getPersons().size();
 	}
 

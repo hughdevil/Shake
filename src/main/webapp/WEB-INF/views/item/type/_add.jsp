@@ -15,17 +15,11 @@
 </script>
 </head>
 <body>
-	<form:form modelAttribute="role" method="post">
-		角色名：<form:input path="rname" /><br>
-		描述：<form:input path="rdesc"  /><br>
-		等级：
-		<select name="rlevelcode">
-			<c:forEach items="${rlevels }" var="item">
-				<option value="${item.key }">${item.value }</option>
-			</c:forEach>
-		</select>
+	<form:form modelAttribute="itemtype" method="post">
+		类型名：<form:input path="tname" />
 		<br>
-		
+		描述：<form:input path="tdesc" />
+		<br>
 		<input type="submit">
 	</form:form>
 

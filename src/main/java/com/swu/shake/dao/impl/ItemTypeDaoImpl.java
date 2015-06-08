@@ -1,5 +1,6 @@
 package com.swu.shake.dao.impl;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -17,7 +18,7 @@ import com.swu.shake.dao.ItemTypeDao;
 import com.swu.shake.model.ItemType;
 
 @Repository(value = "itemTypeDao")
-public class ItemTypeDaoImpl extends HibernateTemplate implements ItemTypeDao {
+public class ItemTypeDaoImpl implements ItemTypeDao {
 	SessionFactory sessionFactory;
 
 	public SessionFactory getSessionFactory() {
@@ -33,15 +34,19 @@ public class ItemTypeDaoImpl extends HibernateTemplate implements ItemTypeDao {
 	public ItemType save(ItemType itemType) {
 		// TODO Auto-generated method stub
 		ItemType it = null;
+		Session session = null;
 		try {
-			Session session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
-			it = super.load(ItemType.class, super.save(itemType));
+			it = (ItemType) session
+					.load(ItemType.class, session.save(itemType));
 			session.getTransaction().commit();
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			session.close();
 		}
 		return it;
 	}
@@ -49,34 +54,40 @@ public class ItemTypeDaoImpl extends HibernateTemplate implements ItemTypeDao {
 	@Override
 	public boolean delete(int id) {
 		// TODO Auto-generated method stub
+		Session session = null;
 		try {
-			Session session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
-			super.delete(getItemTypeById(id));
+			session.delete(getItemTypeById(id));
 			session.getTransaction().commit();
-			return true;
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 			return false;
+		} finally {
+			session.close();
 		}
+		return true;
 	}
 
 	@Override
 	public boolean update(ItemType itemType) {
 		// TODO Auto-generated method stub
+		Session session = null;
 		try {
-			Session session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 			ItemType it = getItemTypeById(itemType.getTid());
 			it.setTname(itemType.getTname());
 
-			super.update(it);
+			session.update(it);
 			session.getTransaction().commit();
-			return true;
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 			return false;
+		} finally {
+			session.close();
 		}
+		return true;
 	}
 
 	@Override
@@ -89,8 +100,11 @@ public class ItemTypeDaoImpl extends HibernateTemplate implements ItemTypeDao {
 			transaction = session.beginTransaction();
 			Criteria criteria = session.createCriteria(ItemType.class);
 			its = criteria.list();
+			transaction.commit();
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			session.close();
 		}
 		return its;
 	}
@@ -111,6 +125,8 @@ public class ItemTypeDaoImpl extends HibernateTemplate implements ItemTypeDao {
 			transaction.commit();
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			session.close();
 		}
 		return list;
 	}
@@ -118,10 +134,11 @@ public class ItemTypeDaoImpl extends HibernateTemplate implements ItemTypeDao {
 	@Override
 	public ItemType getItemTypeById(int id) {
 		// TODO Auto-generated method stub
-		Session session = sessionFactory.getCurrentSession();
+		Session session = sessionFactory.openSession();
 		session.beginTransaction();
-		ItemType itemType = super.get(ItemType.class, id);
+		ItemType itemType = (ItemType) session.get(ItemType.class, id);
 		session.getTransaction().commit();
+		session.close();
 		return itemType;
 	}
 
@@ -137,8 +154,11 @@ public class ItemTypeDaoImpl extends HibernateTemplate implements ItemTypeDao {
 			transaction = session.beginTransaction();
 			String hql = "select count(*) from ItemType";
 			sum = (Integer) session.createQuery(hql).uniqueResult();
+			transaction.commit();
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			session.close();
 		}
 		return sum;
 	}

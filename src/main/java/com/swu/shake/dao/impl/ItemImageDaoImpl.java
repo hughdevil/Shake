@@ -1,6 +1,5 @@
 package com.swu.shake.dao.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.HibernateException;
@@ -27,25 +26,22 @@ public class ItemImageDaoImpl implements ItemImageDao {
 		this.hibernateUtil = hibernateUtil;
 	}
 
-	
-	
 	@Override
 	public List<ItemImage> findall(int iid) {
-		List<ItemImage> list =null;
-		Session session  =  null;
+		List<ItemImage> list = null;
+		Session session = null;
 		Transaction transaction = null;
-		try{
+		try {
 			session = hibernateUtil.getSession();
 			transaction = session.beginTransaction();
-			String sql = "select * from t_itemimage where iid="+iid;
-			SQLQuery sqlQuery= session.createSQLQuery(sql);
+			String sql = "select * from t_itemimage where iid=" + iid;
+			SQLQuery sqlQuery = session.createSQLQuery(sql);
 			sqlQuery.addEntity(ItemImage.class);
 			list = sqlQuery.list();
-//			list = new ArrayList<ItemImage>();
-		}catch(HibernateException e){
+		} catch (HibernateException e) {
 			e.printStackTrace();
 			hibernateUtil.rollbackTransaction(transaction);
-		}finally{
+		} finally {
 			hibernateUtil.closeSession(session);
 		}
 		return list;
@@ -73,9 +69,49 @@ public class ItemImageDaoImpl implements ItemImageDao {
 	}
 
 	@Override
-	public boolean delete(int id) {
-		String hql = "delete from ItemImage where iiid = " + id;
+	public boolean delete() {
+		Session session = null;
+		Transaction transaction = null;
+		boolean flag = true;
+		try {
+			session = hibernateUtil.getSession();
+			transaction = session.beginTransaction();
+			String sql = "delete from t_itemimage where iid is " + null;
+			session.createSQLQuery(sql).executeUpdate();
+			transaction.commit();
+		} catch (Exception e) {
+			hibernateUtil.rollbackTransaction(transaction);
+			flag = false;
+		} finally {
+			hibernateUtil.closeSession(session);
+		}
+		return flag;
+	}
+
+	@Override
+	public boolean delete(int iiid) {
+		String hql = "delete from ItemImage where iiid = " + iiid;
 		return hibernateUtil.exeDelete(hql);
+	}
+
+	@Override
+	public boolean deleteByIid(int iid) {
+		Session session = null;
+		Transaction transaction = null;
+		boolean flag = true;
+		try {
+			session = hibernateUtil.getSession();
+			transaction = session.beginTransaction();
+			String sql = "delete from t_itemimage where iid=" + iid;
+			session.createSQLQuery(sql).executeUpdate();
+			transaction.commit();
+		} catch (Exception e) {
+			hibernateUtil.rollbackTransaction(transaction);
+			flag = false;
+		} finally {
+			hibernateUtil.closeSession(session);
+		}
+		return flag;
 	}
 
 }

@@ -4,7 +4,7 @@
 
 <html>
 <head>
-<title>Item post</title>
+<title>商品列表</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Bootstrap -->
 <link href="<%=request.getContextPath()%>/css/bootstrap.min.css"
@@ -48,8 +48,9 @@
 		<div class="row">
 			<c:forEach items="${itemList}" var="item">
 				<div class="col-sm-6 col-md-3">
-					<div class="thumbnail">
-						<img src="<%=request.getContextPath() %>/${item.postImage}"
+					<div class="thumbnail ">
+						<img class="img-responsive img-thumbnail"
+							src="<%=request.getContextPath() %>/${item.postImage}"
 							alt="${item.iname }">
 						<div class="caption">
 							<h2 style="color: red">￥${item.iprice }</h2>
@@ -68,7 +69,7 @@
 
 
 		<!--分页  -->
-		<%@ include file="../comm/pager.jsp"%>
+		<%@ include file="../comm/postpager.jsp"%>
 	</div>
 </body>
 </html>

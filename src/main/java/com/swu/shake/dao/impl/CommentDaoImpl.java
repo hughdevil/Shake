@@ -27,7 +27,6 @@ public class CommentDaoImpl implements CommentDao {
 
 	@Override
 	public Comment save(Comment comment) {
-		// TODO Auto-generated method stub
 		Session session = null;
 		Transaction transaction = null;
 		Comment c = null;
@@ -49,14 +48,18 @@ public class CommentDaoImpl implements CommentDao {
 
 	@Override
 	public boolean delete(int id) {
-		// TODO Auto-generated method stub
 		String hql = "delete from Comment where cid=" + id;
 		return hibernateUtil.exeDelete(hql);
 	}
 
 	@Override
+	public boolean deleteByIid(int iid) {
+		String hql = "delete from Comment c where c.item.iid=" + iid;
+		return hibernateUtil.exeDelete(hql);
+	}
+
+	@Override
 	public boolean update(Comment comment) {
-		// TODO Auto-generated method stub
 		boolean flag = false;
 		Session session = null;
 		Transaction transaction = null;
@@ -82,20 +85,18 @@ public class CommentDaoImpl implements CommentDao {
 
 	@Override
 	public List<Comment> findall(int iid) {
-		String hql = "from Comment c where c.item.iid= "+iid;
+		String hql = "from Comment c where c.item.iid= " + iid;
 		return hibernateUtil.exeQuery(hql);
 	}
 
 	@Override
 	public List<Comment> getComments(int iid, int start, int end) {
-		// TODO Auto-generated method stub
 		String hql = "from Comment";
 		return hibernateUtil.exeQueryPage(hql, start, end);
 	}
 
 	@Override
 	public long getCount(int iid) {
-		// TODO Auto-generated method stub
 		String hql = "select count(*) from Comment c";
 		return this.hibernateUtil.exeCount(hql);
 	}

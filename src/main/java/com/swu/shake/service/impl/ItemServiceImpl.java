@@ -58,10 +58,17 @@ public class ItemServiceImpl implements ItemService {
 		return i;
 	}
 
+	/**
+	 * 此处之后进行Spring事务级处理 不具备原子性；
+	 */
 	@Override
 	public boolean remove(int[] ids) {
 		boolean flag = true;
 		for (int id : ids) {
+			if (!this.commentDao.deleteByIid(id))
+				flag = false;
+			if (!this.itemImageDao.deleteByIid(id))
+				flag = false;
 			if (!this.itemDao.delete(id))
 				flag = false;
 		}
@@ -132,6 +139,11 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public long getCount() {
 		return itemDao.getCount();
+	}
+
+	@Override
+	public boolean clearUnuserfulImg() {
+		return this.itemImageDao.delete();
 	}
 
 }

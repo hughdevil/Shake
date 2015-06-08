@@ -11,7 +11,7 @@
 	</context-param>
 
 	<welcome-file-list>
-		<welcome-file>home.jsp</welcome-file>
+		<welcome-file>item/post.do</welcome-file>
 	</welcome-file-list>
 
 	<!-- Creates the Spring Container shared by all Servlets and Filters -->
@@ -50,6 +50,15 @@
 	<servlet-mapping>
 		<servlet-name>appServlet</servlet-name>
 		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>DruidStatView</servlet-name>
+		<servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DruidStatView</servlet-name>
+		<url-pattern>/druid/*</url-pattern>
 	</servlet-mapping>
 
 	<!-- 错误页面处理 -->

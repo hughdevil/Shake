@@ -178,7 +178,6 @@ public class RoleDaoImpl implements RoleDao {
 
 	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
 		Session session = null;
 		Transaction transaction = null;
 		boolean isNeed = false;
@@ -208,7 +207,7 @@ public class RoleDaoImpl implements RoleDao {
 		Transaction transaction = null;
 		List<Role> roles = null;
 		try {
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			Criteria c = session.createCriteria(Role.class);
 			c.add(Restrictions.lt("rlevel", rlevel));
@@ -218,6 +217,8 @@ public class RoleDaoImpl implements RoleDao {
 		} catch (HibernateException e) {
 			e.printStackTrace();
 			transaction.rollback();
+		} finally {
+			session.close();
 		}
 		return roles;
 	}

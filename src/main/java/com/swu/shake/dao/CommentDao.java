@@ -16,6 +16,9 @@ public interface CommentDao {
 	/** 删除评论 */
 	public boolean delete(int id);
 
+	/** 删除评论通过商品ID */
+	public boolean deleteByIid(int iid);
+
 	/** 修改评论 */
 	public boolean update(Comment comment);
 
@@ -24,8 +27,8 @@ public interface CommentDao {
 
 	/** 分页显示某商品所有评论 */
 	public List<Comment> getComments(int iid, int start, int end);
-	
-	/** 获得某商品的评论总数*/
+
+	/** 获得某商品的评论总数 */
 	public long getCount(int iid);
 
 }
