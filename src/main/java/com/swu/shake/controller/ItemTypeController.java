@@ -63,4 +63,11 @@ public class ItemTypeController {
 		}
 		return viewName;
 	}
+
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	public String list(HttpSession session, Model model) {
+		String viewName = "";
+		viewName = "/item/type/list";
+		return viewName;
+	}
 }

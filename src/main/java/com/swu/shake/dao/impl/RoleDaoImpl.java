@@ -9,6 +9,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -210,7 +211,8 @@ public class RoleDaoImpl implements RoleDao {
 			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			Criteria c = session.createCriteria(Role.class);
-			c.add(Restrictions.lt("rlevel", rlevel));
+			c.add(Restrictions.lt("rlevel", rlevel)).addOrder(
+					Order.asc("rlevel"));
 			roles = c.list();
 
 			transaction.commit();

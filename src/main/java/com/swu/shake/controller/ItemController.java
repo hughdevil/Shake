@@ -78,7 +78,11 @@ public class ItemController {
 		List<ItemType> itemtypes = itemTypeService.getItemTypes();
 		mm.addAttribute("itemtypes", itemtypes);
 		mm.addAttribute("pager", pager);
+
+		// 分类移除
 		session.removeAttribute("tid");
+		// 模糊移除
+		session.removeAttribute("iname");
 		return "item/post";
 	}
 
@@ -97,6 +101,9 @@ public class ItemController {
 		mm.addAttribute("itemtypes", itemtypes);
 		mm.addAttribute("pager", pager);
 		session.setAttribute("tid", curtid);
+
+		// 移除模糊查找影响
+		session.removeAttribute("iname");
 		return "item/post";
 	}
 
@@ -113,6 +120,19 @@ public class ItemController {
 			mm.addAttribute("itemList", itemService.getItems(curtid,
 					pager.getStartRow(), PAGE_SIZE));
 
+		} else if (null != session.getAttribute("iname")) {
+			String iname = (String) session.getAttribute("iname");
+			count = itemService.getCount(iname);
+			pager = new Pager(count, PAGE_SIZE, curpage);
+			mm.addAttribute("itemList", itemService.getItemsByName(iname,
+					pager.getStartRow(), PAGE_SIZE));
+
+			List<ItemType> itemtypes = itemTypeService.getItemTypes();
+			mm.addAttribute("itemtypes", itemtypes);
+			mm.addAttribute("pager", pager);
+
+			// 移除分类影响
+			session.removeAttribute("tid");
 		} else {
 			count = itemService.getCount();
 			pager = new Pager(count, PAGE_SIZE, curpage);
@@ -282,13 +302,28 @@ public class ItemController {
 			viewName = "comm/failure";
 		} else if (item.getUser().getUid() == curuser.getUid()
 				|| (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_SITER)) {
-			viewName = "item/edit";
-			List<ItemType> itemtypes = itemTypeService.getItemTypes();
-			List<ItemImage> itemimages = itemService.getImgs(item.getIid());
 
-			model.addAttribute("item", item);
-			model.addAttribute("itemtypes", itemtypes);
-			model.addAttribute("itemimages", itemimages);
+			boolean flag = false;
+			if (item.getUser().getUid() == curuser.getUid()) {
+				flag = true;
+			} else if (item.getUser().getRole() == null) {
+				flag = true;
+			} else if (curuser.getRole().getRlevel() > item.getUser().getRole()
+					.getRlevel()) {
+				flag = true;
+			} else {
+				message = "没有权限执行此操作，请查看对方的角色等级";
+				viewName = "/comm/failure";
+			}
+			if (flag) {
+				viewName = "item/edit";
+				List<ItemType> itemtypes = itemTypeService.getItemTypes();
+				List<ItemImage> itemimages = itemService.getImgs(item.getIid());
+
+				model.addAttribute("item", item);
+				model.addAttribute("itemtypes", itemtypes);
+				model.addAttribute("itemimages", itemimages);
+			}
 		} else {
 			message = "该商品不是您的";
 			viewName = "comm/failure";
@@ -322,74 +357,91 @@ public class ItemController {
 		} else if (item.getUser().getUid() == curuser.getUid()
 				|| (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_SITER)) {
 
-			// 检查原封面存不存在
-			String postImage = item.getPostImage();
-			String fileurl = ItemController.class.getResource("/").getPath();
-			fileurl = fileurl.split("WEB-INF/classes/")[0] + postImage;
-			File file = new File(fileurl);
-			if (!file.exists()) {
-				postImage = null;
-				logger.info(fileurl);
-				logger.info("原先的封面不存在！！");
-			}
-			// 如果有新的封面，直接替换
-			if (postFile != null) {
-				for (CommonsMultipartFile mFile : postFile) {
-					if (!mFile.isEmpty()) {
-						postImage = upload(session, dateformat, mFile)
-								.getIiname();
-					}
-				}
-			}
-
-			List<ItemImage> imageList = itemService.getImgs(item.getIid());
-			List<ItemImage> removeList = new ArrayList<ItemImage>();
-			// 剔除已经不需要的图片 步骤1
-			if (iiids != null) {
-				for (ItemImage ii : imageList) {
-					boolean flag = false;
-					for (int iiid : iiids) {
-						if (ii.getIiid() == iiid)
-							flag = true;
-					}
-					if (!flag) {
-						removeList.add(ii);
-					}
-				}
-				imageList.removeAll(removeList);
+			boolean flag = false;
+			if (item.getUser().getUid() == curuser.getUid()) {
+				flag = true;
+			} else if (item.getUser().getRole() == null) {
+				flag = true;
+			} else if (curuser.getRole().getRlevel() > item.getUser().getRole()
+					.getRlevel()) {
+				flag = true;
 			} else {
-				imageList.clear();
+				message = "没有权限执行此操作，请查看对方的角色等级";
+				viewName = "/comm/failure";
 			}
-			Set<ItemImage> itemImages = new HashSet<ItemImage>(imageList);
+			if (flag) {
 
-			// 添加新上传的图片
-			if (mFiles != null) {
-				for (CommonsMultipartFile mFile : mFiles) {
-					if (!mFile.isEmpty()) {
-						itemImages.add(upload(session, dateformat, mFile));
+				// 检查原封面存不存在
+				String postImage = item.getPostImage();
+				String fileurl = ItemController.class.getResource("/")
+						.getPath();
+				fileurl = fileurl.split("WEB-INF/classes/")[0] + postImage;
+				File file = new File(fileurl);
+				if (!file.exists()) {
+					postImage = null;
+					logger.info(fileurl);
+					logger.info("原先的封面不存在！！");
+				}
+				// 如果有新的封面，直接替换
+				if (postFile != null) {
+					for (CommonsMultipartFile mFile : postFile) {
+						if (!mFile.isEmpty()) {
+							postImage = upload(session, dateformat, mFile)
+									.getIiname();
+						}
 					}
 				}
+
+				List<ItemImage> imageList = itemService.getImgs(item.getIid());
+				List<ItemImage> removeList = new ArrayList<ItemImage>();
+				// 剔除已经不需要的图片 步骤1
+				if (iiids != null) {
+					for (ItemImage ii : imageList) {
+						boolean temp = false;
+						for (int iiid : iiids) {
+							if (ii.getIiid() == iiid)
+								temp = true;
+						}
+						if (!temp) {
+							removeList.add(ii);
+						}
+					}
+					imageList.removeAll(removeList);
+				} else {
+					imageList.clear();
+				}
+				Set<ItemImage> itemImages = new HashSet<ItemImage>(imageList);
+
+				// 添加新上传的图片
+				if (mFiles != null) {
+					for (CommonsMultipartFile mFile : mFiles) {
+						if (!mFile.isEmpty()) {
+							itemImages.add(upload(session, dateformat, mFile));
+						}
+					}
+				}
+
+				item.setIname(request.getParameter("title"));
+				item.setiNumber(Integer.parseInt(request.getParameter("number")));
+				item.setIprice(Double.parseDouble(request.getParameter("price")));
+				item.setIdesc(request.getParameter("desc"));
+				item.setValid(Boolean.parseBoolean(request
+						.getParameter("isvalid")));
+
+				ItemType itemtype = itemTypeService.getItemTypeById(tid);
+				item.setItemtype(itemtype);
+
+				// 图片
+				item.setPostImage(postImage);
+				item.setItemImages(itemImages);
+
+				viewName = itemService.modify(item) ? "/comm/success"
+						: "/comm/failure";
+
+				// 剔除已经不需要的图片 步骤2
+				itemService.clearUnuserfulImg();
+
 			}
-
-			item.setIname(request.getParameter("title"));
-			item.setiNumber(Integer.parseInt(request.getParameter("number")));
-			item.setIprice(Double.parseDouble(request.getParameter("price")));
-			item.setIdesc(request.getParameter("desc"));
-			item.setValid(Boolean.parseBoolean(request.getParameter("isvalid")));
-
-			ItemType itemtype = itemTypeService.getItemTypeById(tid);
-			item.setItemtype(itemtype);
-
-			// 图片
-			item.setPostImage(postImage);
-			item.setItemImages(itemImages);
-
-			viewName = itemService.modify(item) ? "/comm/success"
-					: "/comm/failure";
-
-			// 剔除已经不需要的图片 步骤2
-			itemService.clearUnuserfulImg();
-
 		} else {
 			message = "该商品不是您的";
 			viewName = "comm/failure";
@@ -414,13 +466,28 @@ public class ItemController {
 			message = "商品不存在或已经删除";
 			viewName = "/comm/failure";
 		} else if (item.getUser().getUid() == curuser.getUid()
-				|| (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_SITER)) {
-			try {
-				itemService.remove(new int[] { iid });
-				viewName = "/comm/success";
-			} catch (Exception e) {
-				message = "删除失败";
+				|| ((curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_SITER))) {
+			// 还需要判断删除商品的发布人是不是自己的下级
+			boolean flag = false;
+			if (item.getUser().getUid() == curuser.getUid()) {
+				flag = true;
+			} else if (item.getUser().getRole() == null) {
+				flag = true;
+			} else if (curuser.getRole().getRlevel() > item.getUser().getRole()
+					.getRlevel()) {
+				flag = true;
+			} else {
+				message = "没有权限执行此操作，请查看对方的角色等级";
 				viewName = "/comm/failure";
+			}
+			if (flag) {
+				try {
+					itemService.remove(iid);
+					viewName = "/comm/success";
+				} catch (Exception e) {
+					message = "删除失败";
+					viewName = "/comm/failure";
+				}
 			}
 
 		} else {
@@ -428,6 +495,36 @@ public class ItemController {
 			viewName = "comm/failure";
 		}
 
+		request.setAttribute("message", message);
+		return viewName;
+	}
+
+	@RequestMapping(value = "/query", method = RequestMethod.POST)
+	public String query(HttpServletRequest request, HttpSession session,
+			Model model) {
+		String viewName = "";
+		String message = "";
+
+		User curuser = (User) session.getAttribute("user");
+		if (null == curuser) {
+			message = "未登录";
+			viewName = "/comm/failure";
+		} else {
+			String iname = request.getParameter("iname");
+			Long count = itemService.getCount(iname);
+			Pager pager = new Pager(count, PAGE_SIZE, 1);
+			model.addAttribute("itemList", itemService.getItemsByName(iname,
+					pager.getStartRow(), PAGE_SIZE));
+
+			List<ItemType> itemtypes = itemTypeService.getItemTypes();
+			model.addAttribute("itemtypes", itemtypes);
+			model.addAttribute("pager", pager);
+			session.setAttribute("iname", iname);
+			viewName = "item/post";
+
+			// 移除分类影响
+			session.removeAttribute("tid");
+		}
 		request.setAttribute("message", message);
 		return viewName;
 	}

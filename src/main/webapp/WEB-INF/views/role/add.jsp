@@ -10,7 +10,8 @@
 <!-- Bootstrap -->
 <link href="<%=request.getContextPath()%>/css/bootstrap.min.css"
 	rel="stylesheet" media="screen">
-
+<link href="<%=request.getContextPath()%>/css/bootstrap-select.min.css"
+	rel="stylesheet" media="screen">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -21,12 +22,21 @@
 	src=" <%=request.getContextPath()%>/js/jquery-2.1.4.min.js"></script>
 <script type="text/javascript"
 	src=" <%=request.getContextPath()%>/js/bootstrap.min.js"></script>
+<script type="text/javascript"
+	src="<%=request.getContextPath()%>/js/bootstrap-select.min.js"
+	charset="UTF-8"></script>
 
+<script type="text/javascript">
+	$('.selectpicker').selectpicker({
+		style : 'btn-info',
+		size : 4
+	});
+</script>
 </head>
 <body>
+	<!--头  -->
+	<%@ include file="../comm/header.jsp"%>
 	<div class="container">
-		<!--头  -->
-		<%@ include file="../comm/header.jsp"%>
 
 		<form:form modelAttribute="role" method="post"
 			class="form-horizontal col-md-10 col-md-offset-1 ">

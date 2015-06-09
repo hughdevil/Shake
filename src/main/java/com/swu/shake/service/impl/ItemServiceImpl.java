@@ -62,16 +62,14 @@ public class ItemServiceImpl implements ItemService {
 	 * 此处之后进行Spring事务级处理 不具备原子性；
 	 */
 	@Override
-	public boolean remove(int[] ids) {
+	public boolean remove(int iid) {
 		boolean flag = true;
-		for (int id : ids) {
-			if (!this.commentDao.deleteByIid(id))
-				flag = false;
-			if (!this.itemImageDao.deleteByIid(id))
-				flag = false;
-			if (!this.itemDao.delete(id))
-				flag = false;
-		}
+		if (!this.commentDao.deleteByIid(iid))
+			flag = false;
+		if (!this.itemImageDao.deleteByIid(iid))
+			flag = false;
+		if (!this.itemDao.delete(iid))
+			flag = false;
 		return flag;
 	}
 
@@ -83,6 +81,11 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public List<Item> getItems() {
 		return this.itemDao.findall();
+	}
+
+	@Override
+	public List<Item> getItems(int uid) {
+		return itemDao.getItemsByUid(uid);
 	}
 
 	@Override
@@ -139,6 +142,12 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public long getCount() {
 		return itemDao.getCount();
+	}
+	
+
+	@Override
+	public long getCount(String iname) {
+		return this.itemDao.getCount(iname);
 	}
 
 	@Override

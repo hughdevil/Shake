@@ -73,7 +73,8 @@ public class CommentController {
 		User curuser = (User) session.getAttribute("user");
 		String viewName = "";
 		String message = "";
-		if (null != curuser && userService.checkUserId(curuser.getUid())) {
+		if (null != curuser
+				&& (null != userService.getUserById(curuser.getUid()))) {
 			Item item = this.itemService.getItem(iid);
 			if (null != item) {
 				Comment comment = new Comment();

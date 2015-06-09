@@ -111,6 +111,13 @@ public class ItemDaoImpl implements ItemDao {
 	}
 
 	@Override
+	public List<Item> getItemsByUid(int uid) {
+		String hql = "from Item i where i.user.uid =" + uid
+				+ " order by iid desc";
+		return hibernateUtil.exeQuery(hql);
+	}
+
+	@Override
 	public List<Item> getItemsByName(String str) {
 		String hql = "from Item where iname like '%" + str
 				+ "%' order by iid desc";
@@ -154,6 +161,13 @@ public class ItemDaoImpl implements ItemDao {
 	@Override
 	public long getCount(int tid) {
 		String hql = "select count(*) from Item i where i.itemtype.tid=" + tid;
+		return hibernateUtil.exeCount(hql);
+	}
+
+	@Override
+	public long getCount(String iname) {
+		String hql = "select count(*) from Item i where i.iname like '%"
+				+ iname + "%'";
 		return hibernateUtil.exeCount(hql);
 	}
 

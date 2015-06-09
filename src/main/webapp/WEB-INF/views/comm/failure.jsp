@@ -25,9 +25,9 @@
 </style>
 </head>
 <body>
+	<!--//////////////////////////////////////////////   头  -->
+	<%@ include file="./header.jsp"%>
 	<div class="container">
-		<!--//////////////////////////////////////////////   头  -->
-		<%@ include file="./header.jsp"%>
 		<h1>&nbsp;</h1>
 		<h1>&nbsp;</h1>
 		<div class="col-md-2 col-md-offset-5">

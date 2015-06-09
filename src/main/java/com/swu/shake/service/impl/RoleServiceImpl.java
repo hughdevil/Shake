@@ -39,6 +39,11 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
+	public Role getRole(String rid) {
+		return roleDao.getRoleById(rid);
+	}
+
+	@Override
 	public List<Role> finall() {
 		return roleDao.findall();
 	}

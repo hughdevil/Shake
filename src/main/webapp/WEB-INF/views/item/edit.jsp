@@ -32,9 +32,9 @@
 </head>
 
 <body>
+	<!--头  -->
+	<%@ include file="../comm/header.jsp"%>
 	<div class="container">
-		<!--头  -->
-		<%@ include file="../comm/header.jsp"%>
 
 		<form class="form-horizontal col-md-10 col-md-offset-1 " id="itemfrom"
 			enctype="multipart/form-data"
@@ -182,7 +182,7 @@
 								<input class="form-control" size="16" type="text" name="hasdate"
 									readonly value="${item.hasdate }"> <span
 									class="input-group-addon"><span
-									class="glyphicon glyphicon-calendar"></span>&lt;&nbsp;选择日期 </span>
+									class="glyphicon glyphicon-calendar"></span></span>
 							</div>
 							<input type="hidden" id="" value="" />
 						</div>

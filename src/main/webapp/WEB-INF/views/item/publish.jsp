@@ -11,6 +11,8 @@
 <link
 	href="<%=request.getContextPath()%>/css/bootstrap-datetimepicker.min.css"
 	rel="stylesheet" media="screen">
+<link href="<%=request.getContextPath()%>/css/bootstrap-select.min.css"
+	rel="stylesheet" media="screen">
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -23,18 +25,27 @@
 <script type="text/javascript"
 	src=" <%=request.getContextPath()%>/js/bootstrap.min.js"></script>
 <script type="text/javascript"
-	src="<%=request.getContextPath()%>/js/bootstrap-datetimepicker.js"
+	src="<%=request.getContextPath()%>/js/bootstrap-datetimepicker.min.js"
 	charset="UTF-8"></script>
 <script type="text/javascript"
 	src="<%=request.getContextPath()%>/js/bootstrap-datetimepicker.zh-CN.js"
 	charset="UTF-8"></script>
+<script type="text/javascript"
+	src="<%=request.getContextPath()%>/js/bootstrap-select.min.js"
+	charset="UTF-8"></script>
 
 </head>
+<script type="text/javascript">
+	$('.selectpicker').selectpicker({
+		style : 'btn-info',
+		size : 4
+	});
+</script>
 
 <body>
+	<!--头  -->
+	<%@ include file="../comm/header.jsp"%>
 	<div class="container">
-		<!--头  -->
-		<%@ include file="../comm/header.jsp"%>
 
 		<form class="form-horizontal col-md-10 col-md-offset-1 " id="itemfrom"
 			enctype="multipart/form-data"
@@ -45,10 +56,9 @@
 				<!--标题、分类  -->
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-2">
-							<select class="form-control selectpicker  dropup" name="itemtype">
-								<option>&nbsp;种类&nbsp;</option>
+							<select class="selectpicker form-control" name="itemtype">
 								<c:forEach items="${itemtypes }" var="itemtype">
-									<option value="${itemtype.tid}">${itemtype.tname}</option>
+									<option value="${itemtype.tid}" style="text-align: center;">${itemtype.tname}</option>
 								</c:forEach>
 							</select>
 						</div>
@@ -168,7 +178,7 @@
 								data-link-format="yyyy-mm-dd">
 								<input class="form-control" size="16" type="text" name="hasdate"
 									readonly> <span class="input-group-addon"><span
-									class="glyphicon glyphicon-calendar"></span>&lt;&nbsp;选择日期 </span>
+									class="glyphicon glyphicon-calendar"></span> </span>
 							</div>
 							<input type="hidden" id="" value="" />
 						</div>

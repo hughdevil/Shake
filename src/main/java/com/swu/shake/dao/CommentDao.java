@@ -19,6 +19,9 @@ public interface CommentDao {
 	/** 删除评论通过商品ID */
 	public boolean deleteByIid(int iid);
 
+	/** 删除评论通过发布人 */
+	public boolean deleteByUid(int uid);
+
 	/** 修改评论 */
 	public boolean update(Comment comment);
 

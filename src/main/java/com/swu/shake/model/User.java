@@ -19,39 +19,33 @@ import org.hibernate.validator.constraints.Range;
 @Entity
 @Table(name = "T_User")
 public class User {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "uid", nullable = false)
-	// uuid
 	private int uid;
-	/** 姓名 */
 	@Column(name = "name", nullable = false)
 	private String name;
-	/** 密码 */
 	@Column(name = "password", nullable = false)
 	private String password;
-	/** 性别 */
 	@Column(name = "sex", nullable = false)
 	private byte sex;
-	/** 电话 */
-//	@Pattern(regexp="^\\d{11}$",message="")
+	// @Pattern(regexp="^\\d{11}$",message="")
 	@Column(name = "phone", nullable = true)
 	private String phone;
-	/** OICQ */
 	@Column(name = "QQ", nullable = true)
 	private String QQ;
-	/** 联系地址 */
 	@Column(name = "addr", nullable = true)
 	private String addr;
-	/** 邮箱 */
-//	@Email(message="")
+	// @Email(message="")
 	@Column(name = "email", nullable = true)
 	private String email;
 	@Column(name = "regDate", nullable = false)
 	private Date regDate;
 	@Column(name = "IP", nullable = false)
 	private String IP;
+	// 头像
+	@Column(name = "headpic", nullable = false)
+	private String headpic;
 
 	@ManyToOne
 	@JoinColumn(name = "rid")
@@ -112,6 +106,14 @@ public class User {
 
 	public void setAddr(String addr) {
 		this.addr = addr;
+	}
+
+	public String getHeadpic() {
+		return headpic;
+	}
+
+	public void setHeadpic(String headpic) {
+		this.headpic = headpic;
 	}
 
 	public String getEmail() {

@@ -27,7 +27,10 @@ public interface ItemDao {
 
 	/** 根据商品种类查找商品 */
 	public List<Item> getItemsByType(int tid);
-	
+
+	/** 根据发布人查找商品 */
+	public List<Item> getItemsByUid(int uid);
+
 	/** 根据姓名查找商品 */
 	public List<Item> getItemsByName(String str);
 
@@ -36,14 +39,17 @@ public interface ItemDao {
 
 	/** 分页显示所有产品 */
 	public List<Item> getItems(int start, int end);
-	
+
 	/** 分页显示某类所有产品 */
-	public List<Item> getItems(int tid ,int start, int end);
+	public List<Item> getItems(int tid, int start, int end);
 
 	/** 获得商品总数 */
 	public long getCount();
-	
+
 	/** 获得某类商品总数 */
 	public long getCount(int tid);
+
+	/** 通过商品名获得商品总数 模糊 */
+	public long getCount(String iname);
 
 }

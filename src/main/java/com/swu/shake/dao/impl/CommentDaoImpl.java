@@ -59,6 +59,12 @@ public class CommentDaoImpl implements CommentDao {
 	}
 
 	@Override
+	public boolean deleteByUid(int uid) {
+		String hql = "delete from Comment c where c.user.uid=" + uid;
+		return hibernateUtil.exeDelete(hql);
+	}
+
+	@Override
 	public boolean update(Comment comment) {
 		boolean flag = false;
 		Session session = null;

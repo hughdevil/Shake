@@ -23,37 +23,45 @@
 
 </head>
 <body>
-	<div class="container">
-		<!--头  -->
-		<%@ include file="../comm/header.jsp"%>
+	<!--头  -->
+	<%@ include file="../comm/header.jsp"%>
+	<div class="container ">
 
 		<!-- 公告 -->
-		<div class="alert alert-warning alert-dismissable">
+		<!-- <div class="alert alert-warning alert-dismissable">
 			<button type="button" class="close" data-dismiss="alert"
 				aria-hidden="true">&times;</button>
 			<strong>公告：!</strong>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-		</div>
+		</div> -->
 
 		<!-- 分类 -->
-		<ul class="nav nav-tabs">
+		<ul class="nav nav-pills ">
 			<li class="<c:if test="${empty tid}">active</c:if>"><a
-				href="<%=request.getContextPath()%>/item/post.do">全部</a></li>
-			<c:forEach items="${itemtypes }" var="it">
-				<li class='<c:if test="${tid==it.tid }">active</c:if>'><a
-					href="<%=request.getContextPath() %>/item/post.do?type=${it.tid}">${it.tname }</a></li>
-			</c:forEach>
+				href="<%=request.getContextPath()%>/item/post.do"><span
+					class="glyphicon glyphicon-list"></span> &nbsp;全部</a></li>
+			<c:if test="${empty sessionScope.iname }">
+				<c:forEach items="${itemtypes }" var="it">
+					<li class='<c:if test="${tid==it.tid }">active  </c:if>'><a
+						href="<%=request.getContextPath() %>/item/post.do?type=${it.tid}">${it.tname }</a></li>
+				</c:forEach>
+			</c:if>
+
+
 		</ul>
+		<h3></h3>
 
 		<!--单个商品  -->
 		<div class="row">
-			<c:forEach items="${itemList}" var="item">
+			<c:forEach items="${itemList}" var="item" varStatus="status">
 				<div class="col-sm-6 col-md-3">
 					<div class="thumbnail ">
-						<img class="img-responsive img-thumbnail"
+						<img class="img-responsive"
 							src="<%=request.getContextPath() %>/${item.postImage}"
 							alt="${item.iname }">
 						<div class="caption">
-							<h2 style="color: red">￥${item.iprice }</h2>
+							<h3 style="color: red">
+								<span class="glyphicon glyphicon-yen"></span> ${item.iprice }
+							</h3>
 							<h4>
 								<a
 									href="<%=request.getContextPath() %>/item/${item.iid}/detail.do">
@@ -64,6 +72,10 @@
 						</div>
 					</div>
 				</div>
+				<c:if test="${status.count %4 == 0}">
+		</div>
+		<div class="row">
+			</c:if>
 			</c:forEach>
 		</div>
 

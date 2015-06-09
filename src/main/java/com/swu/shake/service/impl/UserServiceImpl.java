@@ -6,7 +6,11 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
+import com.swu.shake.dao.CommentDao;
+import com.swu.shake.dao.ItemDao;
+import com.swu.shake.dao.ItemImageDao;
 import com.swu.shake.dao.UserDao;
+import com.swu.shake.model.Item;
 import com.swu.shake.model.User;
 import com.swu.shake.service.UserService;
 import com.swu.shake.util.MsgException;
@@ -14,20 +18,51 @@ import com.swu.shake.util.MsgException;
 @Component(value = "userService")
 public class UserServiceImpl implements UserService {
 	UserDao userDao;
+	ItemDao itemDao;
+	CommentDao commentDao;
+	ItemImageDao itemImageDao;
+
+	public ItemDao getItemDao() {
+		return itemDao;
+	}
+
+	public ItemImageDao getItemImageDao() {
+		return itemImageDao;
+	}
+
+	@Resource(name = "itemImageDao")
+	public void setItemImageDao(ItemImageDao itemImageDao) {
+		this.itemImageDao = itemImageDao;
+	}
+
+	@Resource(name = "itemDao")
+	public void setItemDao(ItemDao itemDao) {
+		this.itemDao = itemDao;
+	}
+
+	public CommentDao getCommentDao() {
+		return commentDao;
+	}
+
+	@Resource(name = "commentDao")
+	public void setCommentDao(CommentDao commentDao) {
+		this.commentDao = commentDao;
+	}
 
 	public UserDao getUserDao() {
 		return userDao;
 	}
 
-	// 注入userDao层
 	@Resource(name = "userDao")
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
 	}
 
+	/******************************/
+
 	public User register(User user) throws MsgException {
 		User u = null;
-		if (!checkUserName(user.getName())) {
+		if (!userDao.checkUserName(user.getName())) {
 			u = userDao.save(user);
 		} else {
 			throw new MsgException("用户名已经存在");
@@ -35,20 +70,42 @@ public class UserServiceImpl implements UserService {
 		return u;
 	}
 
-	public boolean remove(String[] ids) {
-		boolean flag = false;
-		for (int i = 0; i < ids.length; i++) {
-			return userDao.delete(Integer.parseInt(ids[i]));
+	/**
+	 * 之后记得加事物处理
+	 */
+	public boolean remove(int uid) {
+		boolean flag = true;
+		// 删除此人评论
+		commentDao.deleteByUid(uid);
+
+		// 删除此人的所有发帖
+		List<Item> items = itemDao.getItemsByUid(uid);
+		for (Item item : items) {
+			if (!this.commentDao.deleteByIid(item.getIid()))
+				flag = false;
+			if (!this.itemImageDao.deleteByIid(item.getIid()))
+				flag = false;
+			if (!this.itemDao.delete(item.getIid()))
+				flag = false;
+		}
+
+		// 删除此人
+		if (!userDao.delete(uid)) {
+			flag = false;
 		}
 		return flag;
-
 	}
 
-	public boolean modify(User p) {
-		return userDao.update(p);
+	public boolean modify(User user) {
+		return userDao.update(user);
 	}
 
-	public List<User> getPersons() {
+	@Override
+	public boolean modifyPwd(User user) {
+		return userDao.updatePwd(user);
+	}
+
+	public List<User> getUsers() {
 		return userDao.findall();
 	}
 
@@ -56,21 +113,26 @@ public class UserServiceImpl implements UserService {
 		return userDao.login(name, password);
 	}
 
-	public boolean checkUserName(String username) {
-		return userDao.checkUserName(username);
+	public List<User> getUsers(String username) {
+		return userDao.getUsersByName(username);
 	}
 
 	@Override
-	public boolean checkUserId(int uid) {
-		return userDao.checkUserId(uid);
+	public User getUserById(int uid) {
+		return userDao.getUserById(uid);
 	}
 
-	public List<User> getPersons(int start, int end) {
-		return userDao.getPersons(start, end);
+	public List<User> getUsers(int start, int end) {
+		return userDao.getUsersByPage(start, end);
+	}
+
+	@Override
+	public List<User> getUsers(String username, int start, int end) {
+		return userDao.getUsersByPage(username, start, end);
 	}
 
 	public int getCount() {
-		return this.getPersons().size();
+		return this.getUsers().size();
 	}
 
 }

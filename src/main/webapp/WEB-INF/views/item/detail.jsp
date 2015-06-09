@@ -31,9 +31,9 @@ textarea {
 </style>
 </head>
 <body>
+	<!--//////////////////////////////////////////////   头  -->
+	<%@ include file="../comm/header.jsp"%>
 	<div class="container">
-		<!--//////////////////////////////////////////////   头  -->
-		<%@ include file="../comm/header.jsp"%>
 
 		<!--//////////////////////////////////////////////    左侧-->
 		<div class="panel panel-default col-md-3 col-md-offset-1">
@@ -105,7 +105,8 @@ textarea {
 						<div class="caption">
 							<blockquote>${item.idesc }</blockquote>
 							<footer style="text-align: right">
-								———— from： <cite title="发布人"><a href="#">
+								———— from： <cite title="发布人"><a
+									href="<%=request.getContextPath()%>/user/${item.user.uid }/home.do">
 										${item.user.name}</a></cite>&nbsp;&nbsp;&nbsp;&nbsp;
 							</footer>
 						</div>
@@ -118,19 +119,23 @@ textarea {
 					<div class="btn-group" role="group">
 						<button type="button" class="btn btn-primary  btn-lg"
 							disabled="disabled">照片墙&nbsp;</button>
-						<button type="button" class="btn btn-default  btn-lg">
+						<button type="button" class="btn btn-default  btn-lg"
+							data-toggle="collapse" data-target="#collapsePics"
+							aria-expanded="false" aria-controls="collapsePics">
 							<span class="badge"><%=((Item) request.getAttribute("item")).getItemImages()
 					.size()%></span>&nbsp;
 						</button>
 					</div>
-					<div class="well">
-						<div>
-							<c:forEach items="${item.itemImages }" var="img">
-								<div class="thumbnail ">
-									<img alt="${img.iiname }"
-										src=" <%=request.getContextPath()%>/${img.iiname}">
-								</div>
-							</c:forEach>
+					<div class="collapse in" id="collapsePics">
+						<div class="well">
+							<div>
+								<c:forEach items="${item.itemImages }" var="img">
+									<div class="thumbnail ">
+										<img alt="${img.iiname }"
+											src=" <%=request.getContextPath()%>/${img.iiname}">
+									</div>
+								</c:forEach>
+							</div>
 						</div>
 					</div>
 				</li>
@@ -140,26 +145,30 @@ textarea {
 					<div class="btn-group" role="group">
 						<button type="button" class="btn btn-primary  btn-lg"
 							disabled="disabled">评论区&nbsp;</button>
-						<button type="button" class="btn btn-default  btn-lg">
+						<button type="button" class="btn btn-default  btn-lg"
+							data-toggle="collapse" data-target="#collapseComments"
+							aria-expanded="false" aria-controls="collapseComments">
 							<span class="badge"><%=((Item) request.getAttribute("item")).getComments()
 					.size()%></span>&nbsp;
 						</button>
 					</div>
-					<ul class="media-list">
-						<c:forEach items="${item.comments }" var="comment">
-							<li></li>
-							<li class="media"><a class="pull-left" href="#"> <img
-									class="media-object"
-									src="<%=request.getContextPath()%>/img/user.jpg" alt="...">
-							</a>
-								<div class="media-body">
-									<h4 class="media-heading">${comment.user.name }
-										<small> ${comment.markDate }</small>
-									</h4>
-									<p>${comment.content }</p>
-								</div></li>
-						</c:forEach>
-					</ul>
+					<div class="collapse" id="collapseComments">
+						<ul class="media-list">
+							<c:forEach items="${item.comments }" var="comment">
+								<li></li>
+								<li class="media"><a class="pull-left" href="#"> <img
+										class="media-object"
+										src="<%=request.getContextPath()%>/img/user.jpg" alt="...">
+								</a>
+									<div class="media-body">
+										<h4 class="media-heading">${comment.user.name }
+											<small> ${comment.markDate }</small>
+										</h4>
+										<p>${comment.content }</p>
+									</div></li>
+							</c:forEach>
+						</ul>
+					</div>
 				</li>
 
 				<!--发表评论  -->

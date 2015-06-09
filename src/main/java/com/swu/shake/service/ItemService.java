@@ -15,7 +15,7 @@ public interface ItemService {
 	public Item register(Item item) throws MsgException;
 
 	/** 删除商品 */
-	public boolean remove(int[] ids);
+	public boolean remove(int iid);
 
 	/** 修改商品 */
 	public boolean modify(Item item);
@@ -24,16 +24,19 @@ public interface ItemService {
 	public List<Item> getItems();
 
 	/** 通过ID查找单个商品 */
-	public Item getItem(int id);
+	public Item getItem(int iid);
 
 	/** 通过ID查找单个商品细节 */
-	public Item getDetail(int id);
+	public Item getDetail(int iid);
 
 	/** 通过ID查找单个商品的所有图片 */
-	public List<ItemImage> getImgs(int id);
+	public List<ItemImage> getImgs(int iid);
 
 	/** 清空不需要的图片 */
 	public boolean clearUnuserfulImg();
+
+	/** 通过UID查找此人的所有商品 */
+	public List<Item> getItems(int uid);
 
 	/** 得到所有商品分页 */
 	public List<Item> getItems(int start, int end);
@@ -44,10 +47,10 @@ public interface ItemService {
 	/** 得到某个种类的所有商品 */
 	public List<Item> getItemsByType(int tid);
 
-	/** 通过姓名 检测商品是否存在 */
+	/** 通过姓名 检索商品 模糊 */
 	public List<Item> getItemsByName(String name);
 
-	/** 通过姓名 检测商品是否存在 分页 */
+	/** 通过姓名 检索商品 模糊 分页 */
 	public List<Item> getItemsByName(String name, int start, int end);
 
 	/** 得到商品总数 */
@@ -55,5 +58,8 @@ public interface ItemService {
 
 	/** 得到某类商品总数 */
 	public long getCount(int tid);
+
+	/** 通过商品名得到总数 模糊 */
+	public long getCount(String iname);
 
 }

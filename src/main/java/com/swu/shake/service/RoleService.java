@@ -15,6 +15,9 @@ public interface RoleService {
 	/** 删除角色 */
 	public boolean delete(String rid);
 
+	/** 获得角色 */
+	public Role getRole(String rid);
+
 	/** 获得所有角色 */
 	public List<Role> finall();
 
@@ -26,7 +29,7 @@ public interface RoleService {
 
 	/** 通过名称，获得所有角色 分页 */
 	public List<Role> getRoleByName(String rname, int start, int end);
-	
+
 	/** 根据角色等级，查找下级角色 */
 	public List<Role> getRoleByLevel(int rlevel);
 

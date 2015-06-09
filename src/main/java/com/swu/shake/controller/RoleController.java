@@ -87,4 +87,11 @@ public class RoleController {
 		return viewName;
 	}
 
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	public String list(HttpSession session, Model model) {
+		String viewName = "";
+		viewName = "/role/list";
+		return viewName;
+	}
+
 }
