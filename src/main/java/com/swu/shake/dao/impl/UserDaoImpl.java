@@ -11,6 +11,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Component;
 
 import com.swu.shake.dao.UserDao;
+import com.swu.shake.model.Role;
 import com.swu.shake.model.User;
 import com.swu.shake.util.HibernateUtil;
 import com.swu.shake.util.MsgException;
@@ -113,6 +114,33 @@ public class UserDaoImpl implements UserDao {
 			User u = (User) session.load(User.class, user.getUid());
 			// 自己修改密码
 			u.setPassword(user.getPassword());
+			transaction.commit();
+
+			flag = true;
+		} catch (HibernateException e) {
+			flag = false;
+			e.printStackTrace();
+			hibernateUtil.rollbackTransaction(transaction);
+		} catch (Exception e) {
+			flag = false;
+			e.printStackTrace();
+
+		} finally {
+			hibernateUtil.closeSession(session);
+		}
+		return flag;
+	}
+
+	@Override
+	public boolean removeRole(String rid) {
+		boolean flag = false;
+		Transaction transaction = null;
+		Session session = null;
+		try {
+			session = hibernateUtil.getSession();
+			transaction = session.beginTransaction();
+			String sql = "update t_user set  rid=null where rid='" + rid + "'";
+			session.createSQLQuery(sql).executeUpdate();
 			transaction.commit();
 
 			flag = true;

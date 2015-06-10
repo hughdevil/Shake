@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.swu.shake.dao.RoleDao;
+import com.swu.shake.dao.UserDao;
 import com.swu.shake.model.Role;
 import com.swu.shake.service.RoleService;
 
@@ -13,6 +14,16 @@ import com.swu.shake.service.RoleService;
 public class RoleServiceImpl implements RoleService {
 
 	RoleDao roleDao;
+	UserDao userDao;
+
+	public UserDao getUserDao() {
+		return userDao;
+	}
+
+	@Autowired
+	public void setUserDao(UserDao userDao) {
+		this.userDao = userDao;
+	}
 
 	public RoleDao getRoleDao() {
 		return roleDao;
@@ -35,7 +46,11 @@ public class RoleServiceImpl implements RoleService {
 
 	@Override
 	public boolean delete(String rid) {
-		return roleDao.delete(rid);
+		if (userDao.removeRole(rid))
+			return roleDao.delete(rid);
+		else {
+			return false;
+		}
 	}
 
 	@Override

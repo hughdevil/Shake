@@ -37,18 +37,20 @@
 						<blockquote>
 							<table class="table table-hover">
 								<tr class="active">
-									<td width="70%"><span class="glyphicon glyphicon-list"></span>
+									<td width="60%"><span class="glyphicon glyphicon-list"></span>
 										名称</td>
-									<td width="40%"></td>
+									<td width="20%"></td>
+									<td width="20%"></td>
 								</tr>
-								<c:forEach var="item" items="${items }" varStatus="status">
+								<c:forEach var="itemtype" items="${itemtypes }">
 									<tr>
-										<td width="60%"><a
-											href="<%=request.getContextPath()%>/item/${item.iid}/detail.do">
-												${item.iname }</a></td>
-										<td width="40%"><small class="onshelfdate"
-											id="onshelfdate${status.count-1 }">
-												${item.onshelfdate }</small></td>
+										<td width="60%">${itemtype.tname }</td>
+										<td width="20%"><a
+											href="<%=request.getContextPath()%>/item/type/${itemtype.tid}/edit.do"><span
+												class="glyphicon glyphicon-pencil"></span> </a></td>
+										<td width="20%"><a
+											href="<%=request.getContextPath()%>/item/type/${itemtype.tid}/del.do"><span
+												class="glyphicon glyphicon-remove"></span> </a></td>
 									</tr>
 								</c:forEach>
 							</table>

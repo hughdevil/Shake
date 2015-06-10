@@ -5,7 +5,7 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.ObjectNotFoundException;
-import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -75,9 +75,8 @@ public class RoleDaoImpl implements RoleDao {
 		Transaction transaction = null;
 		boolean flag = false;
 		try {
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
-			// 特殊注意role
 			session.update(role);
 			transaction.commit();
 			flag = true;
@@ -85,6 +84,7 @@ public class RoleDaoImpl implements RoleDao {
 			e.printStackTrace();
 			transaction.rollback();
 		} finally {
+			session.close();
 			return flag;
 		}
 	}
@@ -95,18 +95,18 @@ public class RoleDaoImpl implements RoleDao {
 		Transaction transaction = null;
 		Role role = null;
 		try {
-			session = sessionFactory.getCurrentSession();
-			if (null == session) {
-				session = sessionFactory.openSession();
-			}
+			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			// load找不到时返回错误，这与save的不一样
-			role = (Role) session.load(Role.class, rid);
+			role = (Role) session.get(Role.class, rid);
+			transaction.commit();
 		} catch (ObjectNotFoundException e) {
 			return null;
 		} catch (HibernateException e) {
 			e.printStackTrace();
 			transaction.rollback();
+		} finally {
+			session.close();
 		}
 		return role;
 	}
@@ -131,8 +131,11 @@ public class RoleDaoImpl implements RoleDao {
 			}
 			transaction = session.beginTransaction();
 			String sql = "select * from t_role";
-			Query q = session.createSQLQuery(sql);
-			list = q.setFirstResult(start).setMaxResults(end).list();
+			SQLQuery q = session.createSQLQuery(sql);
+			q.addEntity(Role.class);
+			if (start == 1 && end == 1)
+				q.setFirstResult(start).setMaxResults(end);
+			list = q.list();
 			transaction.commit();
 		} catch (HibernateException e) {
 			e.printStackTrace();

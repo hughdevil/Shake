@@ -2,6 +2,7 @@ package com.swu.shake.dao;
 
 import java.util.List;
 
+import com.swu.shake.model.Role;
 import com.swu.shake.model.User;
 
 /**
@@ -21,6 +22,9 @@ public interface UserDao {
 
 	/** 修改用户密码 */
 	public boolean updatePwd(User user);
+
+	/** 修改用户，将用户的角色置为空 */
+	public boolean removeRole(String  rid);
 
 	/** 用户登陆 */
 	public User login(String name, String password);

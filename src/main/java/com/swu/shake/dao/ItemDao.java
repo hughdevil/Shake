@@ -19,6 +19,9 @@ public interface ItemDao {
 	/** 修改产品 */
 	public boolean update(Item item);
 
+	/** 修改产品，移除类型 */
+	public boolean removeType(int tid);
+
 	/** 查询所有产品 */
 	public List<Item> findall();
 

@@ -92,6 +92,34 @@ public class ItemDaoImpl implements ItemDao {
 	}
 
 	@Override
+	public boolean removeType(int tid) {
+		boolean flag = false;
+		Transaction transaction = null;
+		Session session = null;
+		try {
+			session = hibernateUtil.getSession();
+			transaction = session.beginTransaction();
+			String sql = "update t_item set  tid=null where tid=" + tid;
+			session.createSQLQuery(sql).executeUpdate();
+			transaction.commit();
+
+			flag = true;
+		} catch (HibernateException e) {
+			flag = false;
+			e.printStackTrace();
+			hibernateUtil.rollbackTransaction(transaction);
+		} catch (Exception e) {
+			flag = false;
+			e.printStackTrace();
+
+		} finally {
+			hibernateUtil.closeSession(session);
+		}
+		return flag;
+
+	}
+
+	@Override
 	public Item findById(int id) {
 		String hql = "from Item i where i.iid=" + id;
 		return (Item) hibernateUtil.exeQuery(hql).get(0);

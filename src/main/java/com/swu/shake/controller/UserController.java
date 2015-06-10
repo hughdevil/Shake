@@ -334,6 +334,9 @@ public class UserController {
 				candel = curuser.getRole().getRlevel() > role.getRlevel() ? true
 						: false;
 			}
+			if (role == null) {
+				candel = true;
+			}
 			List<Item> items = itemService.getItems(uid);
 
 			model.addAttribute("items", items);

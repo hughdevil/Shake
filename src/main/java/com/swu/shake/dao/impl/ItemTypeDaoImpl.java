@@ -32,7 +32,6 @@ public class ItemTypeDaoImpl implements ItemTypeDao {
 
 	@Override
 	public ItemType save(ItemType itemType) {
-		// TODO Auto-generated method stub
 		ItemType it = null;
 		Session session = null;
 		try {
@@ -53,7 +52,6 @@ public class ItemTypeDaoImpl implements ItemTypeDao {
 
 	@Override
 	public boolean delete(int id) {
-		// TODO Auto-generated method stub
 		Session session = null;
 		try {
 			session = sessionFactory.openSession();
@@ -66,19 +64,20 @@ public class ItemTypeDaoImpl implements ItemTypeDao {
 		} finally {
 			session.close();
 		}
+		
 		return true;
 	}
 
 	@Override
 	public boolean update(ItemType itemType) {
-		// TODO Auto-generated method stub
 		Session session = null;
 		try {
 			session = sessionFactory.openSession();
 			session.beginTransaction();
 			ItemType it = getItemTypeById(itemType.getTid());
 			it.setTname(itemType.getTname());
-
+			it.setTdesc(itemType.getTdesc());
+			
 			session.update(it);
 			session.getTransaction().commit();
 		} catch (DataAccessException e) {
@@ -111,7 +110,6 @@ public class ItemTypeDaoImpl implements ItemTypeDao {
 
 	@Override
 	public List<ItemType> getItemTypesByName(String str, int start, int end) {
-		// TODO Auto-generated method stub
 		Session session = null;
 		Transaction transaction = null;
 		List<ItemType> list = null;
@@ -133,7 +131,6 @@ public class ItemTypeDaoImpl implements ItemTypeDao {
 
 	@Override
 	public ItemType getItemTypeById(int id) {
-		// TODO Auto-generated method stub
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		ItemType itemType = (ItemType) session.get(ItemType.class, id);
@@ -144,7 +141,6 @@ public class ItemTypeDaoImpl implements ItemTypeDao {
 
 	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
 		Session session = null;
 		Transaction transaction = null;
 		List<ItemType> its = null;
