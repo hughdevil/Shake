@@ -74,7 +74,8 @@ textarea {
 
 			<div class="panel panel-default col-md-12">
 				<h4 align="center">
-					<a href="#">联系方式</a>
+					<a
+						href="<%=request.getContextPath()%>/user/${item.user.uid }/home.do">联系方式</a>
 				</h4>
 			</div>
 
