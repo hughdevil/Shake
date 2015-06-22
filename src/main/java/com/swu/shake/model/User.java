@@ -44,7 +44,7 @@ public class User {
 	@Column(name = "IP", nullable = false)
 	private String IP;
 	// 头像
-	@Column(name = "headpic", nullable = false)
+	@Column(name = "headpic", nullable = true)
 	private String headpic;
 
 	@ManyToOne

@@ -107,6 +107,7 @@
 						</div>
 						<div class="col-md-5">
 							<input name="phone" type="text" class="form-control "
+								onkeyup="this.value=this.value.replace(/\D/g,'')" maxlength="11"
 								placeholder="请仔细填写，发布商品时的默认联系电话" value="${ upuser.phone}">
 						</div>
 					</div></li>
@@ -117,6 +118,7 @@
 						</div>
 						<div class="col-md-5">
 							<input name="qq" type="text" class="form-control "
+								onkeyup="this.value=this.value.replace(/\D/g,'')" maxlength="15"
 								placeholder="请仔细填写，发布商品时的默认联系QQ" value="${upuser.QQ }">
 						</div>
 					</div></li>

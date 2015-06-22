@@ -76,7 +76,8 @@
 						<div class="col-md-6">
 							<div class="input-group">
 								<span class="input-group-addon">￥</span> <input name="price"
-									type="text" class="form-control"
+									onkeyup="this.value=this.value.replace(/\D/g,'')"
+									maxlength="15" type="text" class="form-control"
 									placeholder="最大值 99999  最小值 1  当前产品的出售价格"> <span
 									class="input-group-addon">.00</span>
 							</div>
@@ -92,9 +93,10 @@
 						<div class="col-md-6">
 							<div class="input-group">
 								<span class="input-group-addon">共</span> <input type="text"
-									name="number" class="form-control"
-									placeholder="最大值 100  最小值 1  产品现有数量"> <span
-									class="input-group-addon">台（个、件）</span>
+									onkeyup="this.value=this.value.replace(/\D/g,'')" maxlength="5"
+									type="text" class="form-control" name="number"
+									class="form-control" placeholder="最大值 100  最小值 1  产品现有数量">
+								<span class="input-group-addon">台（个、件）</span>
 							</div>
 						</div>
 					</div></li>
