@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <html>
 <head>
@@ -55,21 +56,28 @@
 			<c:forEach items="${itemList}" var="item" varStatus="status">
 				<div class="col-sm-6 col-md-3">
 					<div class="thumbnail ">
-						<img class="img-responsive"
+						<a
+							href="<%=request.getContextPath() %>/item/${item.iid}/detail.do">
+							<img class="img-responsive"
 							src="<%=request.getContextPath() %>/${item.postImage}"
 							alt="${item.iname }">
-						<div class="caption">
-							<h3 style="color: red">
-								<span class="glyphicon glyphicon-yen"></span> ${item.iprice }
-							</h3>
-							<h4>
-								<a
-									href="<%=request.getContextPath() %>/item/${item.iid}/detail.do">
-									${item.iname }</a>
-							</h4>
-							<p style="text-align: right">${item.user.name}&nbsp;&nbsp;
-								${item.onshelfdate }</p>
-						</div>
+							<div class="caption">
+								<h3 style="color: red">
+									<span class="glyphicon glyphicon-yen"></span> ${item.iprice }
+								</h3>
+								<h4>
+
+									<c:choose>
+										<c:when test="${fn:length(item.iname ) > 10}">
+											<c:out value="${fn:substring(item.iname,0,10)}..."></c:out>
+										</c:when>
+										<c:otherwise>${item.iname}</c:otherwise>
+									</c:choose>
+								</h4>
+								<p style="text-align: right">${item.user.name}&nbsp;&nbsp;
+									${item.onshelfdate }</p>
+							</div>
+						</a>
 					</div>
 				</div>
 				<c:if test="${status.count %4 == 0}">

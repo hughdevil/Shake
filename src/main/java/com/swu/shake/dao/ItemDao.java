@@ -34,6 +34,9 @@ public interface ItemDao {
 	/** 根据发布人查找商品 */
 	public List<Item> getItemsByUid(int uid);
 
+	/** 根据发布人查找商品分页 */
+	public List<Item> getItemsByUidAndPage(int uid, int start, int end);
+
 	/** 根据姓名查找商品 */
 	public List<Item> getItemsByName(String str);
 
@@ -51,6 +54,9 @@ public interface ItemDao {
 
 	/** 获得某类商品总数 */
 	public long getCount(int tid);
+	
+	/** 获得某人商品总数 */
+	public long getCountByUid(int uid);
 
 	/** 通过商品名获得商品总数 模糊 */
 	public long getCount(String iname);

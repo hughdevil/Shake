@@ -26,6 +26,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.swu.shake.model.Item;
+import com.swu.shake.model.Pager;
 import com.swu.shake.model.Role;
 import com.swu.shake.model.User;
 import com.swu.shake.service.ItemService;
@@ -39,6 +40,7 @@ import com.swu.shake.util.MsgException;
 @Controller
 public class UserController {
 	private static final int AUTHORISE_SITER = 3;
+	private static final int PAGE_SIZE = 10;
 	private MD5Util md5Util;
 	private static final Logger logger = LoggerFactory
 			.getLogger(UserController.class);
@@ -316,6 +318,10 @@ public class UserController {
 	@RequestMapping(value = "/user/{uid}/home", method = RequestMethod.GET)
 	public String home(HttpSession session,
 			@PathVariable(value = "uid") int uid, Model model) {
+		int curpage = 1;
+		Long count = itemService.getCountByUid(uid);
+		Pager pager = new Pager(count, PAGE_SIZE, curpage);
+
 		String viewName = "";
 		String message = "";
 		User curuser = (User) session.getAttribute("user");
@@ -337,8 +343,50 @@ public class UserController {
 			if (role == null) {
 				candel = true;
 			}
-			List<Item> items = itemService.getItems(uid);
+			List<Item> items = itemService.getSomebodyItemsByPage(uid,
+					pager.getStartRow(), PAGE_SIZE);
+			model.addAttribute("pager", pager);
+			model.addAttribute("uid", uid);
+			model.addAttribute("items", items);
 
+		}
+		model.addAttribute("candel", candel);
+		model.addAttribute("message", message);
+		return viewName;
+	}
+
+	@RequestMapping(value = "/user/{uid}/home", params = "page", method = RequestMethod.GET)
+	public String home(HttpSession session, HttpServletRequest request,
+			@PathVariable(value = "uid") int uid, Model model) {
+		int curpage = Integer.parseInt(request.getParameter("page"));
+		Long count = itemService.getCountByUid(uid);
+		Pager pager = new Pager(count, PAGE_SIZE, curpage);
+
+		String viewName = "";
+		String message = "";
+		User curuser = (User) session.getAttribute("user");
+		boolean candel = false;
+		if (null == curuser) {
+			message = "未登录";
+			viewName = "/comm/failure";
+		} else {
+			viewName = "/user/home";
+			User showuser = this.userService.getUserById(uid);
+			model.addAttribute("showuser", showuser);
+
+			// 判断是否有删除选项
+			Role role = showuser.getRole();
+			if (curuser.getRole() != null && role != null) {
+				candel = curuser.getRole().getRlevel() > role.getRlevel() ? true
+						: false;
+			}
+			if (role == null) {
+				candel = true;
+			}
+			List<Item> items = itemService.getSomebodyItemsByPage(uid,
+					pager.getStartRow(), PAGE_SIZE);
+			model.addAttribute("pager", pager);
+			model.addAttribute("uid", uid);
 			model.addAttribute("items", items);
 
 		}
@@ -499,8 +547,10 @@ public class UserController {
 			viewName = "/comm/failure";
 		} else {
 			Role role = userService.getUserById(uid).getRole();
-			if (curuser.getRole() != null && role != null
-					&& curuser.getRole().getRlevel() > role.getRlevel()) {
+			if ((curuser.getRole() != null && role == null && curuser.getRole()
+					.getRlevel() > AUTHORISE_SITER)
+					|| (curuser.getRole() != null && role != null && curuser
+							.getRole().getRlevel() > role.getRlevel())) {
 				if (userService.remove(uid)) {
 					viewName = "/comm/success";
 				} else {

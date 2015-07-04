@@ -39,7 +39,8 @@
 	<div class="container">
 
 		<form:form modelAttribute="role" method="post"
-			class="form-horizontal col-md-10 col-md-offset-1 ">
+			class="form-horizontal col-md-10 col-md-offset-1 "
+			onsubmit="return check();">
 			<ul class="list-group">
 
 				<li class="list-group-item">
@@ -52,7 +53,7 @@
 						</div>
 						<div class="col-md-5">
 							<form:input path="rname" type="text" class="form-control "
-								placeholder="注册角色的名称，日后可以修改" />
+								required="required" maxlength="4" placeholder="注册角色的名称，至多4字" />
 						</div>
 					</div></li>
 
@@ -76,7 +77,8 @@
 						</div>
 						<div class="col-md-5">
 							<form:textarea path="rdesc" type="text" class="form-control "
-								rows="4" cols="100%" placeholder="注册角色的描述，日后可以修改" />
+								required="required" maxlength="100" rows="4" cols="100%"
+								placeholder="注册角色的描述，至多100字" />
 						</div>
 					</div></li>
 
@@ -98,5 +100,10 @@
 			enctype="multipart/form-data"
 			action="<c:url value="/user/register.do" />" method="post"></form>
 	</div>
+	<script>
+		function check() {
+			document.getElementById('submit').disabled = 'disabled';
+		}
+	</script>
 </body>
 </html>

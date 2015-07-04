@@ -31,12 +31,13 @@
 	<div class="container">
 
 		<form action="<%=request.getContextPath()%>/item/type/edit.do"
-			method="post" class="form-horizontal col-md-10 col-md-offset-1 ">
+			method="post" class="form-horizontal col-md-10 col-md-offset-1 "
+			onsubmit="return check();">
 			<input type="hidden" name="tid" value="${itemtype.tid }">
 			<ul class="list-group">
 
 				<li class="list-group-item">
-					<h3 align="center">新商品类型注册</h3>
+					<h3 align="center">商品类型修改</h3>
 				</li>
 
 				<li class="list-group-item"><div class="row">
@@ -45,7 +46,8 @@
 						</div>
 						<div class="col-md-5">
 							<input name="tname" type="text" class="form-control "
-								placeholder="新类型的名称，日后可以修改" value="${ itemtype.tname}" />
+								required="required" maxlength="4" placeholder="类型的名称，限4字"
+								value="${ itemtype.tname}" />
 						</div>
 					</div></li>
 
@@ -55,7 +57,7 @@
 						</div>
 						<div class="col-md-5">
 							<textarea name="tdesc" class="form-control " rows="4" cols="100%"
-								placeholder="新类型的描述，日后可以修改">${itemtype.tdesc }</textarea>
+								required="required" maxlength="100" placeholder="类型的描述，限100字">${itemtype.tdesc }</textarea>
 						</div>
 					</div></li>
 
@@ -65,12 +67,17 @@
 						<div class="btn-group">
 							<input type="reset" class="btn btn-danger btn-lg" value="重置">
 							<input type="submit" class="btn btn-warning btn-lg" id="submit"
-								value="确认无误，注册">
+								value="确认无误，修改">
 						</div>
 					</div>
 				</li>
 			</ul>
 		</form>
 	</div>
+	<script>
+		function check() {
+			document.getElementById('submit').disabled = 'disabled';
+		}
+	</script>
 </body>
 </html>

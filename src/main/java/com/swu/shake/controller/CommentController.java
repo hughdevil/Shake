@@ -2,7 +2,6 @@ package com.swu.shake.controller;
 
 import java.util.Date;
 
-import javax.persistence.MappedSuperclass;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 

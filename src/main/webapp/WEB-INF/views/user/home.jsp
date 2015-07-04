@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <html>
 <head>
@@ -22,15 +23,6 @@
 	src=" <%=request.getContextPath()%>/js/jquery-2.1.4.min.js"></script>
 <script type="text/javascript"
 	src=" <%=request.getContextPath()%>/js/bootstrap.min.js"></script>
-<script type="text/javascript">
-	$(document).ready(function() {
-		$(".onshelfdate").each(function(index) {
-			var str = $("#onshelfdate" + index).text();
-			$("#onshelfdate" + index).html(str.substr(0, 11));
-		});
-
-	});
-</script>
 
 </head>
 <body>
@@ -48,8 +40,11 @@
 			<div class="panel panel-default col-md-12"></div>
 			<h4></h4>
 			<div class="thumbnail ">
-				<img alt="${showuser.headpic }"
-					src=" <%=request.getContextPath()%>/${showuser.headpic}">
+				<c:if test="${!empty showuser.headpic}">
+					<img alt="${showuser.headpic }"
+						src=" <%=request.getContextPath()%>/${showuser.headpic}">
+				</c:if>
+
 			</div>
 
 			<div class="panel panel-default col-md-12">
@@ -117,7 +112,9 @@
 				<ul class="list-group">
 					<li class="list-group-item"><div class="container row">
 							<span class="col-md-3 glyphicon glyphicon-registration-mark  "
-								style="text-align: left;">：${showuser.regDate }</span>
+								style="text-align: left;">：<c:out
+									value="${fn:substring(showuser.regDate,0,19)}"></c:out>
+							</span>
 						</div></li>
 
 					<li class="list-group-item"><div class="container row">
@@ -135,8 +132,7 @@
 								href="<%=request.getContextPath() %>/user/${showuser.uid}/edit.do"><span
 									class="glyphicon glyphicon-pencil"></span> </a> <c:if
 									test="${candel }">
-									 · <a
-										href="<%=request.getContextPath() %>/user/${showuser.uid}/del.do"><span
+									 · <a data-toggle="modal" data-target=".bs-example-modal-sm"><span
 										class="glyphicon glyphicon-remove"></span> </a>
 								</c:if></span>
 						</div></li>
@@ -165,8 +161,9 @@
 											href="<%=request.getContextPath()%>/item/${item.iid}/detail.do">
 												${item.iname }</a></td>
 										<td width="40%"><small class="onshelfdate"
-											id="onshelfdate${status.count-1 }">
-												${item.onshelfdate }</small></td>
+											id="onshelfdate${status.count-1 }"> <c:out
+													value="${fn:substring(item.onshelfdate,0,11)}"></c:out>
+										</small></td>
 									</tr>
 								</c:forEach>
 							</table>
@@ -175,12 +172,33 @@
 				</li>
 
 
-
-
 			</ul>
+			<!--分页  -->
+			<%@ include file="../comm/homepager.jsp"%>
 		</div>
 
 
+	</div>
+
+	<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog"
+		aria-labelledby="mySmallModalLabel">
+		<div class="modal-dialog modal-sm">
+			<div class="modal-content">
+				<div class="modal-header">
+					&nbsp; <span class="glyphicon glyphicon-exclamation-sign"
+						style="color: red; text-align: left;"></span>
+				</div>
+				<div class="modal-body">
+					<h5>您确认要执行该操作吗？该操作将删除该用户及其发布的所有商品！</h5>
+				</div>
+				<div class="modal-footer">
+					<a
+						href="<%=request.getContextPath() %>/user/${showuser.uid}/del.do"
+						class="btn btn-danger">确认</a>
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

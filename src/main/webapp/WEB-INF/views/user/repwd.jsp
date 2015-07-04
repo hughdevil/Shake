@@ -26,7 +26,8 @@
 	<%@ include file="../comm/header.jsp"%>
 	<div class="container">
 		<form class="form-horizontal col-md-10 col-md-offset-1 "
-			action="<c:url value="/user/repwd.do" />" method="post">
+			action="<c:url value="/user/repwd.do" />" method="post"
+			onsubmit="return check();">
 			<input name="uid" type="hidden" value="${user.uid }">
 			<ul class="list-group">
 
@@ -34,7 +35,7 @@
 					<h3 align="center">修改个人密码</h3>
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-3">
-							<label for="" class="control-label " style="float: right" >用户名：</label>
+							<label for="" class="control-label " style="float: right">用户名：</label>
 						</div>
 						<div class="col-md-5">
 							<input name="uname" type="text" class="form-control "
@@ -50,6 +51,8 @@
 						</div>
 						<div class="col-md-5">
 							<input name="oldpsw" type="password" class="form-control "
+								pattern="^[a-zA-Z]\w{4,17}$"
+								title="密码格式：以字母开头，长度在5~18之间，只能包含字符、数字和下划线。" required
 								placeholder="请输入密码">
 						</div>
 					</div></li>
@@ -59,6 +62,8 @@
 						</div>
 						<div class="col-md-5">
 							<input name="psw" type="password" class="form-control "
+								pattern="^[a-zA-Z]\w{4,17}$"
+								title="密码格式：以字母开头，长度在5~18之间，只能包含字符、数字和下划线。" required
 								placeholder="如果请输入密码">
 						</div>
 					</div></li>
@@ -68,7 +73,7 @@
 						</div>
 						<div class="col-md-5">
 							<input name="repsw" type="password" class="form-control "
-								placeholder="请与上述密码保持一致">
+								required onchange="checkPasswords()" placeholder="请与上述密码保持一致">
 						</div>
 					</div></li>
 
@@ -86,5 +91,19 @@
 			</ul>
 		</form>
 	</div>
+	<script>
+		function checkPasswords() {
+			var passl = document.getElementById("pwd");
+			var pass2 = document.getElementById("repwd");
+			if (passl.value != pass2.value)
+				passl.setCustomValidity("两次密码必须输入一致！");
+			else
+				passl.setCustomValidity('');
+		}
+
+		function check() {
+			document.getElementById('submit').disabled = 'disabled';
+		}
+	</script>
 </body>
 </html>

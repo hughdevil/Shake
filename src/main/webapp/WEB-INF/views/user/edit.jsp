@@ -39,7 +39,10 @@
 	<div class="container">
 		<form class="form-horizontal col-md-10 col-md-offset-1 "
 			enctype="multipart/form-data"
-			action="<c:url value="/user/edit.do" />" method="post">
+			action="<c:url value="/user/edit.do" />" method="post"
+			onsubmit="return check();">
+
+
 			<input name="uid" type="hidden" value="${upuser.uid }">
 			<ul class="list-group">
 
@@ -47,11 +50,13 @@
 					<h3 align="center">修改个人资料</h3>
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-3">
-							<label for="" class="control-label " style="float: right">用户名：</label>
+							<label for="" class="control-label " style="float: right"><font
+								color="red">*</font> 用户名：</label>
 						</div>
 						<div class="col-md-5">
-							<input name="uname" type="text" class="form-control "
-								placeholder="注册用户的名称，日后可以修改" value="${upuser.name }">
+							<input name="uname" type="text" class="form-control " required
+								maxlength="15" placeholder="注册用户的名称，日后可以修改"
+								value="${upuser.name }">
 						</div>
 					</div></li>
 
@@ -108,6 +113,7 @@
 						<div class="col-md-5">
 							<input name="phone" type="text" class="form-control "
 								onkeyup="this.value=this.value.replace(/\D/g,'')" maxlength="11"
+								pattern="^[0-9]{11}" title="手机正确格式：xxxxxxxxxxx 11位数字"
 								placeholder="请仔细填写，发布商品时的默认联系电话" value="${ upuser.phone}">
 						</div>
 					</div></li>
@@ -119,7 +125,8 @@
 						<div class="col-md-5">
 							<input name="qq" type="text" class="form-control "
 								onkeyup="this.value=this.value.replace(/\D/g,'')" maxlength="15"
-								placeholder="请仔细填写，发布商品时的默认联系QQ" value="${upuser.QQ }">
+								pattern="[0-9]*" placeholder="请仔细填写，发布商品时的默认联系QQ"
+								value="${upuser.QQ }">
 						</div>
 					</div></li>
 				<li class="list-group-item"><div class="row">
@@ -130,10 +137,12 @@
 						<div class="col-md-5">
 							<div class="input-group">
 								<input name="mail" type="text" class="form-control "
-									placeholder="默认联系邮箱" value="${mail }"> <span
-									class="input-group-addon">@</span><input name="mailtype"
-									type="text" class="form-control " placeholder="邮箱类型"
-									value="${mailtype }">
+									pattern="^\w+((-\w+)|(\.\w+))*" placeholder="默认联系邮箱"
+									value="${mail }"> <span class="input-group-addon">@</span><input
+									name="mailtype" type="text" class="form-control "
+									placeholder="邮箱类型"
+									pattern="[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$"
+									title="邮箱正确格式：xxx@xxx.xxx" value="${mailtype }">
 							</div>
 
 						</div>
@@ -145,7 +154,8 @@
 						</div>
 						<div class="col-md-5">
 							<input name="addr" type="text" class="form-control "
-								placeholder="请仔细填写，发布商品时的默认联系地址" value="${upuser.addr }">
+								maxlength="30" placeholder="请仔细填写，发布商品时的默认联系地址"
+								value="${upuser.addr }">
 						</div>
 					</div></li>
 
@@ -170,10 +180,14 @@
 					<!-- 如果不是本用户，密码就不用出现 -->
 					<li class="list-group-item"><div class="row">
 							<div class="col-md-3">
-								<label for="" class="control-label " style="float: right">确认密码：</label>
+								<label for="" class="control-label " style="float: right">
+									<font color="red">*</font> 确认密码：
+								</label>
 							</div>
 							<div class="col-md-5">
 								<input name="psw" type="password" class="form-control "
+									pattern="^[a-zA-Z]\w{4,17}$"
+									title="密码格式：以字母开头，长度在5~18之间，只能包含字符、数字和下划线。" required
 									placeholder="请输入密码，来确认修改">
 							</div>
 						</div></li>
@@ -193,5 +207,11 @@
 			</ul>
 		</form>
 	</div>
+
+	<script>
+		function check() {
+			document.getElementById('submit').disabled = 'disabled';
+		}
+	</script>
 </body>
 </html>

@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8" import="com.swu.shake.model.Item"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+
 
 <html>
 <head>
@@ -27,6 +29,11 @@ textarea {
 	background-color: transparent;
 	color: #666464;
 	height: auto;
+}
+
+blockquote {
+	word-wrap: break-word; /* ie */
+	overflow: hidden;
 }
 </style>
 </head>
@@ -91,22 +98,25 @@ textarea {
 				<li class="list-group-item">
 					<ul>
 						<li><strong><abbr title="attribute">${item.itemtype.tname}</abbr></strong>
-							&nbsp;·&nbsp;${item.onshelfdate }&nbsp;·&nbsp; <a
-							href="<%=request.getContextPath() %>/item/${item.iid}/edit.do">编辑</a>
-							&nbsp;·&nbsp; <a
-							href="<%=request.getContextPath() %>/item/${item.iid}/unload.do">下架<small>（删）</small>
+							&nbsp;·&nbsp;<c:out
+								value="${fn:substring(item.onshelfdate,0,19)}"></c:out>&nbsp;·&nbsp;
+							<a href="<%=request.getContextPath() %>/item/${item.iid}/edit.do">编辑</a>
+							&nbsp;·&nbsp; <a data-toggle="modal"
+							data-target=".bs-example-modal-sm">下架<small>（删）</small>
 						</a></li>
 					</ul>
 				</li>
 
-				<li class="list-group-item">
+				<li class="list-group-item   ">
 					<div class="thumbnail ">
 						<img class="img-rounded" alt="${img.iiname }"
 							src=" <%=request.getContextPath()%>/${item.postImage}">
-						<div class="caption">
-							<blockquote>${item.idesc }</blockquote>
+						<div class="caption ">
+							<blockquote class="">
+								<p>${item.idesc }</p>
+							</blockquote>
 							<footer style="text-align: right">
-								———— from： <cite title="发布人"><a
+								<small> 发布人：</small> <cite title="发布人"><a
 									href="<%=request.getContextPath()%>/user/${item.user.uid }/home.do">
 										${item.user.name}</a></cite>&nbsp;&nbsp;&nbsp;&nbsp;
 							</footer>
@@ -157,13 +167,16 @@ textarea {
 						<ul class="media-list">
 							<c:forEach items="${item.comments }" var="comment">
 								<li></li>
-								<li class="media"><a class="pull-left" href="#"> <img
-										class="media-object"
-										src="<%=request.getContextPath()%>/img/user.jpg" alt="...">
+								<li class="media"><a class="pull-left"
+									href="<%=request.getContextPath()%>/user/${comment.user.uid }/home.do">
+										<img class="media-object" height="64px"
+										src="<%=request.getContextPath()%>/${comment.user.headpic}"
+										alt="">
 								</a>
 									<div class="media-body">
 										<h4 class="media-heading">${comment.user.name }
-											<small> ${comment.markDate }</small>
+											<small> <c:out
+													value="${fn:substring(comment.markDate,0,19)}"></c:out></small>
 										</h4>
 										<p>${comment.content }</p>
 									</div></li>
@@ -177,7 +190,8 @@ textarea {
 					<form action="<c:url value="/comment/remark.do" />" method="post">
 						<input type="hidden" name="itemid" value="${item.iid }">
 						<div align="center">
-							<textarea cols="75%" rows="4" name="content" placeholder="点击此处评论"></textarea>
+							<textarea cols="75%" rows="4" name="content"
+								placeholder="点击此处评论，至多250字" maxlength="250"></textarea>
 							<br> <input type="submit" id="submit" value="提交"
 								class="btn btn-info btn-md">
 						</div>
@@ -188,5 +202,24 @@ textarea {
 		</div>
 	</div>
 
+	<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog"
+		aria-labelledby="mySmallModalLabel">
+		<div class="modal-dialog modal-sm">
+			<div class="modal-content">
+				<div class="modal-header">
+					&nbsp; <span class="glyphicon glyphicon-exclamation-sign"
+						style="color: red; text-align: left;"></span>
+				</div>
+				<div class="modal-body">
+					<h4>&nbsp; &nbsp; &nbsp; 您确认要删除该商品吗？</h4>
+				</div>
+				<div class="modal-footer">
+					<a href="<%=request.getContextPath() %>/item/${item.iid}/unload.do"
+						class="btn btn-danger">确认</a>
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

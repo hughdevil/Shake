@@ -28,7 +28,8 @@
 	<div class="container">
 		<form class="form-horizontal col-md-10 col-md-offset-1 "
 			enctype="multipart/form-data"
-			action="<c:url value="/user/register.do" />" method="post">
+			action="<c:url value="/user/register.do" />" method="post"
+			onsubmit="return check();">
 
 			<ul class="list-group">
 
@@ -36,31 +37,37 @@
 					<h3 align="center">用户注册</h3>
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-3">
-							<label for="" class="control-label " style="float: right">用户名：</label>
+							<label for="" class="control-label " style="float: right"><font
+								color="red">*</font> 用户名：</label>
 						</div>
 						<div class="col-md-5">
-							<input name="uname" type="text" class="form-control "
-								placeholder="注册用户的名称，日后可以修改">
+							<input name="uname" type="text" class="form-control " required
+								maxlength="15" placeholder="注册用户的名称，日后可以修改">
 						</div>
 					</div></li>
 
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-3">
-							<label for="" class="control-label " style="float: right">密码：</label>
+							<label for="" class="control-label " style="float: right"><font
+								color="red">*</font> 密码：</label>
 						</div>
 						<div class="col-md-5">
-							<input name="psw" type="password" class="form-control "
+							<input id="pwd" name="psw" type="password" class="form-control "
+								pattern="^[a-zA-Z]\w{4,17}$"
+								title="密码格式：以字母开头，长度在5~18之间，只能包含字符、数字和下划线。" required
 								placeholder="请输入密码">
 						</div>
 					</div></li>
 
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-3">
-							<label for="" class="control-label " style="float: right">确认密码：</label>
+							<label for="" class="control-label " style="float: right"><font
+								color="red">*</font> 确认密码：</label>
 						</div>
 						<div class="col-md-5">
-							<input name="repsw" type="password" class="form-control "
-								placeholder="请与上述密码保持一致">
+							<input id="repwd" name="repsw" type="password"
+								class="form-control " placeholder="请与上述密码保持一致" required
+								onchange="checkPasswords()">
 						</div>
 					</div></li>
 
@@ -94,6 +101,7 @@
 						<div class="col-md-5">
 							<input name="phone" type="text" class="form-control "
 								onkeyup="this.value=this.value.replace(/\D/g,'')" maxlength="11"
+								pattern="^[0-9]{11}" title="手机正确格式：xxxxxxxxxxx 11位数字"
 								placeholder="请仔细填写，发布商品时的默认联系电话">
 						</div>
 					</div></li>
@@ -105,7 +113,7 @@
 						<div class="col-md-5">
 							<input name="qq" type="text" class="form-control "
 								onkeyup="this.value=this.value.replace(/\D/g,'')" maxlength="15"
-								placeholder="请仔细填写，发布商品时的默认联系QQ">
+								pattern="[0-9]*" placeholder="请仔细填写，发布商品时的默认联系QQ">
 						</div>
 					</div></li>
 				<li class="list-group-item"><div class="row">
@@ -117,9 +125,11 @@
 
 							<div class="input-group">
 								<input name="mail" type="text" class="form-control "
-									placeholder="默认联系邮箱"> <span class="input-group-addon">@</span><input
-									name="mailtype" type="text" class="form-control "
-									placeholder="邮箱类型">
+									pattern="^\w+((-\w+)|(\.\w+))*" placeholder="默认联系邮箱"> <span
+									class="input-group-addon">@</span><input name="mailtype"
+									type="text" class="form-control "
+									pattern="[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$"
+									title="邮箱正确格式：xxx@xxx.xxx" placeholder="邮箱类型">
 							</div>
 
 						</div>
@@ -130,8 +140,8 @@
 							<label for="" class="control-label " style="float: right">地址：</label>
 						</div>
 						<div class="col-md-5">
-							<input name="addr" type="text" class="form-control "
-								placeholder="请仔细填写，发布商品时的默认联系地址">
+							<input name="addr" type="text" class="form-control"
+								placeholder="请仔细填写，发布商品时的默认联系地址" maxlength="30">
 						</div>
 					</div></li>
 
@@ -161,5 +171,20 @@
 			</ul>
 		</form>
 	</div>
+
+	<script>
+		function checkPasswords() {
+			var passl = document.getElementById("pwd");
+			var pass2 = document.getElementById("repwd");
+			if (passl.value != pass2.value)
+				passl.setCustomValidity("两次密码必须输入一致！");
+			else
+				passl.setCustomValidity('');
+		}
+
+		function check() {
+			document.getElementById('submit').disabled = 'disabled';
+		}
+	</script>
 </body>
 </html>

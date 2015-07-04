@@ -48,7 +48,7 @@
 	<div class="container">
 
 		<form class="form-horizontal col-md-10 col-md-offset-1 " id="itemfrom"
-			enctype="multipart/form-data"
+			enctype="multipart/form-data" onsubmit="return check();"
 			action="<c:url value="/item/publish.do" />" method="post">
 
 			<ul class="list-group">
@@ -63,22 +63,24 @@
 							</select>
 						</div>
 						<div class="col-md-10">
-							<input name="title" type="text" class="form-control "
-								placeholder="标题  /  产品的品名、概要等">
+							<input name="title" type="text" class="form-control " required
+								maxlength="30" placeholder="标题  /  产品的品名、概要等">
 						</div>
 					</div></li>
 
 				<!-- 价格 -->
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-2">
-							<label for="" class="control-label " style="float: right">价格：</label>
+							<label for="" class="control-label " style="float: right"><font
+								color="red">*</font> 价格：</label>
 						</div>
 						<div class="col-md-6">
 							<div class="input-group">
 								<span class="input-group-addon">￥</span> <input name="price"
-									onkeyup="this.value=this.value.replace(/\D/g,'')"
-									maxlength="15" type="text" class="form-control"
-									placeholder="最大值 99999  最小值 1  当前产品的出售价格"> <span
+									onkeyup="this.value=this.value.replace(/\D/g,'')" maxlength="9"
+									type="text" class="form-control" required="required"
+									pattern="^[0-9]{1,7}" title="正确格式：最大值 9999999  最小值 0"
+									placeholder="最大值 9999999  最小值 0  当前产品的出售价格"> <span
 									class="input-group-addon">.00</span>
 							</div>
 						</div>
@@ -88,14 +90,16 @@
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-2">
 							<label for="" class="control-label " style="float: right">
-								数量：</label>
+								<font color="red">*</font> 数量：
+							</label>
 						</div>
 						<div class="col-md-6">
 							<div class="input-group">
 								<span class="input-group-addon">共</span> <input type="text"
-									onkeyup="this.value=this.value.replace(/\D/g,'')" maxlength="5"
-									type="text" class="form-control" name="number"
-									class="form-control" placeholder="最大值 100  最小值 1  产品现有数量">
+									onkeyup="this.value=this.value.replace(/\D/g,'')" maxlength="3"
+									type="text" class="form-control" name="number" required
+									pattern="^[0-9]{1,3}" title="正确格式：最大值 999  最小值 0"
+									class="form-control" placeholder="最大值 999  最小值 0  产品现有数量">
 								<span class="input-group-addon">台（个、件）</span>
 							</div>
 						</div>
@@ -105,7 +109,8 @@
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-2">
 							<label for="" class="control-label " style="float: right">
-								有效：</label>
+								<font color="red">*</font> 有效：
+							</label>
 						</div>
 						<div class="col-md-6">
 							<div class="radio">
@@ -125,7 +130,8 @@
 				<!--成色  -->
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-2">
-							<label for="" class="control-label " style="float: right">成色：</label>
+							<label for="" class="control-label " style="float: right"><font
+								color="red">*</font> 成色：</label>
 						</div>
 						<div class="row">
 							<div class="col-md-6 ">
@@ -161,7 +167,7 @@
 								</div>
 								<div class="input-group col-md-6">
 									<span class="input-group-addon"> <input name="newly"
-										value="60" type="radio">
+										checked="checked" value="60" type="radio">
 									</span> <input type="text" disabled="disabled" class="form-control"
 										value="6成或更低成色">
 								</div>
@@ -172,14 +178,15 @@
 				<!--入手时间  -->
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-2">
-							<label for="" style="float: right" class="control-label ">入手时间：</label>
+							<label for="" style="float: right" class="control-label "><font
+								color="red">*</font> 入手时间：</label>
 						</div>
 						<div class="col-md-5">
 							<div class="input-group date form_date" data-date=""
 								data-date-format="yyyy MM dd " data-link-field="dtp_input2"
 								data-link-format="yyyy-mm-dd">
 								<input class="form-control" size="16" type="text" name="hasdate"
-									readonly> <span class="input-group-addon"><span
+									required readonly> <span class="input-group-addon"><span
 									class="glyphicon glyphicon-calendar"></span> </span>
 							</div>
 							<input type="hidden" id="" value="" />
@@ -190,11 +197,13 @@
 				<!-- 描述 -->
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-2">
-							<label for="" style="float: right" class="control-label ">描述：</label>
+							<label for="" style="float: right" class="control-label "><font
+								color="red">*</font> 描述：</label>
 						</div>
 						<div class="col-md-6">
 							<div class="input-group">
-								<textarea name="desc" class="form-control" rows="8" cols="100%"></textarea>
+								<textarea name="desc" class="form-control" rows="8" cols="100%"
+									maxlength="250" required placeholder="商品“简单”的其他介绍，至多250字"></textarea>
 							</div>
 						</div>
 					</div></li>
@@ -207,8 +216,9 @@
 						</div>
 						<div class="col-md-6">
 							<div class="input-group">
-								<span class="input-group-addon">封面：</span> <input type="file"
-									class="btn btn-default" name="postImage" />
+								<span class="input-group-addon"><font color="red">*</font>
+									封面：</span> <input type="file" class="btn btn-default" name="postImage"
+									required />
 							</div>
 
 							<div class="input-group">
@@ -274,6 +284,11 @@
 		function del(o) {
 			document.getElementById("newUpload").removeChild(
 					document.getElementById("div_" + o));
+		}
+	</script>
+	<script>
+		function check() {
+			document.getElementById('submit').disabled = 'disabled';
 		}
 	</script>
 	<!--  //////////////////////////////////////////////////////////////////// -->

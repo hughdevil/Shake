@@ -41,7 +41,8 @@
 
 		<form method="post" class="form-horizontal col-md-10 col-md-offset-1 "
 			action="<%=request.getContextPath()%>/role/edit.do">
-			<input type="hidden" name="rid" value="${role.rid }">
+			<input type="hidden" name="rid" value="${role.rid }"
+				onsubmit="return check();">
 			<ul class="list-group">
 
 				<li class="list-group-item">
@@ -54,7 +55,8 @@
 						</div>
 						<div class="col-md-5">
 							<input name="rname" type="text" class="form-control "
-								placeholder="注册角色的名称，日后可以修改" value="${role.rname }" />
+								required="required" maxlength="4" placeholder="注册角色的名称，至多4字"
+								value="${role.rname }" />
 						</div>
 					</div></li>
 
@@ -80,7 +82,7 @@
 						</div>
 						<div class="col-md-5">
 							<textarea name="rdesc" class="form-control " rows="4" cols="100%"
-								placeholder="注册角色的描述，日后可以修改">${role.rdesc }</textarea>
+								required="required" maxlength="100" placeholder="注册角色的描述，至多100字">${role.rdesc }</textarea>
 						</div>
 					</div></li>
 
@@ -102,5 +104,10 @@
 			enctype="multipart/form-data"
 			action="<c:url value="/user/register.do" />" method="post"></form>
 	</div>
+	<script>
+		function check() {
+			document.getElementById('submit').disabled = 'disabled';
+		}
+	</script>
 </body>
 </html>

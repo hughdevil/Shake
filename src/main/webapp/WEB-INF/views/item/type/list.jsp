@@ -48,22 +48,43 @@
 										<td width="20%"><a
 											href="<%=request.getContextPath()%>/item/type/${itemtype.tid}/edit.do"><span
 												class="glyphicon glyphicon-pencil"></span> </a></td>
-										<td width="20%"><a
-											href="<%=request.getContextPath()%>/item/type/${itemtype.tid}/del.do"><span
+										<td width="20%"><a data-toggle="modal"
+											data-target="#modal${itemtype.tid}"><span
 												class="glyphicon glyphicon-remove"></span> </a></td>
 									</tr>
+
+									<div class="modal fade bs-example-modal-sm" tabindex="-1"
+										id="modal${itemtype.tid}" role="dialog"
+										aria-labelledby="mySmallModalLabel">
+										<div class="modal-dialog modal-sm">
+											<div class="modal-content">
+												<div class="modal-header">
+													&nbsp; <span class="glyphicon glyphicon-exclamation-sign"
+														style="color: red; text-align: left;"></span>
+												</div>
+												<div class="modal-body">
+													<h5>您确认要执行该操作吗？该操作将删除该类型！该类型下的所有商品的类型将为空！</h5>
+												</div>
+												<div class="modal-footer">
+													<a
+														href="<%=request.getContextPath()%>/item/type/${itemtype.tid}/del.do"
+														class="btn btn-danger">确认</a>
+													<button type="button" class="btn btn-default"
+														data-dismiss="modal">取消</button>
+												</div>
+											</div>
+										</div>
+									</div>
 								</c:forEach>
 							</table>
 						</blockquote>
 					</div>
 				</li>
 
-
-
-
 			</ul>
 		</div>
 
 	</div>
+
 </body>
 </html>

@@ -89,6 +89,11 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
+	public List<Item> getSomebodyItemsByPage(int uid, int start, int end) {
+		return itemDao.getItemsByUidAndPage(uid, start, end);
+	}
+
+	@Override
 	public Item getItem(int id) {
 		return itemDao.findById(id);
 	}
@@ -143,7 +148,6 @@ public class ItemServiceImpl implements ItemService {
 	public long getCount() {
 		return itemDao.getCount();
 	}
-	
 
 	@Override
 	public long getCount(String iname) {
@@ -153,6 +157,11 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public boolean clearUnuserfulImg() {
 		return this.itemImageDao.delete();
+	}
+
+	@Override
+	public long getCountByUid(int uid) {
+		return this.itemDao.getCountByUid(uid);
 	}
 
 }

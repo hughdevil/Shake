@@ -11,6 +11,9 @@
 <link
 	href="<%=request.getContextPath()%>/css/bootstrap-datetimepicker.min.css"
 	rel="stylesheet" media="screen">
+<link href="<%=request.getContextPath()%>/css/bootstrap-select.min.css"
+	rel="stylesheet" media="screen">
+
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -28,16 +31,25 @@
 <script type="text/javascript"
 	src="<%=request.getContextPath()%>/js/bootstrap-datetimepicker.zh-CN.js"
 	charset="UTF-8"></script>
+<script type="text/javascript"
+	src="<%=request.getContextPath()%>/js/bootstrap-select.min.js"
+	charset="UTF-8"></script>
 
 </head>
 
 <body>
+	<script type="text/javascript">
+		$('.selectpicker').selectpicker({
+			style : 'btn-info',
+			size : 4
+		});
+	</script>
 	<!--头  -->
 	<%@ include file="../comm/header.jsp"%>
 	<div class="container">
 
 		<form class="form-horizontal col-md-10 col-md-offset-1 " id="itemfrom"
-			enctype="multipart/form-data"
+			enctype="multipart/form-data" onsubmit="return check();"
 			action="<c:url value="/item/edit.do" />" method="post">
 			<input type="hidden" name="iid" value="${item.iid }" />
 			<ul class="list-group">
@@ -45,7 +57,7 @@
 				<!--标题、分类  -->
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-2">
-							<select name="itemtype" class="form-control selectpicker  dropup">
+							<select name="itemtype" class="form-control selectpicker">
 								<c:forEach items="${itemtypes }" var="it">
 									<c:choose>
 										<c:when test='${it.tid==item.itemtype.tid}'>
@@ -59,22 +71,25 @@
 							</select>
 						</div>
 						<div class="col-md-10">
-							<input name="title" type="text" class="form-control "
-								placeholder="标题  /  产品的品名、概要等" value="${item.iname }">
+							<input name="title" type="text" class="form-control " required
+								maxlength="30" placeholder="标题  /  产品的品名、概要等"
+								value="${item.iname }">
 						</div>
 					</div></li>
 
 				<!-- 价格 -->
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-2">
-							<label for="" class="control-label " style="float: right">价格：</label>
+							<label for="" class="control-label " style="float: right"><font
+								color="red">*</font> 价格：</label>
 						</div>
 						<div class="col-md-6">
 							<div class="input-group">
 								<span class="input-group-addon">￥</span> <input name="price"
-									onkeyup="this.value=this.value.replace(/\D/g,'')"
-									maxlength="15" type="text" class="form-control"
-									placeholder="最大值 99999  最小值 1  当前产品的出售价格"
+									onkeyup="this.value=this.value.replace(/\D/g,'')" type="text"
+									class="form-control" required="required" pattern="^[0-9]{1,7}"
+									title="正确格式：最大值 9999999  最小值 0" maxlength="9"
+									placeholder="最大值 9999999  最小值 0  当前产品的出售价格"
 									value="<%=(int) (((Item) request.getAttribute("item")).getIprice())%>">
 								<span class="input-group-addon">.00</span>
 							</div>
@@ -85,15 +100,18 @@
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-2">
 							<label for="" class="control-label " style="float: right">
-								数量：</label>
+								<font color="red">*</font> 数量：
+							</label>
 						</div>
 						<div class="col-md-6">
 							<div class="input-group">
 								<span class="input-group-addon">共</span> <input type="text"
-									onkeyup="this.value=this.value.replace(/\D/g,'')" maxlength="5"
-									name="number" class="form-control"
-									placeholder="最大值 100  最小值 1  产品现有数量" value="${item.iNumber }">
-								<span class="input-group-addon">台（个、件）</span>
+									onkeyup="this.value=this.value.replace(/\D/g,'')" maxlength="3"
+									name="number" class="form-control" required
+									pattern="^[0-9]{1,3}" title="正确格式：最大值 999  最小值 0"
+									class="form-control" placeholder="最大值 999  最小值 0  产品现有数量"
+									value="${item.iNumber }"> <span
+									class="input-group-addon">台（个、件）</span>
 							</div>
 						</div>
 					</div></li>
@@ -102,7 +120,8 @@
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-2">
 							<label for="" class="control-label " style="float: right">
-								有效（重选）：</label>
+								<font color="red">*</font> 有效（重选）：
+							</label>
 						</div>
 						<div class="col-md-6">
 							<div class="radio">
@@ -122,7 +141,8 @@
 				<!--成色  -->
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-2">
-							<label for="" class="control-label " style="float: right">成色：</label>
+							<label for="" class="control-label " style="float: right"><font
+								color="red">*</font> 成色：</label>
 						</div>
 						<div class="row">
 							<div class="col-md-6 ">
@@ -175,7 +195,8 @@
 				<!--入手时间  -->
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-2">
-							<label for="" style="float: right" class="control-label ">入手时间：</label>
+							<label for="" style="float: right" class="control-label "><font
+								color="red">*</font> 入手时间：</label>
 						</div>
 						<div class="col-md-5">
 							<div class="input-group date form_date" data-date=""
@@ -194,11 +215,13 @@
 				<!-- 描述 -->
 				<li class="list-group-item"><div class="row">
 						<div class="col-md-2">
-							<label for="" style="float: right" class="control-label ">描述：</label>
+							<label for="" style="float: right" class="control-label "><font
+								color="red">*</font> 描述：</label>
 						</div>
 						<div class="col-md-6">
 							<div class="input-group">
-								<textarea name="desc" class="form-control" rows="8" cols="100%">${item.idesc }</textarea>
+								<textarea name="desc" class="form-control" rows="8" cols="100%"
+									maxlength="250" required="required">${item.idesc }</textarea>
 							</div>
 						</div>
 					</div></li>
@@ -305,6 +328,12 @@
 		function del(o) {
 			document.getElementById("newUpload").removeChild(
 					document.getElementById("div_" + o));
+		}
+	</script>
+
+	<script>
+		function check() {
+			document.getElementById('submit').disabled = 'disabled';
 		}
 	</script>
 	<!--  //////////////////////////////////////////////////////////////////// -->

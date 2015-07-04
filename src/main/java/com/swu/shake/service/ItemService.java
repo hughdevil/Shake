@@ -38,6 +38,9 @@ public interface ItemService {
 	/** 通过UID查找此人的所有商品 */
 	public List<Item> getItems(int uid);
 
+	/** 通过UID查找此人的所有商品 分页 */
+	public List<Item> getSomebodyItemsByPage(int uid, int start, int end);
+
 	/** 得到所有商品分页 */
 	public List<Item> getItems(int start, int end);
 
@@ -58,6 +61,9 @@ public interface ItemService {
 
 	/** 得到某类商品总数 */
 	public long getCount(int tid);
+
+	/** 得到某人商品总数 */
+	public long getCountByUid(int uid);
 
 	/** 通过商品名得到总数 模糊 */
 	public long getCount(String iname);
