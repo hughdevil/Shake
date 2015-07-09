@@ -114,7 +114,7 @@
 						</div>
 						<div class="col-md-6">
 							<div class="radio">
-								<label> <input type="radio" name="isvalid" value="ture"
+								<label> <input type="radio" name="isvalid" value="true"
 									checked> Yes
 								</label>
 							</div>

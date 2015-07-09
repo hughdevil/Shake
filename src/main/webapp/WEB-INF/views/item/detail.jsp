@@ -73,7 +73,15 @@ blockquote {
 
 					<li class="list-group-item">入手时间：${item.hasdate }</li>
 					<li class="list-group-item">数量：${item.iNumber }</li>
-					<li class="list-group-item">有效：${item.valid }</li>
+					<li class="list-group-item">有效： <c:choose>
+							<c:when test="${item.valid }">
+								<span class="glyphicon glyphicon-ok " style="color: green"></span>
+							</c:when>
+							<c:otherwise>
+								<span class=" glyphicon glyphicon-remove" style="color: red"></span>
+							</c:otherwise>
+						</c:choose>
+					</li>
 					<li class="list-group-item">所在园区：${item.user.addr }</li>
 
 				</ul>

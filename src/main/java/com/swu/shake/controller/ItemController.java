@@ -43,7 +43,7 @@ public class ItemController {
 	private static final int PAGE_SIZE = 12;
 	private static final Logger logger = LoggerFactory
 			.getLogger(ItemController.class);
-	private static final int AUTHORISE_SITER = 3;
+	private static final int AUTHORISE_MODERATOR = 2;
 
 	private ItemService itemService;
 	private ItemTypeService itemTypeService;
@@ -301,7 +301,7 @@ public class ItemController {
 			message = "商品不存在或已经删除";
 			viewName = "comm/failure";
 		} else if (item.getUser().getUid() == curuser.getUid()
-				|| (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_SITER)) {
+				|| (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_MODERATOR)) {
 
 			boolean flag = false;
 			if (item.getUser().getUid() == curuser.getUid()) {
@@ -355,7 +355,7 @@ public class ItemController {
 			message = "商品不存在或已经删除";
 			viewName = "/comm/failure";
 		} else if (item.getUser().getUid() == curuser.getUid()
-				|| (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_SITER)) {
+				|| (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_MODERATOR)) {
 
 			boolean flag = false;
 			if (item.getUser().getUid() == curuser.getUid()) {
@@ -466,7 +466,7 @@ public class ItemController {
 			message = "商品不存在或已经删除";
 			viewName = "/comm/failure";
 		} else if (item.getUser().getUid() == curuser.getUid()
-				|| ((curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_SITER))) {
+				|| ((curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_MODERATOR))) {
 			// 还需要判断删除商品的发布人是不是自己的下级
 			boolean flag = false;
 			if (item.getUser().getUid() == curuser.getUid()) {

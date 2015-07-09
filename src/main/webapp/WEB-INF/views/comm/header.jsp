@@ -50,7 +50,7 @@ body {
 
 
 			<!--模糊搜索  -->
-			<form class="navbar-form navbar-left"  role="search"
+			<form class="navbar-form navbar-left" role="search"
 				action="<%=request.getContextPath()%>/
 				item/query.do"
 				method="post">
@@ -73,7 +73,9 @@ body {
 							class="btn btn-default navbar-btn btn-sm">注册 </a> <a
 							href="<%=request.getContextPath()%>/user/login.do"
 							class="btn btn-default navbar-btn btn-success btn-sm"
-							data-toggle="modal" data-target="#myModal">登录</a><a>&nbsp; </a>
+							data-toggle="modal" data-target="#myModal">登录</a><a>&nbsp; </a> <a
+							href="<%=request.getContextPath()%>/help.do"><span
+							class="glyphicon glyphicon-question-sign" style="width: 40"></span></a>
 					</div>
 
 				</c:when>
@@ -96,7 +98,7 @@ body {
 											class="glyphicon glyphicon-refresh glyphicon glyphicon-refresh"
 											style="width: 40"></span>密码</a></li>
 									<li class="divider"></li>
-									<li><a href="<%=request.getContextPath()%>/user/repwd.do"><span
+									<li><a href="<%=request.getContextPath()%>/help.do"><span
 											class="glyphicon glyphicon-question-sign" style="width: 40"></span>帮助</a></li>
 									<li class="divider"></li>
 									<li><a
