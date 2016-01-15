@@ -91,7 +91,7 @@ public class CommentDaoImpl implements CommentDao {
 
 	@Override
 	public List<Comment> findall(int iid) {
-		String hql = "from Comment c where c.item.iid= " + iid;
+		String hql = "from Comment c where c.item.iid=" + iid;
 		return hibernateUtil.exeQuery(hql);
 	}
 

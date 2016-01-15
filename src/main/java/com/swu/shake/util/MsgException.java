@@ -1,5 +1,7 @@
 package com.swu.shake.util;
 
+import org.springframework.scheduling.support.CronTrigger;
+
 public class MsgException extends Exception {
     private String resultMsg;
     public MsgException(String resultMsg){
@@ -10,4 +12,5 @@ public class MsgException extends Exception {
 		// TODO Auto-generated method stub
 		return resultMsg;
 	}
+	
 }

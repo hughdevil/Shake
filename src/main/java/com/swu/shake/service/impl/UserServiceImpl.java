@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.swu.shake.dao.CommentDao;
 import com.swu.shake.dao.ItemDao;
@@ -73,6 +74,7 @@ public class UserServiceImpl implements UserService {
 	/**
 	 * 之后记得加事物处理
 	 */
+	@Transactional
 	public boolean remove(int uid) {
 		boolean flag = true;
 		// 删除此人评论

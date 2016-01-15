@@ -12,6 +12,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.swu.shake.dao.RoleDao;
@@ -20,7 +21,6 @@ import com.swu.shake.model.Role;
 @Repository(value = "roleDao")
 public class RoleDaoImpl implements RoleDao {
 	SessionFactory sessionFactory;
-
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
