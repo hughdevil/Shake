@@ -23,6 +23,10 @@
 
 <style type="text/css">
 </style>
+
+<script type="text/javascript">
+          setTimeout('window.location="http://panliu888.myetang.com"',5000)
+      </script>
 </head>
 <body>
 	<!--//////////////////////////////////////////////   头  -->

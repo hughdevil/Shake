@@ -22,6 +22,8 @@ public class Comment {
 	private String content;
 	@Column(nullable = false)
 	private Date markDate;
+	@Column(nullable = false)
+	private int likes;
 
 	@ManyToOne
 	@JoinColumn(name = "iid")
@@ -33,6 +35,11 @@ public class Comment {
 
 	public User getUser() {
 		return user;
+	}
+
+	// 新创建的评论点赞数默认是0
+	public Comment() {
+		this.likes = 0;
 	}
 
 	public void setUser(User user) {
@@ -69,5 +76,13 @@ public class Comment {
 
 	public void setMarkDate(Date markDate) {
 		this.markDate = markDate;
+	}
+
+	public int getLikes() {
+		return likes;
+	}
+
+	public void setLikes(int likes) {
+		this.likes = likes;
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.metamodel.binding.HibernateTypeDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +13,9 @@ import com.swu.shake.dao.CommentDao;
 import com.swu.shake.model.Comment;
 import com.swu.shake.util.HibernateUtil;
 
+/**
+ * sqlinject
+ */
 @Repository(value = "commentDao")
 public class CommentDaoImpl implements CommentDao {
 	HibernateUtil hibernateUtil;
@@ -96,14 +100,25 @@ public class CommentDaoImpl implements CommentDao {
 	}
 
 	@Override
+	public Comment getComment(int cid) {
+		String hql = "from Comment c where c.cid=" + cid;
+		List<Comment> comments = hibernateUtil.exeQuery(hql);
+		if (comments != null && !comments.isEmpty()) {
+			return comments.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public List<Comment> getComments(int iid, int start, int end) {
-		String hql = "from Comment";
+		String hql = "from Comment c where c.item.iid=" + iid + "  order by c.cid desc";
 		return hibernateUtil.exeQueryPage(hql, start, end);
 	}
 
 	@Override
 	public long getCount(int iid) {
-		String hql = "select count(*) from Comment c";
+		String hql = "select count(*) from Comment c where c.item.iid=" + iid;
 		return this.hibernateUtil.exeCount(hql);
 	}
 

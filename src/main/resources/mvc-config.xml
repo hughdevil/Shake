@@ -11,17 +11,22 @@
 	<resources mapping="/resources/**" location="/resources/" />
 
 	<!-- Enables the Spring MVC @Controller programming model -->
-    <beans:bean id="conversion-service" class="org.springframework.format.support.FormattingConversionServiceFactoryBean" />
-    <beans:bean id="validatemessageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">  
-        <beans:property name="basename" value="classpath:properties/validatemessages"/>  
-        <beans:property name="fileEncodings" value="utf-8"/>  
-        <beans:property name="cacheSeconds" value="120"/>  
-    </beans:bean>
-	<beans:bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
-        <beans:property name="providerClass"  value="org.hibernate.validator.HibernateValidator"/>
-        <!--不设置则默认为classpath下的 ValidationMessages.properties -->
-        <beans:property name="validationMessageSource" ref="validatemessageSource"/>
-    </beans:bean>
+	<beans:bean id="conversion-service"
+		class="org.springframework.format.support.FormattingConversionServiceFactoryBean" />
+	<beans:bean id="validatemessageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<beans:property name="basename"
+			value="classpath:properties/validatemessages" />
+		<beans:property name="fileEncodings" value="utf-8" />
+		<beans:property name="cacheSeconds" value="120" />
+	</beans:bean>
+	<beans:bean id="validator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<beans:property name="providerClass"
+			value="org.hibernate.validator.HibernateValidator" />
+		<!--不设置则默认为classpath下的 ValidationMessages.properties -->
+		<beans:property name="validationMessageSource" ref="validatemessageSource" />
+	</beans:bean>
 
 	<!-- <annotation-driven validator="validator " conversion-service="conversion-service"/> -->
 	<annotation-driven />

@@ -12,15 +12,20 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.swu.shake.dao.RoleDao;
 import com.swu.shake.model.Role;
 
+/**
+ * 1.sessionq全部用SF的openSesion來获得
+ * <p>
+ * 2.不使用hibernateUtil
+ */
 @Repository(value = "roleDao")
 public class RoleDaoImpl implements RoleDao {
 	SessionFactory sessionFactory;
+
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
@@ -36,18 +41,16 @@ public class RoleDaoImpl implements RoleDao {
 		Transaction transaction = null;
 		Role r = null;
 		try {
-			// session不需要关闭，到时候事务提交后会自动关闭
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			r = (Role) session.load(Role.class, session.save(role));
 			transaction.commit();
 		} catch (HibernateException e) {
 			e.printStackTrace();
 			transaction.rollback();
+		} finally {
+			session.close();
 		}
-		// finally {
-		// session.close();
-		// }
 		return r;
 	}
 
@@ -56,7 +59,7 @@ public class RoleDaoImpl implements RoleDao {
 		Session session = null;
 		Transaction transaction = null;
 		try {
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			Role role = getRoleById(rid);
 			session.delete(role);
@@ -65,6 +68,8 @@ public class RoleDaoImpl implements RoleDao {
 		} catch (HibernateException e) {
 			e.printStackTrace();
 			transaction.rollback();
+		} finally {
+			session.close();
 		}
 		return false;
 	}
@@ -85,8 +90,8 @@ public class RoleDaoImpl implements RoleDao {
 			transaction.rollback();
 		} finally {
 			session.close();
-			return flag;
 		}
+		return flag;
 	}
 
 	@Override
@@ -122,13 +127,8 @@ public class RoleDaoImpl implements RoleDao {
 		Session session = null;
 		Transaction transaction = null;
 		List<Role> list = null;
-		boolean isNeedClose = false;
 		try {
-			session = sessionFactory.getCurrentSession();
-			if (null == session) {
-				session = sessionFactory.openSession();
-				isNeedClose = true;
-			}
+			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			String sql = "select * from t_role";
 			SQLQuery q = session.createSQLQuery(sql);
@@ -141,8 +141,7 @@ public class RoleDaoImpl implements RoleDao {
 			e.printStackTrace();
 			transaction.rollback();
 		} finally {
-			if (isNeedClose)
-				session.close();
+			session.close();
 		}
 		return list;
 	}
@@ -158,24 +157,17 @@ public class RoleDaoImpl implements RoleDao {
 		Session session = null;
 		Transaction transaction = null;
 		List<Role> list = null;
-		boolean isNeed = false;
 		try {
-			session = sessionFactory.getCurrentSession();
-			if (null == session) {
-				session = sessionFactory.openSession();
-				isNeed = true;
-			}
+			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			Criteria c = session.createCriteria(Role.class);
-			c.setFirstResult(start).setMaxResults(end)
-					.add(Restrictions.like("rname", "%str%"));
+			c.setFirstResult(start).setMaxResults(end).add(Restrictions.like("rname", "%"+str+"%"));
 			list = c.list();
 		} catch (HibernateException e) {
 			e.printStackTrace();
 			transaction.rollback();
 		} finally {
-			if (isNeed)
-				session.close();
+			session.close();
 		}
 		return list;
 	}
@@ -184,14 +176,9 @@ public class RoleDaoImpl implements RoleDao {
 	public int getCount() {
 		Session session = null;
 		Transaction transaction = null;
-		boolean isNeed = false;
 		int sum = 0;
 		try {
-			session = sessionFactory.getCurrentSession();
-			if (null == session) {
-				session = sessionFactory.openSession();
-				isNeed = true;
-			}
+			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			Criteria c = session.createCriteria(Role.class);
 			sum = c.list().size();
@@ -199,8 +186,7 @@ public class RoleDaoImpl implements RoleDao {
 			e.printStackTrace();
 			transaction.rollback();
 		} finally {
-			if (isNeed)
-				session.close();
+			session.close();
 		}
 		return sum;
 	}
@@ -214,8 +200,7 @@ public class RoleDaoImpl implements RoleDao {
 			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			Criteria c = session.createCriteria(Role.class);
-			c.add(Restrictions.lt("rlevel", rlevel)).addOrder(
-					Order.asc("rlevel"));
+			c.add(Restrictions.lt("rlevel", rlevel)).addOrder(Order.asc("rlevel"));
 			roles = c.list();
 
 			transaction.commit();

@@ -13,6 +13,10 @@ import com.swu.shake.dao.ItemImageDao;
 import com.swu.shake.model.ItemImage;
 import com.swu.shake.util.HibernateUtil;
 
+/**
+ * sqlinject
+ * 1.仅用HibernateUtil的session功能
+ */
 @Repository(value = "itemImageDao")
 public class ItemImageDaoImpl implements ItemImageDao {
 	HibernateUtil hibernateUtil;
@@ -96,7 +100,11 @@ public class ItemImageDaoImpl implements ItemImageDao {
 
 	@Override
 	public boolean deleteByIid(int iid) {
-		Session session = null;
+		String hql = "delete from ItemImage where iid = " + iid;
+		return hibernateUtil.exeDelete(hql);
+		
+		//此种方法无法Spring事务处理
+		/*Session session = null;
 		Transaction transaction = null;
 		boolean flag = true;
 		try {
@@ -111,7 +119,7 @@ public class ItemImageDaoImpl implements ItemImageDao {
 		} finally {
 			hibernateUtil.closeSession(session);
 		}
-		return flag;
+		return flag;*/
 	}
 
 }

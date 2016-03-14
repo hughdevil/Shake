@@ -45,20 +45,18 @@ blockquote {
 		<!--//////////////////////////////////////////////    左侧-->
 		<div class="panel panel-default col-md-3 col-md-offset-1">
 			<div class="panel  col-md-12"></div>
-			<div class="panel  col-md-12"></div>
-
-			<ul class="nav nav-pills  nav-stacked">
-				<li role="presentation"><a
-					href="<%=request.getContextPath()%>/help/introduce.do">系统介绍</a></li>
-				<li role="presentation"><a
-					href="<%=request.getContextPath()%>/help/roleauth.do">角色权限</a></li>
-				<li role="presentation" class="active"><a
-					href="<%=request.getContextPath()%>/help/demo.do">操作演示</a></li>
-				<li role="presentation"><a
-					href="<%=request.getContextPath()%>/help/install.do">安装说明</a></li>
-			</ul>
-
-			<div class="panel  col-md-12"></div>
+			<div class="panel  col-md-12">
+				<ul class="nav nav-pills  nav-stacked">
+					<li role="presentation"><a
+						href="<%=request.getContextPath()%>/help/introduce.do">系统介绍</a></li>
+					<li role="presentation"><a
+						href="<%=request.getContextPath()%>/help/roleauth.do">角色权限</a></li>
+					<li role="presentation" class="active"><a
+						href="<%=request.getContextPath()%>/help/demo.do">操作演示</a></li>
+					<li role="presentation"><a
+						href="<%=request.getContextPath()%>/help/install.do">安装说明</a></li>
+				</ul>
+			</div>
 			<div class="panel  col-md-12"></div>
 		</div>
 

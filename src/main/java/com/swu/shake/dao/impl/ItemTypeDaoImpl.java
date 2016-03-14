@@ -1,6 +1,5 @@
 package com.swu.shake.dao.impl;
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -10,12 +9,16 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.swu.shake.dao.ItemTypeDao;
 import com.swu.shake.model.ItemType;
+
+/**
+ * 1.sessionq全部用SF的openSesion來获得 
+ * <p>
+ * 2.不使用hibernateUtil
+ */
 
 @Repository(value = "itemTypeDao")
 public class ItemTypeDaoImpl implements ItemTypeDao {

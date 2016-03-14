@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
@@ -8,10 +7,8 @@
 <title>个人资料</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Bootstrap -->
-<link href="<%=request.getContextPath()%>/css/bootstrap.min.css"
-	rel="stylesheet" media="screen">
-<link href="<%=request.getContextPath()%>/css/bootstrap-select.min.css"
-	rel="stylesheet" media="screen">
+<link href="<%=request.getContextPath()%>/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="<%=request.getContextPath()%>/css/bootstrap-select.min.css" rel="stylesheet" media="screen">
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -19,10 +16,8 @@
  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
  <![endif]-->
-<script type="text/javascript"
-	src=" <%=request.getContextPath()%>/js/jquery-2.1.4.min.js"></script>
-<script type="text/javascript"
-	src=" <%=request.getContextPath()%>/js/bootstrap.min.js"></script>
+<script type="text/javascript" src=" <%=request.getContextPath()%>/js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src=" <%=request.getContextPath()%>/js/bootstrap.min.js"></script>
 
 </head>
 <body>
@@ -41,8 +36,7 @@
 			<h4></h4>
 			<div class="thumbnail ">
 				<c:if test="${!empty showuser.headpic}">
-					<img alt="${showuser.headpic }"
-						src=" <%=request.getContextPath()%>/${showuser.headpic}">
+					<img alt="${showuser.headpic }" src=" <%=request.getContextPath()%>/${showuser.headpic}">
 				</c:if>
 
 			</div>
@@ -53,22 +47,17 @@
 					<li class="list-group-item">
 						<h4></h4>
 						<div class="container row">
-							<span style="text-align: left;"
-								class="col-md-2 glyphicon glyphicon-barcode">：<strong>${showuser.name }</strong>
+							<span style="text-align: left;" class="col-md-2 glyphicon glyphicon-barcode">：<strong>${showuser.name }</strong>
 							</span><label class="
-								col-md-1"
-								style="width: 40; text-align: right"> <c:choose>
+								col-md-1" style="width: 40; text-align: right"> <c:choose>
 									<c:when test="${showuser.sex==1 }">
-										<img alt="male" height="17"
-											src="<%=request.getContextPath()%>/img/male.jpg">
+										<img alt="male" height="17" src="<%=request.getContextPath()%>/img/male.jpg">
 									</c:when>
 									<c:when test="${showuser.sex==-1 }">
-										<img alt="female" height="17"
-											src="<%=request.getContextPath()%>/img/female.jpg">
+										<img alt="female" height="17" src="<%=request.getContextPath()%>/img/female.jpg">
 									</c:when>
 									<c:otherwise>
-										<span class="glyphicon glyphicon-eye-close"
-											style="color: #4D4D4D; font-weight: bold;"></span>
+										<span class="glyphicon glyphicon-eye-close" style="color: #4D4D4D; font-weight: bold;"></span>
 									</c:otherwise>
 								</c:choose>
 							</label>
@@ -77,27 +66,23 @@
 
 					<li class="list-group-item">
 						<div class="container row">
-							<span class="col-md-2   glyphicon glyphicon-king"
-								style="text-align: left;">：<abbr title="角色">${showuser.role.rname }</abbr></span>
+							<span class="col-md-2   glyphicon glyphicon-king" style="text-align: left;">：<abbr title="角色">${showuser.role.rname }</abbr></span>
 						</div>
 					</li>
 
 
 					<li class="list-group-item">
 						<div class="container row">
-							<span class="col-md-2  glyphicon glyphicon-phone"
-								style="text-align: left;">：<abbr title="Phone">${showuser.phone }</abbr></span>
+							<span class="col-md-2  glyphicon glyphicon-phone" style="text-align: left;">：<abbr title="Phone">${showuser.phone }</abbr></span>
 						</div>
 					</li>
 
 					<li class="list-group-item"><div class="container row">
-							<span class="col-md-2  glyphicon glyphicon-envelope"
-								style="text-align: left;">：<a href="mailto:#">${showuser.email }</a></span>
+							<span class="col-md-2  glyphicon glyphicon-envelope" style="text-align: left;">：<a href="mailto:#">${showuser.email }</a></span>
 						</div></li>
 
 					<li class="list-group-item"><div class="container row">
-							<span class="col-md-2 glyphicon glyphicon-home  "
-								style="text-align: left;">：${showuser.addr }</span>
+							<span class="col-md-2 glyphicon glyphicon-home  " style="text-align: left;">：${showuser.addr }</span>
 						</div></li>
 
 					<li class="list-group-item"><div class="container row">
@@ -111,15 +96,12 @@
 			<div class="panel panel-default col-md-12">
 				<ul class="list-group">
 					<li class="list-group-item"><div class="container row">
-							<span class="col-md-3 glyphicon glyphicon-registration-mark  "
-								style="text-align: left;">：<c:out
-									value="${fn:substring(showuser.regDate,0,19)}"></c:out>
+							<span class="col-md-3 glyphicon glyphicon-registration-mark  " style="text-align: left;">：<c:out value="${fn:substring(showuser.regDate,0,19)}"></c:out>
 							</span>
 						</div></li>
 
 					<li class="list-group-item"><div class="container row">
-							<span class="col-md-3 glyphicon  glyphicon-log-in  "
-								style="text-align: left;">：${showuser.IP }</span>
+							<span class="col-md-3 glyphicon  glyphicon-log-in  " style="text-align: left;">：${showuser.IP }</span>
 						</div></li>
 				</ul>
 			</div>
@@ -127,13 +109,8 @@
 			<div class="panel panel-default col-md-12">
 				<ul class="list-group">
 					<li class="list-group-item"><div class="container row">
-							<span class="col-md-3  glyphicon glyphicon-cog  "
-								style="text-align: left;">： <a
-								href="<%=request.getContextPath() %>/user/${showuser.uid}/edit.do"><span
-									class="glyphicon glyphicon-pencil"></span> </a> <c:if
-									test="${candel }">
-									 · <a data-toggle="modal" data-target=".bs-example-modal-sm"><span
-										class="glyphicon glyphicon-remove"></span> </a>
+							<span class="col-md-3  glyphicon glyphicon-cog  " style="text-align: left;">： <a href="<%=request.getContextPath() %>/user/${showuser.uid}/edit.do"><span class="glyphicon glyphicon-pencil"></span> </a> <c:if test="${candel }">
+									 · <a data-toggle="modal" data-target=".bs-example-modal-sm"><span class="glyphicon glyphicon-remove"></span> </a>
 								</c:if></span>
 						</div></li>
 				</ul>
@@ -151,18 +128,13 @@
 						<blockquote>
 							<table class="table table-hover">
 								<tr class="active">
-									<td width="70%"><span class="glyphicon glyphicon-list"></span>
-										标题</td>
+									<td width="70%"><span class="glyphicon glyphicon-list"></span> 标题</td>
 									<td width="40%"></td>
 								</tr>
 								<c:forEach var="item" items="${items }" varStatus="status">
 									<tr>
-										<td width="60%"><a
-											href="<%=request.getContextPath()%>/item/${item.iid}/detail.do">
-												${item.iname }</a></td>
-										<td width="40%"><small class="onshelfdate"
-											id="onshelfdate${status.count-1 }"> <c:out
-													value="${fn:substring(item.onshelfdate,0,11)}"></c:out>
+										<td width="60%"><a href="<%=request.getContextPath()%>/item/${item.iid}/detail.do"> ${item.iname }</a></td>
+										<td width="40%"><small class="onshelfdate" id="onshelfdate${status.count-1 }"> <c:out value="${fn:substring(item.onshelfdate,0,11)}"></c:out>
 										</small></td>
 									</tr>
 								</c:forEach>
@@ -174,27 +146,23 @@
 
 			</ul>
 			<!--分页  -->
-			<%@ include file="../comm/homepager.jsp"%>
+			<%@ include file="../page/home.jsp"%>
 		</div>
 
 
 	</div>
 
-	<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog"
-		aria-labelledby="mySmallModalLabel">
+	<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
 		<div class="modal-dialog modal-sm">
 			<div class="modal-content">
 				<div class="modal-header">
-					&nbsp; <span class="glyphicon glyphicon-exclamation-sign"
-						style="color: red; text-align: left;"></span>
+					&nbsp; <span class="glyphicon glyphicon-exclamation-sign" style="color: red; text-align: left;"></span>
 				</div>
 				<div class="modal-body">
 					<h5>您确认要执行该操作吗？该操作将删除该用户及其发布的所有商品！</h5>
 				</div>
 				<div class="modal-footer">
-					<a
-						href="<%=request.getContextPath() %>/user/${showuser.uid}/del.do"
-						class="btn btn-danger">确认</a>
+					<a href="<%=request.getContextPath() %>/user/${showuser.uid}/del.do" class="btn btn-danger">确认</a>
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
 				</div>
 			</div>

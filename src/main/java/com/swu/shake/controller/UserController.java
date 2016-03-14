@@ -1,12 +1,9 @@
 package com.swu.shake.controller;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -17,11 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -40,10 +35,10 @@ import com.swu.shake.util.MsgException;
 @Controller
 public class UserController {
 	private static final int AUTHORISE_SITER = 3;
+	private static final int AUTHORISE_ADMIN = 4;
 	private static final int PAGE_SIZE = 10;
 	private MD5Util md5Util;
-	private static final Logger logger = LoggerFactory
-			.getLogger(UserController.class);
+	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	private UserService userService;
 	private RoleService roleService;
@@ -122,9 +117,8 @@ public class UserController {
 	 * @return
 	 */
 	public String checkPwd(HttpServletRequest request) {
-		return request.getParameter("psw")
-				.equals(request.getParameter("repsw")) ? md5Util.getMD5(request
-				.getParameter("psw")) : null;
+		return request.getParameter("psw").equals(request.getParameter("repsw"))
+				? md5Util.getMD5(request.getParameter("psw")) : null;
 	}
 
 	/**
@@ -136,8 +130,8 @@ public class UserController {
 	 * @return
 	 * @throws IOException
 	 */
-	public User getUser(HttpServletRequest request, HttpSession session,
-			CommonsMultipartFile headpic) throws IOException {
+	public User getUser(HttpServletRequest request, HttpSession session, CommonsMultipartFile headpic)
+			throws IOException {
 		User user = new User();
 		String uname = request.getParameter("uname");
 		// 1
@@ -163,8 +157,7 @@ public class UserController {
 		// 5
 		user.setAddr(request.getParameter("addr"));
 		// 6
-		user.setEmail(request.getParameter("mail") + "@"
-				+ request.getParameter("mailtype"));
+		user.setEmail(request.getParameter("mail") + "@" + request.getParameter("mailtype"));
 		// 7
 		user.setIP(request.getRemoteAddr());
 
@@ -173,15 +166,12 @@ public class UserController {
 			SimpleDateFormat dateformat = new SimpleDateFormat("yyyyMMddHH");
 			logger.info("上传文件的名字：" + headpic.getOriginalFilename());
 			/** 获取文件的后缀* */
-			String suffix = headpic.getOriginalFilename().substring(
-					headpic.getOriginalFilename().lastIndexOf("."));
+			String suffix = headpic.getOriginalFilename().substring(headpic.getOriginalFilename().lastIndexOf("."));
 
 			String curpath = session.getServletContext().getRealPath("/");
 			Date uploadDate = new Date();
-			String fileName = "upload/pic/"
-					+ dateformat.format(uploadDate)
-					+ MD5Util.getMD5(uploadDate.toString()
-							+ headpic.getOriginalFilename()) + suffix;
+			String fileName = "upload/pic/" + dateformat.format(uploadDate)
+					+ MD5Util.getMD5(uploadDate.toString() + headpic.getOriginalFilename()) + suffix;
 			String path = curpath + fileName;
 			logger.info("path:" + path);
 			FileUtility.saveUploadFile(headpic.getInputStream(), path);
@@ -194,16 +184,17 @@ public class UserController {
 	}
 
 	/****************** 以下为 请求响应 ********************/
-
 	@RequestMapping(value = "/user/login", method = RequestMethod.POST)
-	public String login(HttpServletRequest request, HttpSession session)
-			throws Exception {
+	public String login(HttpServletRequest request, HttpSession session) throws Exception {
 		String name = request.getParameter("name");
 		String unPassword = request.getParameter("password");
 		String password = MD5Util.getMD5(unPassword);
 		User u = userService.login(name, password);
 		if (null != u) {
 			session.setAttribute("user", u);
+			if (u.getRole() != null && u.getRole().getRlevel() >= AUTHORISE_ADMIN) {
+				session.setAttribute("isADMIN", true);
+			}
 			return "redirect:/item/post.do";
 		} else {
 			System.out.println("==================");
@@ -218,11 +209,8 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/user/register", method = RequestMethod.POST)
-	public ModelAndView register(
-			HttpServletRequest request,
-			HttpSession session,
-			@RequestParam(value = "hearpic", required = false) CommonsMultipartFile headpic)
-			throws IOException {
+	public ModelAndView register(HttpServletRequest request, HttpSession session,
+			@RequestParam(value = "hearpic", required = false) CommonsMultipartFile headpic) throws IOException {
 		ModelAndView mav = new ModelAndView();
 		String uname = request.getParameter("uname");
 		String upwd = this.checkPwd(request);
@@ -250,6 +238,7 @@ public class UserController {
 	public String logout(HttpSession session) {
 		String viewName = "";
 		session.removeAttribute("user");
+		session.removeAttribute("isADMIN");
 		viewName = "redirect:/item/post.do";
 		return viewName;
 	}
@@ -316,8 +305,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/user/{uid}/home", method = RequestMethod.GET)
-	public String home(HttpSession session,
-			@PathVariable(value = "uid") int uid, Model model) {
+	public String home(HttpSession session, @PathVariable(value = "uid") int uid, Model model) {
 		int curpage = 1;
 		Long count = itemService.getCountByUid(uid);
 		Pager pager = new Pager(count, PAGE_SIZE, curpage);
@@ -337,14 +325,12 @@ public class UserController {
 			// 判断是否有删除选项
 			Role role = showuser.getRole();
 			if (curuser.getRole() != null && role != null) {
-				candel = curuser.getRole().getRlevel() > role.getRlevel() ? true
-						: false;
+				candel = curuser.getRole().getRlevel() > role.getRlevel() ? true : false;
 			}
 			if (role == null) {
 				candel = true;
 			}
-			List<Item> items = itemService.getSomebodyItemsByPage(uid,
-					pager.getStartRow(), PAGE_SIZE);
+			List<Item> items = itemService.getSomebodyItemsByPage(uid, pager.getStartRow(), PAGE_SIZE);
 			model.addAttribute("pager", pager);
 			model.addAttribute("uid", uid);
 			model.addAttribute("items", items);
@@ -356,8 +342,8 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/user/{uid}/home", params = "page", method = RequestMethod.GET)
-	public String home(HttpSession session, HttpServletRequest request,
-			@PathVariable(value = "uid") int uid, Model model) {
+	public String home(HttpSession session, HttpServletRequest request, @PathVariable(value = "uid") int uid,
+			Model model) {
 		int curpage = Integer.parseInt(request.getParameter("page"));
 		Long count = itemService.getCountByUid(uid);
 		Pager pager = new Pager(count, PAGE_SIZE, curpage);
@@ -377,14 +363,12 @@ public class UserController {
 			// 判断是否有删除选项
 			Role role = showuser.getRole();
 			if (curuser.getRole() != null && role != null) {
-				candel = curuser.getRole().getRlevel() > role.getRlevel() ? true
-						: false;
+				candel = curuser.getRole().getRlevel() > role.getRlevel() ? true : false;
 			}
 			if (role == null) {
 				candel = true;
 			}
-			List<Item> items = itemService.getSomebodyItemsByPage(uid,
-					pager.getStartRow(), PAGE_SIZE);
+			List<Item> items = itemService.getSomebodyItemsByPage(uid, pager.getStartRow(), PAGE_SIZE);
 			model.addAttribute("pager", pager);
 			model.addAttribute("uid", uid);
 			model.addAttribute("items", items);
@@ -396,8 +380,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/user/{uid}/edit", method = RequestMethod.GET)
-	public String edit(HttpSession session,
-			@PathVariable(value = "uid") int uid, Model model) {
+	public String edit(HttpSession session, @PathVariable(value = "uid") int uid, Model model) {
 		String viewName = "";
 		String message = "";
 		User curuser = (User) session.getAttribute("user");
@@ -422,8 +405,7 @@ public class UserController {
 			model.addAttribute("upuser", user);
 
 			// 判断有无必要查询这个用户资料
-		} else if (curuser.getRole() != null
-				&& curuser.getRole().getRlevel() >= AUTHORISE_SITER) {
+		} else if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_SITER) {
 			// 前台显示的是从数据库里查询出来的USER
 			User user = userService.getUserById(uid);
 			Role role = user.getRole();
@@ -437,14 +419,11 @@ public class UserController {
 
 			// role == null是无角色，所以可以随便修改
 			// role不为null时，并且当前用户角色等级大于被修改的才可以修改
-			if (role == null
-					|| (role != null && role.getRlevel() < curuser.getRole()
-							.getRlevel())) {
+			if (role == null || (role != null && role.getRlevel() < curuser.getRole().getRlevel())) {
 				viewName = "/user/edit";
 
 				// 此时还可已修改这个用户的等级
-				List<Role> roles = roleService.getRoleByLevel(curuser.getRole()
-						.getRlevel());
+				List<Role> roles = roleService.getRoleByLevel(curuser.getRole().getRlevel());
 				model.addAttribute("roles", roles);
 				model.addAttribute("upuser", user);
 
@@ -462,12 +441,8 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/user/edit", method = RequestMethod.POST)
-	public ModelAndView edit(
-			HttpSession session,
-			HttpServletRequest request,
-			@RequestParam(value = "uid") int uid,
-			@RequestParam(value = "hearpic", required = false) CommonsMultipartFile[] headpics)
-			throws IOException {
+	public ModelAndView edit(HttpSession session, HttpServletRequest request, @RequestParam(value = "uid") int uid,
+			@RequestParam(value = "hearpic", required = false) CommonsMultipartFile[] headpics) throws IOException {
 		ModelAndView mav = new ModelAndView();
 		String viewName = "";
 		String message = "";
@@ -500,14 +475,11 @@ public class UserController {
 			}
 
 			// 判断有无必要查询这个用户资料
-		} else if (curuser.getRole() != null
-				&& curuser.getRole().getRlevel() >= AUTHORISE_SITER) {
+		} else if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_SITER) {
 			Role role = userService.getUserById(uid).getRole();
 			// role == null是无角色，所以可以随便修改
 			// role不为null时，并且当前用户角色等级大于被修改的才可以修改
-			if (role == null
-					|| (role != null && role.getRlevel() < curuser.getRole()
-							.getRlevel())) {
+			if (role == null || (role != null && role.getRlevel() < curuser.getRole().getRlevel())) {
 				String rid = request.getParameter("rid");
 				Role setter = roleService.getRole(rid);
 				User user = this.getUser(request, session, headpic);
@@ -537,8 +509,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/user/{uid}/del", method = RequestMethod.GET)
-	public String del(HttpSession session,
-			@PathVariable(value = "uid") int uid, Model model) {
+	public String del(HttpSession session, @PathVariable(value = "uid") int uid, Model model) {
 		String viewName = "";
 		String message = "";
 		User curuser = (User) session.getAttribute("user");
@@ -547,15 +518,16 @@ public class UserController {
 			viewName = "/comm/failure";
 		} else {
 			Role role = userService.getUserById(uid).getRole();
-			if ((curuser.getRole() != null && role == null && curuser.getRole()
-					.getRlevel() > AUTHORISE_SITER)
-					|| (curuser.getRole() != null && role != null && curuser
-							.getRole().getRlevel() > role.getRlevel())) {
-				if (userService.remove(uid)) {
+			if ((curuser.getRole() != null && role == null && curuser.getRole().getRlevel() > AUTHORISE_SITER)
+					|| (curuser.getRole() != null && role != null
+							&& curuser.getRole().getRlevel() > role.getRlevel())) {
+				try {
+					userService.remove(uid);
 					viewName = "/comm/success";
-				} else {
-					message = "由于不知名的原因删除出错！！";
+				} catch (Exception e) {
+					message = "系统出错，我们可爱的程序猿正在积极努力的调试中";
 					viewName = "/comm/failure";
+					logger.error(message, e);
 				}
 			} else {
 				message = "权限不够，不能删除";

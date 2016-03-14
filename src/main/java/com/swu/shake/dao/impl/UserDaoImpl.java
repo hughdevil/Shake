@@ -7,15 +7,16 @@ import javax.annotation.Resource;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Component;
 
 import com.swu.shake.dao.UserDao;
-import com.swu.shake.model.Role;
 import com.swu.shake.model.User;
 import com.swu.shake.util.HibernateUtil;
 import com.swu.shake.util.MsgException;
 
+/**
+ * sqlinject
+ */
 @Component(value = "userDao")
 public class UserDaoImpl implements UserDao {
 	HibernateUtil hibernateUtil;
@@ -24,7 +25,6 @@ public class UserDaoImpl implements UserDao {
 		return hibernateUtil;
 	}
 
-	// 注入hibernateUtil工具类
 	@Resource(name = "hibernateUtil")
 	public void setHibernateUtil(HibernateUtil hibernateUtil) {
 		this.hibernateUtil = hibernateUtil;
@@ -139,8 +139,8 @@ public class UserDaoImpl implements UserDao {
 		try {
 			session = hibernateUtil.getSession();
 			transaction = session.beginTransaction();
-			String sql = "update t_user set  rid=null where rid='" + rid + "'";
-			session.createSQLQuery(sql).executeUpdate();
+			String sql = "update t_user set  rid=null where rid=:rid";
+			session.createSQLQuery(sql).setString("rid", rid).executeUpdate();
 			transaction.commit();
 
 			flag = true;
@@ -169,29 +169,27 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	public List<User> getUsersByPage(String username, int start, int end) {
-		String hql = "from User where name like '%" + username + "%'";
-		return hibernateUtil.exeQueryPage(hql, start, end);
+		String hql = "from User where name like ?";
+		return hibernateUtil.exeQueryPage(hql, start, end, "%" + username + "%");
 	}
 
 	public User login(String name, String password) {
 		User u = null;
-		String hql = "from User where name='" + name + "' and password='"
-				+ password + "'";
+		String hql = "from User where name=? and password=?";
 		try {
-			List list = hibernateUtil.exeQuery(hql);
+			List<User> list = hibernateUtil.exeQuery(hql, name, password);
 			if (list.size() != 0) {
 				u = (User) list.get(0);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
 		}
 		return u;
 	}
 
 	public List<User> getUsersByName(String username) {
-		String hql = "from User where name like '%" + username + "%'";
-		return hibernateUtil.exeQuery(hql);
+		String hql = "from User where name like ?";
+		return hibernateUtil.exeQuery(hql, "%" + username + "%");
 	}
 
 	@Override
@@ -207,8 +205,9 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public boolean checkUserName(String username) {
-		String hql = "from User where name ='" + username + "'";
-		List<User> users = hibernateUtil.exeQuery(hql);
+		String hql = "from User where name like ?";
+		List<User> users = hibernateUtil.exeQuery(hql,"%"+ username + "%");
+
 		if (users != null && !users.isEmpty()) {
 			return true;
 		} else {
@@ -218,8 +217,8 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public List<User> getUsersByNameNoLike(String username) {
-		String hql = "from User where name ='" + username + "'";
-		List<User> users = hibernateUtil.exeQuery(hql);
+		String hql = "from User where name = ?";
+		List<User> users = hibernateUtil.exeQuery(hql, username);
 		return users;
 	}
 }

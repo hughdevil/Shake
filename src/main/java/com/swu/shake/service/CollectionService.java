@@ -2,25 +2,27 @@ package com.swu.shake.service;
 
 import java.util.List;
 /**
- * 评论业务服务类
+ * 收藏业务服务类
  */
 
 import com.swu.shake.model.Collection;
-import com.swu.shake.model.Comment;
-import com.swu.shake.util.MsgException;
+import com.swu.shake.model.Item;
 
 public interface CollectionService {
-	/** 新增收藏 */
-	public Collection collect(Comment comment);
+	/** 添加到收藏 */
+	public Collection collect(Collection collection);
 
 	/** 删除收藏 */
-	public boolean remove(int[] id);
+	public boolean remove(int[] ids);
 
-	/** 查询某用户所有收藏 */
-	public List<Comment> findall(int uid);
+	/** 查询某用户所有收藏商品 */
+	public List<Item> findall(int uid);
+
+	/** 查询某用户是否收藏过改商品 */
+	public Collection isMyCol(int uid, int iid);
 
 	/** 分页显示某用户所有收藏 */
-	public List<Comment> getCollections(int uid, int start, int end);
+	public List<Collection> getCollections(int uid, int start, int end);
 
 	/** 获得某用户收藏总数 */
 	public long getCount(int uid);

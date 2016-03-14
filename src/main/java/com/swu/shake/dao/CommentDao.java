@@ -24,6 +24,9 @@ public interface CommentDao {
 
 	/** 修改评论 */
 	public boolean update(Comment comment);
+	
+	/** 获得单个评论 */
+	public Comment getComment(int cid);
 
 	/** 查询某商品所有评论 */
 	public List<Comment> findall(int iid);

@@ -38,10 +38,10 @@ public interface ItemDao {
 	public List<Item> getItemsByUidAndPage(int uid, int start, int end);
 
 	/** 根据姓名查找商品 */
-	public List<Item> getItemsByName(String str);
+	public List<Item> getItemsByName(String iname);
 
 	/** 根据姓名查找商品 分页 */
-	public List<Item> getItemsByName(String str, int start, int end);
+	public List<Item> getItemsByName(String iname, int start, int end);
 
 	/** 分页显示所有产品 */
 	public List<Item> getItems(int start, int end);

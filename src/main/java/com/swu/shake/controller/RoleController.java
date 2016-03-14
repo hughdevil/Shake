@@ -43,8 +43,7 @@ public class RoleController {
 		if (null == curuser) {
 			message = "未登录";
 			viewName = "/comm/failure";
-		} else if (curuser.getRole() != null
-				&& curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
+		} else if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
 			int rlevel = curuser.getRole().getRlevel();
 			Map<String, String> rlevels = null;
 			try {
@@ -55,6 +54,10 @@ public class RoleController {
 			}
 			model.addAttribute("rlevels", rlevels);
 			model.addAttribute("role", new Role());
+
+			List<Role> roles = roleService.finall();
+			model.addAttribute("roles", roles);
+
 			viewName = "role/add";
 		} else {
 			viewName = "comm/failure";
@@ -65,18 +68,15 @@ public class RoleController {
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	public String add(
-			@RequestParam(value = "rlevelcode", required = true) String rlevelcode,
-			HttpServletRequest request, HttpSession session, Model model,
-			Role role) {
+	public String add(@RequestParam(value = "rlevelcode", required = true) String rlevelcode,
+			HttpServletRequest request, HttpSession session, Model model, Role role) {
 		User curuser = (User) session.getAttribute("user");
 		String viewName = "";
 		String message = null;
 		if (null == curuser) {
 			message = "未登录";
 			viewName = "/comm/failure";
-		} else if (curuser.getRole() != null
-				&& curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
+		} else if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
 			int rlevel = RlevelUtil.getLevel(rlevelcode);
 			role.setRlevel(rlevel);
 			roleService.register(role);
@@ -107,19 +107,16 @@ public class RoleController {
 	}
 
 	@RequestMapping(value = "/{rid}/del", method = RequestMethod.GET)
-	public String del(HttpSession session, Model model,
-			@PathVariable(value = "rid") String rid) {
+	public String del(HttpSession session, Model model, @PathVariable(value = "rid") String rid) {
 		String viewName = "";
 		User curuser = (User) session.getAttribute("user");
 		String message = null;
 		if (null == curuser) {
 			message = "未登录";
 			viewName = "/comm/failure";
-		} else if (curuser.getRole() != null
-				&& curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
+		} else if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
 			Role role = roleService.getRole(rid);
-			if (role != null
-					&& curuser.getRole().getRlevel() > role.getRlevel()) {
+			if (role != null && curuser.getRole().getRlevel() > role.getRlevel()) {
 				if (roleService.delete(rid)) {
 					viewName = "/comm/success";
 				} else {
@@ -141,19 +138,17 @@ public class RoleController {
 	}
 
 	@RequestMapping(value = "/{rid}/edit", method = RequestMethod.GET)
-	public String edit(HttpSession session, Model model,
-			@PathVariable(value = "rid") String rid) throws UnsupportedEncodingException {
+	public String edit(HttpSession session, Model model, @PathVariable(value = "rid") String rid)
+			throws UnsupportedEncodingException {
 		String viewName = "";
 		User curuser = (User) session.getAttribute("user");
 		String message = null;
 		if (null == curuser) {
 			message = "未登录";
 			viewName = "/comm/failure";
-		} else if (curuser.getRole() != null
-				&& curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
+		} else if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
 			Role role = roleService.getRole(rid);
-			if (role != null
-					&& curuser.getRole().getRlevel() > role.getRlevel()) {
+			if (role != null && curuser.getRole().getRlevel() > role.getRlevel()) {
 
 				int rlevel = curuser.getRole().getRlevel();
 				Map<String, String> rlevels = null;
@@ -164,9 +159,12 @@ public class RoleController {
 					e.printStackTrace();
 				}
 				model.addAttribute("rlevels", rlevels);
-				model.addAttribute("rleveldesc",
-						RlevelUtil.getDesc(role.getRlevel()));
+				model.addAttribute("rleveldesc", RlevelUtil.getDesc(role.getRlevel()));
 				model.addAttribute("role", role);
+
+				List<Role> roles = roleService.finall();
+				model.addAttribute("roles", roles);
+
 				viewName = "/role/edit";
 
 			} else {
@@ -182,9 +180,7 @@ public class RoleController {
 	}
 
 	@RequestMapping(value = "/edit", method = RequestMethod.POST)
-	public String edit(
-			HttpSession session,
-			HttpServletRequest request,
+	public String edit(HttpSession session, HttpServletRequest request,
 			@RequestParam(value = "rlevelcode", required = true) String rlevelcode) {
 		String viewName = "";
 		User curuser = (User) session.getAttribute("user");
@@ -192,12 +188,10 @@ public class RoleController {
 		if (null == curuser) {
 			message = "未登录";
 			viewName = "/comm/failure";
-		} else if (curuser.getRole() != null
-				&& curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
+		} else if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
 			String rid = request.getParameter("rid");
 			Role role = roleService.getRole(rid);
-			if (role != null
-					&& curuser.getRole().getRlevel() > role.getRlevel()) {
+			if (role != null && curuser.getRole().getRlevel() > role.getRlevel()) {
 				Role newRole = new Role();
 				int rlevel = RlevelUtil.getLevel(rlevelcode);
 				newRole.setRid(rid);

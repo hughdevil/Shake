@@ -21,8 +21,7 @@ import com.swu.shake.service.ItemTypeService;
 @Controller
 @RequestMapping(value = "/item/type")
 public class ItemTypeController {
-	private static final Logger logger = LoggerFactory
-			.getLogger(ItemTypeController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ItemTypeController.class);
 	private static final int AUTHORISE_ADMIN = 4;
 
 	private ItemTypeService itemTypeService;
@@ -44,8 +43,11 @@ public class ItemTypeController {
 		if (null == curuser) {
 			message = "未登录";
 			viewName = "/comm/failure";
-		} else if (curuser.getRole() != null
-				&& curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
+		} else if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
+
+			List<ItemType> its = itemTypeService.getItemTypes();
+			model.addAttribute("itemtypes", its);
+
 			model.addAttribute("itemtype", new ItemType());
 			viewName = "/item/type/add";
 		} else {
@@ -86,16 +88,18 @@ public class ItemTypeController {
 	}
 
 	@RequestMapping(value = "/{tid}/edit", method = RequestMethod.GET)
-	public String edit(HttpSession session, Model model,
-			@PathVariable("tid") int tid) {
+	public String edit(HttpSession session, Model model, @PathVariable("tid") int tid) {
 		String viewName = "";
 		String message = "";
 		User curuser = (User) session.getAttribute("user");
 		if (null == curuser) {
 			message = "未登录";
 			viewName = "/comm/failure";
-		} else if (curuser.getRole() != null
-				&& curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
+		} else if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
+
+			List<ItemType> its = itemTypeService.getItemTypes();
+			model.addAttribute("itemtypes", its);
+
 			ItemType it = itemTypeService.getItemTypeById(tid);
 			model.addAttribute("itemtype", it);
 			viewName = "/item/type/edit";
@@ -115,8 +119,7 @@ public class ItemTypeController {
 		if (null == curuser) {
 			message = "未登录";
 			viewName = "/comm/failure";
-		} else if (curuser.getRole() != null
-				&& curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
+		} else if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
 			ItemType it = new ItemType();
 			it.setTid(Integer.parseInt(request.getParameter("tid")));
 			it.setTname(request.getParameter("tname"));
@@ -137,16 +140,14 @@ public class ItemTypeController {
 	}
 
 	@RequestMapping(value = "/{tid}/del", method = RequestMethod.GET)
-	public String del(HttpSession session, Model model,
-			@PathVariable("tid") int tid) {
+	public String del(HttpSession session, Model model, @PathVariable("tid") int tid) {
 		String viewName = "";
 		String message = "";
 		User curuser = (User) session.getAttribute("user");
 		if (null == curuser) {
 			message = "未登录";
 			viewName = "/comm/failure";
-		} else if (curuser.getRole() != null
-				&& curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
+		} else if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
 			if (itemTypeService.remove(tid))
 				viewName = "/comm/success";
 			else {

@@ -30,6 +30,7 @@ import com.swu.shake.model.ItemImage;
 import com.swu.shake.model.ItemType;
 import com.swu.shake.model.Pager;
 import com.swu.shake.model.User;
+import com.swu.shake.service.CollectionService;
 import com.swu.shake.service.ItemService;
 import com.swu.shake.service.ItemTypeService;
 import com.swu.shake.util.FileUtility;
@@ -41,12 +42,22 @@ import com.swu.shake.util.MsgException;
 @RequestMapping("/item")
 public class ItemController {
 	private static final int PAGE_SIZE = 12;
-	private static final Logger logger = LoggerFactory
-			.getLogger(ItemController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ItemController.class);
 	private static final int AUTHORISE_MODERATOR = 2;
+	private static final int AUTHORISE_ADMIN = 4;
 
 	private ItemService itemService;
 	private ItemTypeService itemTypeService;
+	private CollectionService collectionService;
+
+	public CollectionService getCollectionService() {
+		return collectionService;
+	}
+
+	@Autowired
+	public void setCollectionService(CollectionService collectionService) {
+		this.collectionService = collectionService;
+	}
 
 	public ItemService getItemService() {
 		return itemService;
@@ -70,10 +81,7 @@ public class ItemController {
 	public String post(HttpSession session, ModelMap mm) {
 		Long count = itemService.getCount();
 		Pager pager = new Pager(count, PAGE_SIZE, 1);
-		mm.addAttribute(
-				"itemList",
-				itemService.getItems(pager.getStartRow(), pager.getStartRow()
-						+ PAGE_SIZE));
+		mm.addAttribute("itemList", itemService.getItems(pager.getStartRow(), pager.getStartRow() + PAGE_SIZE));
 
 		List<ItemType> itemtypes = itemTypeService.getItemTypes();
 		mm.addAttribute("itemtypes", itemtypes);
@@ -87,15 +95,11 @@ public class ItemController {
 	}
 
 	@RequestMapping(value = "/post", params = "type", method = RequestMethod.GET)
-	public String postByTid(HttpServletRequest request, HttpSession session,
-			ModelMap mm) {
+	public String postByTid(HttpServletRequest request, HttpSession session, ModelMap mm) {
 		int curtid = Integer.parseInt(request.getParameter("type"));
 		Long count = itemService.getCount(curtid);
 		Pager pager = new Pager(count, PAGE_SIZE, 1);
-		mm.addAttribute(
-				"itemList",
-				itemService.getItems(curtid, pager.getStartRow(),
-						pager.getStartRow() + PAGE_SIZE));
+		mm.addAttribute("itemList", itemService.getItems(curtid, pager.getStartRow(), pager.getStartRow() + PAGE_SIZE));
 
 		List<ItemType> itemtypes = itemTypeService.getItemTypes();
 		mm.addAttribute("itemtypes", itemtypes);
@@ -108,8 +112,7 @@ public class ItemController {
 	}
 
 	@RequestMapping(value = "/post", params = "page", method = RequestMethod.GET)
-	public String post(HttpServletRequest request, HttpSession session,
-			ModelMap mm) {
+	public String post(HttpServletRequest request, HttpSession session, ModelMap mm) {
 		int curpage = Integer.parseInt(request.getParameter("page"));
 		Long count = null;
 		Pager pager = null;
@@ -117,15 +120,13 @@ public class ItemController {
 			int curtid = (Integer) session.getAttribute("tid");
 			count = itemService.getCount(curtid);
 			pager = new Pager(count, PAGE_SIZE, curpage);
-			mm.addAttribute("itemList", itemService.getItems(curtid,
-					pager.getStartRow(), PAGE_SIZE));
+			mm.addAttribute("itemList", itemService.getItems(curtid, pager.getStartRow(), PAGE_SIZE));
 
 		} else if (null != session.getAttribute("iname")) {
 			String iname = (String) session.getAttribute("iname");
 			count = itemService.getCount(iname);
 			pager = new Pager(count, PAGE_SIZE, curpage);
-			mm.addAttribute("itemList", itemService.getItemsByName(iname,
-					pager.getStartRow(), PAGE_SIZE));
+			mm.addAttribute("itemList", itemService.getItemsByName(iname, pager.getStartRow(), PAGE_SIZE));
 
 			List<ItemType> itemtypes = itemTypeService.getItemTypes();
 			mm.addAttribute("itemtypes", itemtypes);
@@ -136,8 +137,7 @@ public class ItemController {
 		} else {
 			count = itemService.getCount();
 			pager = new Pager(count, PAGE_SIZE, curpage);
-			mm.addAttribute("itemList",
-					itemService.getItems(pager.getStartRow(), PAGE_SIZE));
+			mm.addAttribute("itemList", itemService.getItems(pager.getStartRow(), PAGE_SIZE));
 		}
 		mm.addAttribute("pager", pager);
 
@@ -173,9 +173,7 @@ public class ItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/publish", method = RequestMethod.POST)
-	public ModelAndView publish(
-			HttpServletRequest request,
-			HttpSession session,
+	public ModelAndView publish(HttpServletRequest request, HttpSession session,
 			@RequestParam(value = "itemtype", required = false) int tid,
 			@RequestParam(value = "itemImages", required = false) CommonsMultipartFile[] mFiles,
 			@RequestParam(value = "postImage", required = false) CommonsMultipartFile[] postFile) {
@@ -191,8 +189,7 @@ public class ItemController {
 				if (postFile != null) {
 					for (CommonsMultipartFile mFile : postFile) {
 						if (!mFile.isEmpty()) {
-							postImage = upload(session, dateformat, mFile)
-									.getIiname();
+							postImage = upload(session, dateformat, mFile).getIiname();
 						}
 					}
 				}
@@ -212,8 +209,7 @@ public class ItemController {
 				item.setIdesc(request.getParameter("desc"));
 				item.setNewly(Integer.parseInt(request.getParameter("newly")));
 				item.setHasdate(request.getParameter("hasdate"));
-				item.setValid(Boolean.parseBoolean(request
-						.getParameter("isvalid")));
+				item.setValid(Boolean.parseBoolean(request.getParameter("isvalid")));
 
 				ItemType itemtype = itemTypeService.getItemTypeById(tid);
 				item.setItemtype(itemtype);
@@ -248,19 +244,16 @@ public class ItemController {
 	 * @return
 	 * @throws IOException
 	 */
-	public ItemImage upload(HttpSession session, SimpleDateFormat dateformat,
-			CommonsMultipartFile mFile) throws IOException {
+	public ItemImage upload(HttpSession session, SimpleDateFormat dateformat, CommonsMultipartFile mFile)
+			throws IOException {
 		logger.info("上传文件的名字：" + mFile.getOriginalFilename());
 		/** 获取文件的后缀* */
-		String suffix = mFile.getOriginalFilename().substring(
-				mFile.getOriginalFilename().lastIndexOf("."));
+		String suffix = mFile.getOriginalFilename().substring(mFile.getOriginalFilename().lastIndexOf("."));
 
 		String curpath = session.getServletContext().getRealPath("/");
 		Date uploadDate = new Date();
-		String fileName = "upload/pic/"
-				+ dateformat.format(uploadDate)
-				+ MD5Util.getMD5(uploadDate.toString()
-						+ mFile.getOriginalFilename()) + suffix;
+		String fileName = "upload/pic/" + dateformat.format(uploadDate)
+				+ MD5Util.getMD5(uploadDate.toString() + mFile.getOriginalFilename()) + suffix;
 		String path = curpath + fileName;
 		logger.info("path:" + path);
 		FileUtility.saveUploadFile(mFile.getInputStream(), path);
@@ -273,23 +266,30 @@ public class ItemController {
 	}
 
 	@RequestMapping(value = "/{iid}/detail", method = RequestMethod.GET)
-	public String showDetail(@PathVariable(value = "iid") int iid, Model model,
-			HttpServletRequest request, HttpSession session) {
+	public String showDetail(@PathVariable(value = "iid") int iid, Model model, HttpServletRequest request,
+			HttpSession session) {
 		String viewName = "";
 		Item item = this.itemService.getDetail(iid);
+		User curuser = (User) session.getAttribute("user");
 		if (null == item) {
 			viewName = "comm/failure";
 			request.setAttribute("message", "童鞋，你确定有这个编号？");
 		} else {
 			viewName = "item/detail";
+			if (curuser != null) {
+				boolean isMyCol = null != collectionService.isMyCol(curuser.getUid(), iid) ? true : false;
+				model.addAttribute("isMyCol", isMyCol);
+				if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
+					model.addAttribute("isADMIN", true);
+				}
+			}
 			model.addAttribute("item", item);
 		}
 		return viewName;
 	}
 
 	@RequestMapping(value = "/{iid}/edit", method = RequestMethod.GET)
-	public String edit(@PathVariable(value = "iid") int iid,
-			HttpSession session, Model model) {
+	public String edit(@PathVariable(value = "iid") int iid, HttpSession session, Model model) {
 		String viewName = "";
 		String message = "";
 		User curuser = (User) session.getAttribute("user");
@@ -308,8 +308,7 @@ public class ItemController {
 				flag = true;
 			} else if (item.getUser().getRole() == null) {
 				flag = true;
-			} else if (curuser.getRole().getRlevel() > item.getUser().getRole()
-					.getRlevel()) {
+			} else if (curuser.getRole().getRlevel() > item.getUser().getRole().getRlevel()) {
 				flag = true;
 			} else {
 				message = "没有权限执行此操作，请查看对方的角色等级";
@@ -333,14 +332,11 @@ public class ItemController {
 	}
 
 	@RequestMapping(value = "/edit", method = RequestMethod.POST)
-	public String edit(
-			@RequestParam("iid") int iid,
-			@RequestParam("itemtype") int tid,
+	public String edit(@RequestParam("iid") int iid, @RequestParam("itemtype") int tid,
 			@RequestParam(value = "selectedimages", required = false) int[] iiids,
 			@RequestParam("postImage") CommonsMultipartFile[] postFile,
-			@RequestParam(value = "newimages", required = false) CommonsMultipartFile[] mFiles,
-			HttpSession session, HttpServletRequest request, Model model)
-			throws IOException {
+			@RequestParam(value = "newimages", required = false) CommonsMultipartFile[] mFiles, HttpSession session,
+			HttpServletRequest request, Model model) throws IOException {
 
 		SimpleDateFormat dateformat = new SimpleDateFormat("yyyyMMddHH");
 		String viewName = "";
@@ -362,8 +358,7 @@ public class ItemController {
 				flag = true;
 			} else if (item.getUser().getRole() == null) {
 				flag = true;
-			} else if (curuser.getRole().getRlevel() > item.getUser().getRole()
-					.getRlevel()) {
+			} else if (curuser.getRole().getRlevel() > item.getUser().getRole().getRlevel()) {
 				flag = true;
 			} else {
 				message = "没有权限执行此操作，请查看对方的角色等级";
@@ -373,8 +368,7 @@ public class ItemController {
 
 				// 检查原封面存不存在
 				String postImage = item.getPostImage();
-				String fileurl = ItemController.class.getResource("/")
-						.getPath();
+				String fileurl = ItemController.class.getResource("/").getPath();
 				fileurl = fileurl.split("WEB-INF/classes/")[0] + postImage;
 				File file = new File(fileurl);
 				if (!file.exists()) {
@@ -386,8 +380,7 @@ public class ItemController {
 				if (postFile != null) {
 					for (CommonsMultipartFile mFile : postFile) {
 						if (!mFile.isEmpty()) {
-							postImage = upload(session, dateformat, mFile)
-									.getIiname();
+							postImage = upload(session, dateformat, mFile).getIiname();
 						}
 					}
 				}
@@ -425,8 +418,7 @@ public class ItemController {
 				item.setiNumber(Integer.parseInt(request.getParameter("number")));
 				item.setIprice(Double.parseDouble(request.getParameter("price")));
 				item.setIdesc(request.getParameter("desc"));
-				item.setValid(Boolean.parseBoolean(request
-						.getParameter("isvalid")));
+				item.setValid(Boolean.parseBoolean(request.getParameter("isvalid")));
 
 				ItemType itemtype = itemTypeService.getItemTypeById(tid);
 				item.setItemtype(itemtype);
@@ -435,8 +427,7 @@ public class ItemController {
 				item.setPostImage(postImage);
 				item.setItemImages(itemImages);
 
-				viewName = itemService.modify(item) ? "/comm/success"
-						: "/comm/failure";
+				viewName = itemService.modify(item) ? "/comm/success" : "/comm/failure";
 
 				// 剔除已经不需要的图片 步骤2
 				itemService.clearUnuserfulImg();
@@ -452,8 +443,7 @@ public class ItemController {
 	}
 
 	@RequestMapping(value = "/{iid}/unload", method = RequestMethod.GET)
-	public String unload(@PathVariable(value = "iid") int iid,
-			HttpServletRequest request, HttpSession session) {
+	public String unload(@PathVariable(value = "iid") int iid, HttpServletRequest request, HttpSession session) {
 		String viewName = "";
 		String message = "";
 		Item item = null;
@@ -473,8 +463,7 @@ public class ItemController {
 				flag = true;
 			} else if (item.getUser().getRole() == null) {
 				flag = true;
-			} else if (curuser.getRole().getRlevel() > item.getUser().getRole()
-					.getRlevel()) {
+			} else if (curuser.getRole().getRlevel() > item.getUser().getRole().getRlevel()) {
 				flag = true;
 			} else {
 				message = "没有权限执行此操作，请查看对方的角色等级";
@@ -485,8 +474,9 @@ public class ItemController {
 					itemService.remove(iid);
 					viewName = "/comm/success";
 				} catch (Exception e) {
-					message = "删除失败";
+					message = "商品下架失败";
 					viewName = "/comm/failure";
+					logger.error(message, e);
 				}
 			}
 
@@ -500,8 +490,7 @@ public class ItemController {
 	}
 
 	@RequestMapping(value = "/query", method = RequestMethod.POST)
-	public String query(HttpServletRequest request, HttpSession session,
-			Model model) {
+	public String query(HttpServletRequest request, HttpSession session, Model model) {
 		String viewName = "";
 		String message = "";
 
@@ -513,8 +502,7 @@ public class ItemController {
 			String iname = request.getParameter("iname");
 			Long count = itemService.getCount(iname);
 			Pager pager = new Pager(count, PAGE_SIZE, 1);
-			model.addAttribute("itemList", itemService.getItemsByName(iname,
-					pager.getStartRow(), PAGE_SIZE));
+			model.addAttribute("itemList", itemService.getItemsByName(iname, pager.getStartRow(), PAGE_SIZE));
 
 			List<ItemType> itemtypes = itemTypeService.getItemTypes();
 			model.addAttribute("itemtypes", itemtypes);

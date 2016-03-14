@@ -21,5 +21,4 @@ public class BaseDaoTest extends AbstractTest{
 		List<User> users = hibernateUtil.exeQuery(hql);
 		System.out.println(users.size());
 	}
-
 }

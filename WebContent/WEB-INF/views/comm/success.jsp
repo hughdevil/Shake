@@ -6,6 +6,7 @@
 <head>
 <title>SUCCESS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="refresh" content="3;URL=<%=request.getContextPath()%>${jumpUri}">
 <!-- Bootstrap -->
 <link href="<%=request.getContextPath()%>/css/bootstrap.min.css"
 	rel="stylesheet" media="screen">
@@ -30,7 +31,8 @@
 		<div class="col-md-4 col-md-offset-4 ">
 			<img class="img-responsive"
 				src="<%=request.getContextPath()%>/img/success.jpg" alt="success">
-			<h3 style="text-align: center">SUCCESS!!!</h3>
+				<h3 style="text-align: center"><a href="<%=request.getContextPath()%>${jumpUri}">SUCCESS!!!</a></h3>
+			1111111111111
 		</div>
 	</div>
 </body>

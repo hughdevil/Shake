@@ -6,6 +6,7 @@ import java.util.List;
  */
 
 import com.swu.shake.model.Comment;
+import com.swu.shake.model.Item;
 import com.swu.shake.util.MsgException;
 
 public interface CommentService {
@@ -18,11 +19,14 @@ public interface CommentService {
 	/** 修改评论 */
 	public boolean modify(Comment comment);
 
+	/** 得到某评论 */
+	public Comment getComment(int cid);
+
+	/** 获得评论，分页 */
+	public Item getComments(int iid, int start, int end);
+
 	/** 查询某商品所有评论 */
 	public List<Comment> findall(int iid);
-
-	/** 分页显示某商品所有评论 */
-	public List<Comment> getComments(int iid, int start, int end);
 
 	/** 获得某商品评论总数 */
 	public long getCount(int iid);

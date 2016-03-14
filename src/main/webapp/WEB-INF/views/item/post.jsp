@@ -86,7 +86,7 @@
 
 
 		<!--分页  -->
-		<%@ include file="../comm/postpager.jsp"%>
+		<%@ include file="../page/post.jsp"%>
 	</div>
 </body>
 </html>

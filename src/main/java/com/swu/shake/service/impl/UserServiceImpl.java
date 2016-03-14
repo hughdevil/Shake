@@ -13,6 +13,7 @@ import com.swu.shake.dao.ItemImageDao;
 import com.swu.shake.dao.UserDao;
 import com.swu.shake.model.Item;
 import com.swu.shake.model.User;
+import com.swu.shake.service.ItemService;
 import com.swu.shake.service.UserService;
 import com.swu.shake.util.MsgException;
 
@@ -22,6 +23,16 @@ public class UserServiceImpl implements UserService {
 	ItemDao itemDao;
 	CommentDao commentDao;
 	ItemImageDao itemImageDao;
+	ItemService itemService;
+
+	public ItemService getItemService() {
+		return itemService;
+	}
+
+	@Resource(name = "itemService")
+	public void setItemService(ItemService itemService) {
+		this.itemService = itemService;
+	}
 
 	public ItemDao getItemDao() {
 		return itemDao;
@@ -60,7 +71,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/******************************/
-
 	public User register(User user) throws MsgException {
 		User u = null;
 		if (!userDao.checkUserName(user.getName())) {
@@ -75,6 +85,7 @@ public class UserServiceImpl implements UserService {
 	 * 之后记得加事物处理
 	 */
 	@Transactional
+	@Override
 	public boolean remove(int uid) {
 		boolean flag = true;
 		// 删除此人评论
@@ -83,12 +94,7 @@ public class UserServiceImpl implements UserService {
 		// 删除此人的所有发帖
 		List<Item> items = itemDao.getItemsByUid(uid);
 		for (Item item : items) {
-			if (!this.commentDao.deleteByIid(item.getIid()))
-				flag = false;
-			if (!this.itemImageDao.deleteByIid(item.getIid()))
-				flag = false;
-			if (!this.itemDao.delete(item.getIid()))
-				flag = false;
+			flag = itemService.remove(item.getIid());
 		}
 
 		// 删除此人

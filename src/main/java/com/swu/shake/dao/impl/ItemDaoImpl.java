@@ -7,7 +7,6 @@ import javax.annotation.Resource;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.swu.shake.dao.ItemDao;
@@ -15,8 +14,9 @@ import com.swu.shake.model.Item;
 import com.swu.shake.util.HibernateUtil;
 
 /**
- * @author Hugh
- *
+ * <p>
+ * HibernateUtil里的SQL参数化来解决SQL注入
+ * 
  */
 @Repository(value = "itemDao")
 public class ItemDaoImpl implements ItemDao {
@@ -55,7 +55,9 @@ public class ItemDaoImpl implements ItemDao {
 	@Override
 	public boolean delete(int id) {
 		String hql = "delete from Item where iid=" + id;
-		return hibernateUtil.exeDelete(hql);
+		// return hibernateUtil.exeDelete(hql);
+		// 测试删除时，Spring事务管理是否会回滚
+		throw new java.lang.ClassCastException();
 	}
 
 	@Override
@@ -99,8 +101,8 @@ public class ItemDaoImpl implements ItemDao {
 		try {
 			session = hibernateUtil.getSession();
 			transaction = session.beginTransaction();
-			String sql = "update t_item set  tid=null where tid=" + tid;
-			session.createSQLQuery(sql).executeUpdate();
+			String sql = "update t_item set  tid=null where tid=?";
+			session.createSQLQuery(sql).setParameter(0, tid).executeUpdate();
 			transaction.commit();
 
 			flag = true;
@@ -133,37 +135,32 @@ public class ItemDaoImpl implements ItemDao {
 
 	@Override
 	public List<Item> getItemsByType(int tid) {
-		String hql = "from Item i where i.itemtype.tid =" + tid
-				+ " order by iid desc";
+		String hql = "from Item i where i.itemtype.tid =" + tid + " order by iid desc";
 		return hibernateUtil.exeQuery(hql);
 	}
 
 	@Override
 	public List<Item> getItemsByUid(int uid) {
-		String hql = "from Item i where i.user.uid =" + uid
-				+ " order by iid desc";
+		String hql = "from Item i where i.user.uid =" + uid + " order by iid desc";
 		return hibernateUtil.exeQuery(hql);
 	}
 
 	@Override
 	public List<Item> getItemsByUidAndPage(int uid, int start, int end) {
-		String hql = "from Item i where i.user.uid =" + uid
-				+ " order by iid desc";
+		String hql = "from Item i where i.user.uid =" + uid + " order by iid desc";
 		return hibernateUtil.exeQueryPage(hql, start, end);
 	}
 
 	@Override
-	public List<Item> getItemsByName(String str) {
-		String hql = "from Item where iname like '%" + str
-				+ "%' order by iid desc";
-		return hibernateUtil.exeQuery(hql);
+	public List<Item> getItemsByName(String iname) {
+		String hql = "from Item where iname like ? order by iid desc";
+		return hibernateUtil.exeQuery(hql, "%" + iname + "%");
 	}
 
 	@Override
-	public List<Item> getItemsByName(String str, int start, int end) {
-		String hql = "from Item where iname like '%" + str
-				+ "%' order by iid desc";
-		return hibernateUtil.exeQueryPage(hql, start, end);
+	public List<Item> getItemsByName(String iname, int start, int end) {
+		String hql = "from Item where iname like ? order by iid desc";
+		return hibernateUtil.exeQueryPage(hql, start, end, "%" + iname + "%");
 	}
 
 	@Override
@@ -207,9 +204,8 @@ public class ItemDaoImpl implements ItemDao {
 
 	@Override
 	public long getCount(String iname) {
-		String hql = "select count(*) from Item i where i.iname like '%"
-				+ iname + "%'";
-		return hibernateUtil.exeCount(hql);
+		String hql = "select count(*) from Item i where i.iname like ?";
+		return hibernateUtil.exeCount(hql, "%" + iname + "%");
 	}
 
 }

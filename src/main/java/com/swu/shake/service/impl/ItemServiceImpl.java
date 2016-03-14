@@ -3,6 +3,8 @@ package com.swu.shake.service.impl;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +14,6 @@ import com.swu.shake.dao.ItemImageDao;
 import com.swu.shake.model.Comment;
 import com.swu.shake.model.Item;
 import com.swu.shake.model.ItemImage;
-import com.swu.shake.model.ItemType;
 import com.swu.shake.service.ItemService;
 import com.swu.shake.util.MsgException;
 
@@ -59,18 +60,19 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	/**
-	 * 此处之后进行Spring事务级处理 不具备原子性；
+	 * 删除，要用Spring事务级处理；
 	 */
+	@Transactional
 	@Override
 	public boolean remove(int iid) {
-		boolean flag = true;
-		if (!this.commentDao.deleteByIid(iid))
-			flag = false;
-		if (!this.itemImageDao.deleteByIid(iid))
-			flag = false;
-		if (!this.itemDao.delete(iid))
-			flag = false;
-		return flag;
+		try{
+			this.commentDao.deleteByIid(iid);
+			this.itemImageDao.deleteByIid(iid);
+			this.itemDao.delete(iid);
+			return true;
+		}catch(RuntimeException e){
+			throw e;
+		}
 	}
 
 	@Override
@@ -102,7 +104,7 @@ public class ItemServiceImpl implements ItemService {
 	public Item getDetail(int id) {
 		Item item = itemDao.findById(id);
 		List<ItemImage> images = itemImageDao.findall(id);
-		List<Comment> comments = commentDao.findall(id);
+		List<Comment> comments = commentDao.getComments(id, 0, 10);
 		item.setItemImages(new HashSet<ItemImage>(images));
 		item.setComments(comments);
 
