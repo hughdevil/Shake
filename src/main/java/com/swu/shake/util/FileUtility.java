@@ -20,8 +20,7 @@ public class FileUtility {
 	 *            保存路径
 	 * @throws IOException
 	 */
-	public static void saveUploadFile(InputStream in, String path)
-			throws IOException {
+	public static void saveUploadFile(InputStream in, String path) throws IOException {
 		FileOutputStream fos = new FileOutputStream(path);
 		BufferedOutputStream bos = new BufferedOutputStream(fos);
 		byte[] buffer = new byte[1024 * 1024];

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 /**
  * Hibernate工具类
  * <p>
- * 1.重开session的工具类 
+ * 1.重开session的工具类
  * <p>
  * 2.查、删的工具类，不负责增、改
  * 
@@ -82,7 +82,7 @@ public class HibernateUtil {
 		}
 
 	}
-	
+
 	/**
 	 * 删除操作 事务回滚处理
 	 * <p>
@@ -115,12 +115,12 @@ public class HibernateUtil {
 		}
 		return flag;
 	}
-	
+
 	/**
 	 * 通用查询
 	 * <p>
 	 * SQL非参数化，支持非字符串的HQL语句
-	 *  
+	 * 
 	 */
 	public List exeQuery(String hql) {
 		List list = null;
@@ -201,7 +201,7 @@ public class HibernateUtil {
 		return list;
 
 	}
-	
+
 	/**
 	 * 通用分页查询
 	 * <p>
@@ -212,7 +212,7 @@ public class HibernateUtil {
 	 * @param end
 	 * @return
 	 */
-	public List exeQueryPage(String hql,int start, int end,String... params) {
+	public List exeQueryPage(String hql, int start, int end, String... params) {
 		List list = null;
 		Transaction transaction = null;
 		Session session = null;
@@ -220,7 +220,7 @@ public class HibernateUtil {
 			session = getSession();
 			transaction = session.beginTransaction();
 			// 链式编程
-			list = getQuery(session,hql,params).setFirstResult(start).setMaxResults(end).list();
+			list = getQuery(session, hql, params).setFirstResult(start).setMaxResults(end).list();
 			transaction.commit();
 
 		} catch (HibernateException e) {
@@ -235,8 +235,6 @@ public class HibernateUtil {
 
 	}
 
-	
-	
 	/**
 	 * 计算总数
 	 * <p>
@@ -264,8 +262,7 @@ public class HibernateUtil {
 		}
 		return count;
 	}
-	
-	
+
 	/**
 	 * 计算总数
 	 * <p>
@@ -274,14 +271,14 @@ public class HibernateUtil {
 	 * @param hql
 	 * @return
 	 */
-	public long exeCount(String hql,String... params) {
+	public long exeCount(String hql, String... params) {
 		Session session = null;
 		Transaction transaction = null;
 		long count = 0;
 		try {
 			session = getSession();
 			transaction = session.beginTransaction();
-			count = (Long) getQuery(session,hql,params).uniqueResult();
+			count = (Long) getQuery(session, hql, params).uniqueResult();
 			transaction.commit();
 		} catch (HibernateException e) {
 			e.printStackTrace();
@@ -293,7 +290,7 @@ public class HibernateUtil {
 		}
 		return count;
 	}
-	
+
 	/**
 	 * 处理非SQL参数为字符串的情况
 	 * 
@@ -302,7 +299,7 @@ public class HibernateUtil {
 	 * @param params
 	 * @return
 	 */
-	private Query getQuery(Session session,String hql,String... params){
+	private Query getQuery(Session session, String hql, String... params) {
 		Query query = session.createQuery(hql);
 		for (int index = 0; index < params.length; index++) {
 			query.setParameter(index, params[index]);

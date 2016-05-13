@@ -63,12 +63,6 @@ public class CommentDaoImpl implements CommentDao {
 	}
 
 	@Override
-	public boolean deleteByUid(int uid) {
-		String hql = "delete from Comment c where c.user.uid=" + uid;
-		return hibernateUtil.exeDelete(hql);
-	}
-
-	@Override
 	public boolean update(Comment comment) {
 		boolean flag = false;
 		Session session = null;
@@ -120,6 +114,44 @@ public class CommentDaoImpl implements CommentDao {
 	public long getCount(int iid) {
 		String hql = "select count(*) from Comment c where c.item.iid=" + iid;
 		return this.hibernateUtil.exeCount(hql);
+	}
+
+	@Override
+	public boolean like(int cid) {
+		boolean flag = false;
+		try {
+			Session session = hibernateUtil.getSessionFactory().getCurrentSession();
+			Comment c = (Comment) session.get(Comment.class, cid);
+			c.setLikes((c.getLikes() + 1));
+			flag = true;
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			flag = false;
+			throw e;
+		}
+		return flag;
+	}
+
+	@Override
+	public boolean unlike(int cid) {
+		boolean flag = false;
+		try {
+			Session session = hibernateUtil.getSessionFactory().getCurrentSession();
+			Comment c = (Comment) session.get(Comment.class, cid);
+			c.setLikes((c.getLikes() - 1));
+			flag = true;
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			flag = false;
+			throw e;
+		}
+		return flag;
+	}
+
+	@Override
+	public List<Comment> findallByUid(int uid) {
+		String hql = "from Comment c where c.user.uid=" + uid;
+		return hibernateUtil.exeQuery(hql);
 	}
 
 }

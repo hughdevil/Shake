@@ -1,11 +1,16 @@
 package com.swu.shake.util;
 
 /**
- *
+ * 
+ * Ajax请求用
+ * 
+ * @author Shuai
  */
 public class Status {
-	/** 状态码 */
+
+	/** 成功状态 */
 	private boolean status;
+
 	/** 状态描述 */
 	private String desc;
 

@@ -19,6 +19,9 @@ public interface CollectionDao {
 	/** 删除收藏通过收藏人 */
 	public boolean deleteByUid(int uid);
 
+	/** 删除收藏通过收藏商品 */
+	public boolean deleteByIid(int iid);
+
 	/** 查询某用户所有收藏 */
 	public List<Collection> findall(int uid);
 

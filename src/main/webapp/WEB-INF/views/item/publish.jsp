@@ -274,10 +274,12 @@
 							$("#btn_add")
 									.click(
 											function() {
+												if(j<11){
 												document
 														.getElementById("newUpload").innerHTML += '<div id="div_'+j+'" class="btn-group"><input  name="itemImages" class="btn control" type="file"  /><input type="button" class="btn btn-default" value="删除"  onclick="del('
 														+ j + ')"/><br></div>';
 												j = j + 1;
+												}
 											});
 						});
 

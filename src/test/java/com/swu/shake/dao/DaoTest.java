@@ -3,13 +3,13 @@ package com.swu.shake.dao;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.swu.shake.AbstractTest;import com.swu.shake.util.HibernateUtil;
+import com.swu.shake.AbstractTest;
 
 public class DaoTest extends AbstractTest {
 	@Autowired
 	UserDao userDao;
 	
-//	@Test
+	@Test
 	public void testSQLInject(){
 		String userName = "' or 1=1 or ''='";
 		System.out.println(userDao.getUsersByName(userName).size());

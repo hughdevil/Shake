@@ -25,8 +25,8 @@
 						<c:forEach var="role" items="${roles }">
 							<tr>
 								<td width="90%">${role.rname }</td>
-								<td width="5%"><a href="<%=request.getContextPath()%>/role/${role.rid}/edit.do"><span class="glyphicon glyphicon-pencil"></span> </a></td>
-								<td width="5%"><a data-toggle="modal" data-target="#modal${role.rid}"><span class="glyphicon glyphicon-remove"></span> </a></td>
+								<td width="5%"><a href="<%=request.getContextPath()%>/role/${role.rid}/edit.do"><span class="glyphicon glyphicon-pencil" data-toggle="tooltip" data-placement="right" title="点击修改"></span> </a></td>
+								<td width="5%"><a data-toggle="modal" data-target="#modal${role.rid}"><span class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="点击删除"></span> </a></td>
 							</tr>
 
 							<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" id="modal${role.rid}" aria-labelledby="mySmallModalLabel">

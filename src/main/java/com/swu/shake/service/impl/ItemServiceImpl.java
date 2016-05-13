@@ -8,12 +8,14 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.swu.shake.dao.CollectionDao;
 import com.swu.shake.dao.CommentDao;
 import com.swu.shake.dao.ItemDao;
 import com.swu.shake.dao.ItemImageDao;
 import com.swu.shake.model.Comment;
 import com.swu.shake.model.Item;
 import com.swu.shake.model.ItemImage;
+import com.swu.shake.service.CommentService;
 import com.swu.shake.service.ItemService;
 import com.swu.shake.util.MsgException;
 
@@ -21,15 +23,25 @@ import com.swu.shake.util.MsgException;
 public class ItemServiceImpl implements ItemService {
 	ItemDao itemDao;
 	ItemImageDao itemImageDao;
-	CommentDao commentDao;
+	CollectionDao collectionDao;
+	CommentService commentService;
 
-	public CommentDao getCommentDao() {
-		return commentDao;
+	public CollectionDao getCollectionDao() {
+		return collectionDao;
 	}
 
 	@Autowired
-	public void setCommentDao(CommentDao commentDao) {
-		this.commentDao = commentDao;
+	public void setCollectionDao(CollectionDao collectionDao) {
+		this.collectionDao = collectionDao;
+	}
+
+	public CommentService getCommentService() {
+		return commentService;
+	}
+
+	@Autowired
+	public void setCommentService(CommentService commentService) {
+		this.commentService = commentService;
 	}
 
 	public ItemDao getItemDao() {
@@ -65,12 +77,17 @@ public class ItemServiceImpl implements ItemService {
 	@Transactional
 	@Override
 	public boolean remove(int iid) {
-		try{
-			this.commentDao.deleteByIid(iid);
+		try {
+			// 删除该商品下的所有评论
+			List<Comment> cs = this.commentService.findall(iid);
+			for (Comment c : cs) {
+				this.commentService.remove(c.getCid());
+			}
+			this.collectionDao.deleteByIid(iid);
 			this.itemImageDao.deleteByIid(iid);
 			this.itemDao.delete(iid);
 			return true;
-		}catch(RuntimeException e){
+		} catch (RuntimeException e) {
 			throw e;
 		}
 	}
@@ -101,10 +118,10 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public Item getDetail(int id) {
-		Item item = itemDao.findById(id);
-		List<ItemImage> images = itemImageDao.findall(id);
-		List<Comment> comments = commentDao.getComments(id, 0, 10);
+	public Item getDetail(int iid) {
+		Item item = itemDao.findById(iid);
+		List<ItemImage> images = itemImageDao.findall(iid);
+		List<Comment> comments = commentService.getCommentsByIid(iid, 0, 10);
 		item.setItemImages(new HashSet<ItemImage>(images));
 		item.setComments(comments);
 

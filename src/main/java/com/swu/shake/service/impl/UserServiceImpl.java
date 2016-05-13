@@ -1,5 +1,6 @@
 package com.swu.shake.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -7,12 +8,16 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.swu.shake.dao.CollectionDao;
 import com.swu.shake.dao.CommentDao;
 import com.swu.shake.dao.ItemDao;
 import com.swu.shake.dao.ItemImageDao;
+import com.swu.shake.dao.LikeDao;
 import com.swu.shake.dao.UserDao;
+import com.swu.shake.model.Comment;
 import com.swu.shake.model.Item;
 import com.swu.shake.model.User;
+import com.swu.shake.service.CommentService;
 import com.swu.shake.service.ItemService;
 import com.swu.shake.service.UserService;
 import com.swu.shake.util.MsgException;
@@ -22,8 +27,38 @@ public class UserServiceImpl implements UserService {
 	UserDao userDao;
 	ItemDao itemDao;
 	CommentDao commentDao;
+	CommentService commentService;
 	ItemImageDao itemImageDao;
 	ItemService itemService;
+	LikeDao likeDao;
+	CollectionDao collectionDao;
+
+	public CommentService getCommentService() {
+		return commentService;
+	}
+
+	@Resource(name = "commentService")
+	public void setCommentService(CommentService commentService) {
+		this.commentService = commentService;
+	}
+
+	public CollectionDao getCollectionDao() {
+		return collectionDao;
+	}
+
+	@Resource(name = "collectionDao")
+	public void setCollectionDao(CollectionDao collectionDao) {
+		this.collectionDao = collectionDao;
+	}
+
+	public LikeDao getLikeDao() {
+		return likeDao;
+	}
+
+	@Resource(name = "likeDao")
+	public void setLikeDao(LikeDao likeDao) {
+		this.likeDao = likeDao;
+	}
 
 	public ItemService getItemService() {
 		return itemService;
@@ -87,21 +122,37 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	@Override
 	public boolean remove(int uid) {
-		boolean flag = true;
-		// 删除此人评论
-		commentDao.deleteByUid(uid);
+		try {
 
-		// 删除此人的所有发帖
-		List<Item> items = itemDao.getItemsByUid(uid);
-		for (Item item : items) {
-			flag = itemService.remove(item.getIid());
-		}
+			/**
+			 * 收藏和点赞没有被作为外键引用，直接用dao
+			 */
+			// 删除此人的所有收藏
+			collectionDao.deleteByUid(uid);
+			// 删除此人所有的评论点赞，但是不影响他人评论店点赞总数
+			likeDao.removeAllByUid(uid);
 
-		// 删除此人
-		if (!userDao.delete(uid)) {
-			flag = false;
+			/**
+			 * 评论、商品有外键引用，使用servcie;
+			 */
+			// 删除此人生产的所有评论
+			List<Comment> comments = commentService.getCommentsByUid(uid);
+			for (Comment c : comments) {
+				commentService.remove(c.getCid());
+			}
+
+			// 删除此人的所有发帖
+			List<Item> items = itemDao.getItemsByUid(uid);
+			for (Item item : items) {
+				itemService.remove(item.getIid());
+			}
+
+			// 删除此人
+			userDao.delete(uid);
+			return true;
+		} catch (RuntimeException e) {
+			throw e;
 		}
-		return flag;
 	}
 
 	public boolean modify(User user) {

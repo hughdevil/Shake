@@ -14,6 +14,9 @@ public interface CollectionService {
 
 	/** 删除收藏 */
 	public boolean remove(int[] ids);
+	
+	/** 删除用户的所有收藏**/
+	public boolean removeByUid(int uid);
 
 	/** 查询某用户所有收藏商品 */
 	public List<Item> findall(int uid);

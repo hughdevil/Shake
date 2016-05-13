@@ -24,8 +24,8 @@
 						<c:forEach var="itemtype" items="${itemtypes }">
 							<tr>
 								<td width="90%">${itemtype.tname }</td>
-								<td width="5%"><a href="<%=request.getContextPath()%>/item/type/${itemtype.tid}/edit.do"><span class="glyphicon glyphicon-pencil"></span> </a></td>
-								<td width="5%"><a data-toggle="modal" data-target="#modal${itemtype.tid}"><span class="glyphicon glyphicon-remove"></span> </a></td>
+								<td width="5%"><a href="<%=request.getContextPath()%>/item/type/${itemtype.tid}/edit.do"><span class="glyphicon glyphicon-pencil" data-toggle="tooltip" data-placement="right" title="点击修改"></span> </a></td>
+								<td width="5%"><a data-toggle="modal" data-target="#modal${itemtype.tid}"><span class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="点击删除"></span> </a></td>
 							</tr>
 
 							<div class="modal fade bs-example-modal-sm" tabindex="-1" id="modal${itemtype.tid}" role="dialog" aria-labelledby="mySmallModalLabel">

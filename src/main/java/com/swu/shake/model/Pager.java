@@ -2,9 +2,8 @@ package com.swu.shake.model;
 
 import java.io.Serializable;
 
-import org.hibernate.transform.ToListResultTransformer;
-
 public class Pager implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private long totalRows; // 总行数
 	private int pageSize; // 每页显示的行数
 	private int currentPage; // 当前页号
@@ -33,8 +32,7 @@ public class Pager implements Serializable {
 		this.totalPages += (totalRows % pageSize) > 0 ? 1 : 0;
 		this.startRow = (_currentPage - 1) * _pageSize;
 		this.prePage = (currentPage > 1 ? currentPage - 1 : currentPage);
-		this.nextPage = (currentPage < totalPages ? currentPage + 1
-				: currentPage);
+		this.nextPage = (currentPage < totalPages ? currentPage + 1 : currentPage);
 	}
 
 	public long getTotalRows() {

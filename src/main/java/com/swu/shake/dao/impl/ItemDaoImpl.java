@@ -55,9 +55,9 @@ public class ItemDaoImpl implements ItemDao {
 	@Override
 	public boolean delete(int id) {
 		String hql = "delete from Item where iid=" + id;
-		// return hibernateUtil.exeDelete(hql);
+		return hibernateUtil.exeDelete(hql);
 		// 测试删除时，Spring事务管理是否会回滚
-		throw new java.lang.ClassCastException();
+		// throw new java.lang.ClassCastException();
 	}
 
 	@Override

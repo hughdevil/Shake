@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.swu.shake.model.Item;
 import com.swu.shake.model.ItemImage;
-import com.swu.shake.model.ItemType;
 import com.swu.shake.util.MsgException;
 
 public interface ItemService {

@@ -1,6 +1,5 @@
 package com.swu.shake.util;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -9,20 +8,19 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * 
- * @author Hugh
  *
  */
 public final class RlevelUtil {
 	private static OrderedProperties prop;
+
 	static {
-		//此处用Object.class不行
+		// 此处用Object.class不行
 		InputStream in = RlevelUtil.class.getResourceAsStream("/properties/rlevel.properties");
 		prop = new OrderedProperties();
 		try {
-			if(null !=in){
+			if (null != in) {
 				prop.load(in);
-			}else{
+			} else {
 				System.out.println("路径不正确");
 			}
 		} catch (IOException e) {
@@ -47,8 +45,7 @@ public final class RlevelUtil {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	public static String getDesc(int levelCode)
-			throws UnsupportedEncodingException {
+	public static String getDesc(int levelCode) throws UnsupportedEncodingException {
 		String value = prop.getProperty(levelCode + "");
 		return new String(value.trim().getBytes("ISO-8859-1"), "UTF-8");
 	}
@@ -60,8 +57,7 @@ public final class RlevelUtil {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	public static Map<String, String> getAbleLevel(int unknow)
-			throws UnsupportedEncodingException {
+	public static Map<String, String> getAbleLevel(int unknow) throws UnsupportedEncodingException {
 		Map<String, String> levels = new TreeMap<String, String>();
 		Enumeration<Object> en = prop.keys();
 		for (int flag = 0; flag < unknow - 1; flag++) {

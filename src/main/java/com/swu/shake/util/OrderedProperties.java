@@ -9,8 +9,6 @@ import java.util.Set;
 /**
  * 有序的Properties
  * 
- * @author Hugh
- *
  */
 public class OrderedProperties extends Properties {
 	private static final long serialVersionUID = -4627607243846121965L;

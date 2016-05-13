@@ -23,7 +23,7 @@ public class Like {
 	private Date likeDate;
 
 	@ManyToOne
-	@JoinColumn(name = "iid")
+	@JoinColumn(name = "cid")
 	private Comment comment;
 
 	@ManyToOne

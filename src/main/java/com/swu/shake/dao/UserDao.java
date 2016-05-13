@@ -2,7 +2,6 @@ package com.swu.shake.dao;
 
 import java.util.List;
 
-import com.swu.shake.model.Role;
 import com.swu.shake.model.User;
 
 /**

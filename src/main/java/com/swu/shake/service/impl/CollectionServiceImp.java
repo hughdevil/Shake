@@ -73,4 +73,11 @@ public class CollectionServiceImp implements CollectionService {
 		return this.collectionDao.getCount(uid);
 	}
 
+	@Override
+	public boolean removeByUid(int uid) {
+		return this.collectionDao.deleteByColid(uid);
+	}
+
+	
+	
 }

@@ -16,7 +16,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -26,7 +25,7 @@ public class Item {
 	@Column(nullable = false)
 	private String iname;
 	@Column(nullable = false)
-	private double iprice;
+	private int iprice;
 	@Column(nullable = false)
 	private int iNumber;
 	@Column(nullable = false)
@@ -35,6 +34,7 @@ public class Item {
 	private Date onshelfdate;
 	@Column(nullable = false)
 	private boolean isValid;
+	@Column(nullable = false)
 
 	// 入手时间
 	private String hasdate;
@@ -59,7 +59,7 @@ public class Item {
 
 	}
 
-	public Item(int iid, String iname, double iprice, boolean isvalid,
+	public Item(int iid, String iname, int iprice, boolean isvalid,
 			Date onshelfdate, String postImage, int uid, String name) {
 		this.iid = iid;
 		this.iname = iname;
@@ -107,7 +107,7 @@ public class Item {
 		return iNumber;
 	}
 
-	public double getIprice() {
+	public int getIprice() {
 		return iprice;
 	}
 
@@ -155,9 +155,6 @@ public class Item {
 		this.iNumber = iNumber;
 	}
 
-	public void setIprice(double iprice) {
-		this.iprice = iprice;
-	}
 
 	public void setItemtype(ItemType itemtype) {
 		this.itemtype = itemtype;
@@ -177,6 +174,11 @@ public class Item {
 
 	public void setValid(boolean isValid) {
 		this.isValid = isValid;
+	}
+	
+
+	public void setIprice(int iprice) {
+		this.iprice = iprice;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

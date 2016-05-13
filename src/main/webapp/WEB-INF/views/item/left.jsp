@@ -33,8 +33,8 @@ blockquote {
 
 	<div class="panel panel-default col-md-12">
 		<ul class="list-group">
-			<li class="list-group-item" style="text-align: center; color: red"><h3>
-					<strong>￥ ${item.iprice }</strong>
+			<li class="list-group-item" style="text-align: center; color: orange;"><h3>
+					<strong> &yen; ${item.iprice }</strong>
 				</h3></li>
 			<!--成色  -->
 			<li class="list-group-item">

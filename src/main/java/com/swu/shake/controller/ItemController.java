@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.swu.shake.log.ItemLog;
+import com.swu.shake.model.Comment;
 import com.swu.shake.model.Item;
 import com.swu.shake.model.ItemImage;
 import com.swu.shake.model.ItemType;
@@ -33,9 +35,11 @@ import com.swu.shake.model.User;
 import com.swu.shake.service.CollectionService;
 import com.swu.shake.service.ItemService;
 import com.swu.shake.service.ItemTypeService;
+import com.swu.shake.service.LikeService;
 import com.swu.shake.util.FileUtility;
 import com.swu.shake.util.MD5Util;
 import com.swu.shake.util.MsgException;
+import com.swu.shake.util.TimeUtil;
 
 //标识为控制层
 @Controller
@@ -49,6 +53,16 @@ public class ItemController {
 	private ItemService itemService;
 	private ItemTypeService itemTypeService;
 	private CollectionService collectionService;
+	private LikeService likeService;
+
+	public LikeService getLikeService() {
+		return likeService;
+	}
+
+	@Autowired
+	public void setLikeService(LikeService likeService) {
+		this.likeService = likeService;
+	}
 
 	public CollectionService getCollectionService() {
 		return collectionService;
@@ -77,6 +91,35 @@ public class ItemController {
 		this.itemTypeService = itemTypeService;
 	}
 
+	/**
+	 * 上传单张图片
+	 * 
+	 * @param session
+	 * @param dateformat
+	 * @param mFile
+	 * @return
+	 * @throws IOException
+	 */
+	public ItemImage upload(HttpSession session, SimpleDateFormat dateformat, CommonsMultipartFile mFile) throws IOException {
+		logger.info("上传文件的名字：" + mFile.getOriginalFilename());
+		/** 获取文件的后缀* */
+		String suffix = mFile.getOriginalFilename().substring(mFile.getOriginalFilename().lastIndexOf("."));
+
+		String curpath = session.getServletContext().getRealPath("/");
+		Date uploadDate = new Date();
+		String fileName = "upload/pic/" + dateformat.format(uploadDate) + MD5Util.getMD5(uploadDate.toString() + mFile.getOriginalFilename()) + suffix;
+		String path = curpath + fileName;
+		logger.info("path:" + path);
+		FileUtility.saveUploadFile(mFile.getInputStream(), path);
+		ItemImage ii = new ItemImage();
+
+		ii.setIiname(fileName);
+		ii.setUploadDate(uploadDate);
+		logger.info("=======文件上传成功=======");
+		return ii;
+	}
+
+	/****************** 以下为 请求响应 ********************/
 	@RequestMapping(value = "/post", method = RequestMethod.GET)
 	public String post(HttpSession session, ModelMap mm) {
 		Long count = itemService.getCount();
@@ -173,8 +216,7 @@ public class ItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/publish", method = RequestMethod.POST)
-	public ModelAndView publish(HttpServletRequest request, HttpSession session,
-			@RequestParam(value = "itemtype", required = false) int tid,
+	public ModelAndView publish(HttpServletRequest request, HttpSession session, @RequestParam(value = "itemtype", required = false) int tid,
 			@RequestParam(value = "itemImages", required = false) CommonsMultipartFile[] mFiles,
 			@RequestParam(value = "postImage", required = false) CommonsMultipartFile[] postFile) {
 
@@ -195,9 +237,13 @@ public class ItemController {
 				}
 				// 其他照片
 				if (mFiles != null) {
+					int sum = 0;
 					for (CommonsMultipartFile mFile : mFiles) {
 						if (!mFile.isEmpty()) {
+							sum++;
 							itemImages.add(upload(session, dateformat, mFile));
+							if (sum > 10)
+								break;
 						}
 					}
 				}
@@ -205,7 +251,7 @@ public class ItemController {
 				Item item = new Item();
 				item.setIname(request.getParameter("title"));
 				item.setiNumber(Integer.parseInt(request.getParameter("number")));
-				item.setIprice(Double.parseDouble(request.getParameter("price")));
+				item.setIprice(Integer.parseInt(request.getParameter("price")));
 				item.setIdesc(request.getParameter("desc"));
 				item.setNewly(Integer.parseInt(request.getParameter("newly")));
 				item.setHasdate(request.getParameter("hasdate"));
@@ -220,13 +266,20 @@ public class ItemController {
 				item.setItemImages(itemImages);
 				Item rei = itemService.register(item);
 				mav.addObject("item", rei);
-				mav.setViewName("comm/success");
+				mav.addObject("message", "发布成功，马上跳转到该商品详情");
+				mav.addObject("jumpUri", "/item/" + rei.getIid() + "/detail");
+				mav.setViewName("comm/successJ");
+				logger.info(new ItemLog(curUser.getUid(), rei.getIid(), "PUBLISH", ItemLog.SUCCESS, "", TimeUtil.getUSDate()).toString());
 			} catch (MsgException e) {
 				request.setAttribute("message", e);
+
 				mav.setViewName("comm/failure");
+				logger.info(new ItemLog(curUser.getUid(), 0, "PUBLISH", ItemLog.FAILLURE, "", TimeUtil.getUSDate()).toString());
 			} catch (IOException e) {
 				e.printStackTrace();
 				mav.setViewName("comm/failure");
+
+				logger.info(new ItemLog(curUser.getUid(), 0, "PUBLISH", ItemLog.FAILLURE, "", TimeUtil.getUSDate()).toString());
 			}
 		} else {
 			request.setAttribute("message", "未登录，亲！！");
@@ -235,39 +288,8 @@ public class ItemController {
 		return mav;
 	}
 
-	/**
-	 * 上传单张图片
-	 * 
-	 * @param session
-	 * @param dateformat
-	 * @param mFile
-	 * @return
-	 * @throws IOException
-	 */
-	public ItemImage upload(HttpSession session, SimpleDateFormat dateformat, CommonsMultipartFile mFile)
-			throws IOException {
-		logger.info("上传文件的名字：" + mFile.getOriginalFilename());
-		/** 获取文件的后缀* */
-		String suffix = mFile.getOriginalFilename().substring(mFile.getOriginalFilename().lastIndexOf("."));
-
-		String curpath = session.getServletContext().getRealPath("/");
-		Date uploadDate = new Date();
-		String fileName = "upload/pic/" + dateformat.format(uploadDate)
-				+ MD5Util.getMD5(uploadDate.toString() + mFile.getOriginalFilename()) + suffix;
-		String path = curpath + fileName;
-		logger.info("path:" + path);
-		FileUtility.saveUploadFile(mFile.getInputStream(), path);
-		ItemImage ii = new ItemImage();
-
-		ii.setIiname(fileName);
-		ii.setUploadDate(uploadDate);
-		logger.info("=======文件上传成功=======");
-		return ii;
-	}
-
 	@RequestMapping(value = "/{iid}/detail", method = RequestMethod.GET)
-	public String showDetail(@PathVariable(value = "iid") int iid, Model model, HttpServletRequest request,
-			HttpSession session) {
+	public String showDetail(@PathVariable(value = "iid") int iid, Model model, HttpServletRequest request, HttpSession session) {
 		String viewName = "";
 		Item item = this.itemService.getDetail(iid);
 		User curuser = (User) session.getAttribute("user");
@@ -279,8 +301,12 @@ public class ItemController {
 			if (curuser != null) {
 				boolean isMyCol = null != collectionService.isMyCol(curuser.getUid(), iid) ? true : false;
 				model.addAttribute("isMyCol", isMyCol);
-				if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_ADMIN) {
-					model.addAttribute("isADMIN", true);
+				if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_MODERATOR) {
+					model.addAttribute("isMODERATOR", true);
+				}
+
+				for (Comment c : item.getComments()) {
+					c.setIsMyLike(likeService.isMyLike(curuser.getUid(), c.getCid()));
 				}
 			}
 			model.addAttribute("item", item);
@@ -292,6 +318,7 @@ public class ItemController {
 	public String edit(@PathVariable(value = "iid") int iid, HttpSession session, Model model) {
 		String viewName = "";
 		String message = "";
+		String jumpUri = "";
 		User curuser = (User) session.getAttribute("user");
 		Item item = null;
 		if (null == curuser) {
@@ -299,48 +326,47 @@ public class ItemController {
 			viewName = "comm/failure";
 		} else if (null == (item = itemService.getItem(iid))) {
 			message = "商品不存在或已经删除";
-			viewName = "comm/failure";
-		} else if (item.getUser().getUid() == curuser.getUid()
-				|| (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_MODERATOR)) {
-
-			boolean flag = false;
+			viewName = "comm/failureJ";
+			jumpUri = "/item/post";
+		} else {
+			boolean canEdit = false;
 			if (item.getUser().getUid() == curuser.getUid()) {
-				flag = true;
-			} else if (item.getUser().getRole() == null) {
-				flag = true;
-			} else if (curuser.getRole().getRlevel() > item.getUser().getRole().getRlevel()) {
-				flag = true;
-			} else {
-				message = "没有权限执行此操作，请查看对方的角色等级";
-				viewName = "/comm/failure";
+				canEdit = true;
+			} else if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_MODERATOR) {
+				if (item.getUser().getRole() == null) {
+					canEdit = true;
+				} else if (curuser.getRole().getRlevel() > item.getUser().getRole().getRlevel()) {
+					canEdit = true;
+				}
 			}
-			if (flag) {
-				viewName = "item/edit";
+
+			if (canEdit) {
 				List<ItemType> itemtypes = itemTypeService.getItemTypes();
 				List<ItemImage> itemimages = itemService.getImgs(item.getIid());
 
 				model.addAttribute("item", item);
 				model.addAttribute("itemtypes", itemtypes);
 				model.addAttribute("itemimages", itemimages);
+				viewName = "item/edit";
+			} else {
+				message = "该商品不是您的";
+				viewName = "comm/failureJ";
+				jumpUri = "/item/" + iid + "/detail";
 			}
-		} else {
-			message = "该商品不是您的";
-			viewName = "comm/failure";
 		}
 		model.addAttribute("message", message);
 		return viewName;
 	}
 
 	@RequestMapping(value = "/edit", method = RequestMethod.POST)
-	public String edit(@RequestParam("iid") int iid, @RequestParam("itemtype") int tid,
-			@RequestParam(value = "selectedimages", required = false) int[] iiids,
-			@RequestParam("postImage") CommonsMultipartFile[] postFile,
-			@RequestParam(value = "newimages", required = false) CommonsMultipartFile[] mFiles, HttpSession session,
+	public String edit(@RequestParam("iid") int iid, @RequestParam("itemtype") int tid, @RequestParam(value = "selectedimages", required = false) int[] iiids,
+			@RequestParam("postImage") CommonsMultipartFile[] postFile, @RequestParam(value = "newimages", required = false) CommonsMultipartFile[] mFiles, HttpSession session,
 			HttpServletRequest request, Model model) throws IOException {
 
 		SimpleDateFormat dateformat = new SimpleDateFormat("yyyyMMddHH");
 		String viewName = "";
 		String message = "";
+		String jumpUri = "";
 		Item item = null;
 		User curuser = (User) session.getAttribute("user");
 
@@ -349,22 +375,21 @@ public class ItemController {
 			viewName = "/comm/failure";
 		} else if (null == (item = itemService.getItem(iid))) {
 			message = "商品不存在或已经删除";
-			viewName = "/comm/failure";
-		} else if (item.getUser().getUid() == curuser.getUid()
-				|| (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_MODERATOR)) {
-
-			boolean flag = false;
+			viewName = "/comm/failureJ";
+			jumpUri = "/item/post";
+		} else {
+			boolean canEdit = false;
 			if (item.getUser().getUid() == curuser.getUid()) {
-				flag = true;
-			} else if (item.getUser().getRole() == null) {
-				flag = true;
-			} else if (curuser.getRole().getRlevel() > item.getUser().getRole().getRlevel()) {
-				flag = true;
-			} else {
-				message = "没有权限执行此操作，请查看对方的角色等级";
-				viewName = "/comm/failure";
+				canEdit = true;
+			} else if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_MODERATOR) {
+				if (item.getUser().getRole() == null) {
+					canEdit = true;
+				} else if (curuser.getRole().getRlevel() > item.getUser().getRole().getRlevel()) {
+					canEdit = true;
+				}
 			}
-			if (flag) {
+
+			if (canEdit) {
 
 				// 检查原封面存不存在
 				String postImage = item.getPostImage();
@@ -416,7 +441,7 @@ public class ItemController {
 
 				item.setIname(request.getParameter("title"));
 				item.setiNumber(Integer.parseInt(request.getParameter("number")));
-				item.setIprice(Double.parseDouble(request.getParameter("price")));
+				item.setIprice(Integer.parseInt(request.getParameter("price")));
 				item.setIdesc(request.getParameter("desc"));
 				item.setValid(Boolean.parseBoolean(request.getParameter("isvalid")));
 
@@ -427,17 +452,21 @@ public class ItemController {
 				item.setPostImage(postImage);
 				item.setItemImages(itemImages);
 
-				viewName = itemService.modify(item) ? "/comm/success" : "/comm/failure";
+				viewName = itemService.modify(item) ? "/comm/successJ" : "/comm/failureJ";
 
 				// 剔除已经不需要的图片 步骤2
 				itemService.clearUnuserfulImg();
+				jumpUri = "/item/" + iid + "/detail";
+				logger.info(new ItemLog(curuser.getUid(), iid, "EDIT", ItemLog.SUCCESS, "", TimeUtil.getUSDate()).toString());
 
+			} else {
+				message = "该商品不是您的";
+				viewName = "comm/failureJ";
+				jumpUri = "/item/" + iid + "/detail";
+				logger.info(new ItemLog(curuser.getUid(), iid, "EDIT", ItemLog.FAILLURE, "", TimeUtil.getUSDate()).toString());
 			}
-		} else {
-			message = "该商品不是您的";
-			viewName = "comm/failure";
 		}
-
+		model.addAttribute("jumpUri", jumpUri);
 		model.addAttribute("message", message);
 		return viewName;
 	}
@@ -446,6 +475,7 @@ public class ItemController {
 	public String unload(@PathVariable(value = "iid") int iid, HttpServletRequest request, HttpSession session) {
 		String viewName = "";
 		String message = "";
+		String jumpUri = "";
 		Item item = null;
 
 		User curuser = (User) session.getAttribute("user");
@@ -454,37 +484,41 @@ public class ItemController {
 			viewName = "/comm/failure";
 		} else if (null == (item = itemService.getItem(iid))) {
 			message = "商品不存在或已经删除";
-			viewName = "/comm/failure";
-		} else if (item.getUser().getUid() == curuser.getUid()
-				|| ((curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_MODERATOR))) {
-			// 还需要判断删除商品的发布人是不是自己的下级
-			boolean flag = false;
+			viewName = "/comm/failureJ";
+			jumpUri = "/item/post";
+		} else {
+			boolean canDel = false;
 			if (item.getUser().getUid() == curuser.getUid()) {
-				flag = true;
-			} else if (item.getUser().getRole() == null) {
-				flag = true;
-			} else if (curuser.getRole().getRlevel() > item.getUser().getRole().getRlevel()) {
-				flag = true;
-			} else {
-				message = "没有权限执行此操作，请查看对方的角色等级";
-				viewName = "/comm/failure";
-			}
-			if (flag) {
-				try {
-					itemService.remove(iid);
-					viewName = "/comm/success";
-				} catch (Exception e) {
-					message = "商品下架失败";
-					viewName = "/comm/failure";
-					logger.error(message, e);
+				canDel = true;
+			} else if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_MODERATOR) {
+				if (item.getUser().getRole() == null) {
+					canDel = true;
+				} else if (curuser.getRole().getRlevel() > item.getUser().getRole().getRlevel()) {
+					canDel = true;
 				}
 			}
 
-		} else {
-			message = "该商品不是您的";
-			viewName = "comm/failure";
-		}
+			if (canDel) {
+				try {
+					itemService.remove(iid);
+					viewName = "/comm/successJ";
+					jumpUri = "/item/post";
+					logger.info(new ItemLog(curuser.getUid(), iid, "UNLOAD", ItemLog.SUCCESS, "", TimeUtil.getUSDate()).toString());
+				} catch (Exception e) {
+					message = "商品下架失败";
+					viewName = "/comm/failureJ";
+					jumpUri = "/item/" + iid + "/detail";
+					logger.error(message, e);
+				}
+			} else {
+				message = "该商品不是您的";
+				viewName = "comm/failureJ";
+				jumpUri = "/item/" + iid + "/detail";
+				logger.info(new ItemLog(curuser.getUid(), iid, "UNLOAD", ItemLog.FAILLURE, "", TimeUtil.getUSDate()).toString());
+			}
 
+		}
+		request.setAttribute("jumpUri", jumpUri);
 		request.setAttribute("message", message);
 		return viewName;
 	}

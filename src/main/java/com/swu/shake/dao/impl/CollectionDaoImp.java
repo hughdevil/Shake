@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import com.swu.shake.dao.CollectionDao;
 import com.swu.shake.model.Collection;
-import com.swu.shake.model.User;
 import com.swu.shake.util.HibernateUtil;
 
 @Repository(value = "collectionDao")
@@ -90,6 +89,12 @@ public class CollectionDaoImp implements CollectionDao {
 			e.printStackTrace();
 		}
 		return coll;
+	}
+
+	@Override
+	public boolean deleteByIid(int iid) {
+		String hql = "delete from Collection col where col.item.iid=" + iid;
+		return hibernateUtil.exeDelete(hql);
 	}
 
 }

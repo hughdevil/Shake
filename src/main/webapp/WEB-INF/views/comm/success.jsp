@@ -6,7 +6,6 @@
 <head>
 <title>SUCCESS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="refresh" content="5;URL=<%=request.getContextPath()%>/${jumpUri}.do">
 <!-- Bootstrap -->
 <link href="<%=request.getContextPath()%>/css/bootstrap.min.css"
 	rel="stylesheet" media="screen">
@@ -30,9 +29,9 @@
 		<h1>&nbsp;</h1>
 		<div class="col-md-4 col-md-offset-4 ">
 			<img class="img-responsive"
-				src="<%=request.getContextPath()%>/img/success.jpg" alt="success">
-				<h3 style="text-align: center"><a href="<%=request.getContextPath()%>/${jumpUri}.do">SUCCESS!!!</a></h3>
-				<h5 style="text-align: center">5秒后自动跳转</h5>
+				src="<%=request.getContextPath()%>/img/success.gif" alt="success">
+				<h3 style="text-align: center">SUCCESS!!!</h3>
+				<h5 style="text-align: center">${message }</h5>
 		</div>
 	</div>
 </body>

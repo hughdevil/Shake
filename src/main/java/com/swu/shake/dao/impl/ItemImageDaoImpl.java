@@ -14,8 +14,7 @@ import com.swu.shake.model.ItemImage;
 import com.swu.shake.util.HibernateUtil;
 
 /**
- * sqlinject
- * 1.仅用HibernateUtil的session功能
+ * sqlinject 1.仅用HibernateUtil的session功能
  */
 @Repository(value = "itemImageDao")
 public class ItemImageDaoImpl implements ItemImageDao {
@@ -59,8 +58,7 @@ public class ItemImageDaoImpl implements ItemImageDao {
 		try {
 			session = hibernateUtil.getSession();
 			transaction = session.beginTransaction();
-			ii = (ItemImage) session.load(ItemImage.class,
-					session.save(itemImage));
+			ii = (ItemImage) session.load(ItemImage.class, session.save(itemImage));
 
 			transaction.commit();
 		} catch (HibernateException e) {
@@ -102,24 +100,19 @@ public class ItemImageDaoImpl implements ItemImageDao {
 	public boolean deleteByIid(int iid) {
 		String hql = "delete from ItemImage where iid = " + iid;
 		return hibernateUtil.exeDelete(hql);
-		
-		//此种方法无法Spring事务处理
-		/*Session session = null;
-		Transaction transaction = null;
-		boolean flag = true;
-		try {
-			session = hibernateUtil.getSession();
-			transaction = session.beginTransaction();
-			String sql = "delete from t_itemimage where iid=" + iid;
-			session.createSQLQuery(sql).executeUpdate();
-			transaction.commit();
-		} catch (Exception e) {
-			hibernateUtil.rollbackTransaction(transaction);
-			flag = false;
-		} finally {
-			hibernateUtil.closeSession(session);
-		}
-		return flag;*/
+		// throw new RuntimeException();
+
+		// 此种方法无法Spring事务处理
+		/*
+		 * Session session = null; Transaction transaction = null; boolean flag
+		 * = true; try { session = hibernateUtil.getSession(); transaction =
+		 * session.beginTransaction(); String sql =
+		 * "delete from t_itemimage where iid=" + iid;
+		 * session.createSQLQuery(sql).executeUpdate(); transaction.commit(); }
+		 * catch (Exception e) { hibernateUtil.rollbackTransaction(transaction);
+		 * flag = false; } finally { hibernateUtil.closeSession(session); }
+		 * return flag;
+		 */
 	}
 
 }

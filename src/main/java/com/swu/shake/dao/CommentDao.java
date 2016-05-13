@@ -19,17 +19,23 @@ public interface CommentDao {
 	/** 删除评论通过商品ID */
 	public boolean deleteByIid(int iid);
 
-	/** 删除评论通过发布人 */
-	public boolean deleteByUid(int uid);
-
 	/** 修改评论 */
 	public boolean update(Comment comment);
-	
+
+	/** 点赞一次 */
+	public boolean like(int cid);
+
+	/** 取消点赞一次 */
+	public boolean unlike(int cid);
+
 	/** 获得单个评论 */
 	public Comment getComment(int cid);
 
 	/** 查询某商品所有评论 */
 	public List<Comment> findall(int iid);
+
+	/** 查询某用户进行评价的所有评论 */
+	public List<Comment> findallByUid(int uid);
 
 	/** 分页显示某商品所有评论 */
 	public List<Comment> getComments(int iid, int start, int end);

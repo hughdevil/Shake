@@ -36,7 +36,7 @@
 				<!--商品操作  -->
 				<li class="list-group-item">
 					<ul>
-						<li><strong><abbr title="attribute">${item.itemtype.tname}</abbr></strong> &nbsp;·&nbsp;<c:out value="${fn:substring(item.onshelfdate,0,19)}"></c:out>&nbsp;·&nbsp; <a href="<%=request.getContextPath() %>/item/${item.iid}/edit.do">编辑</a> &nbsp;·&nbsp; <a data-toggle="modal" data-target=".bs-example-modal-sm">下架<small>（删）</small>
+						<li><strong><abbr title="attribute">${item.itemtype.tname}</abbr></strong> &nbsp;·&nbsp;<c:out value="${fn:substring(item.onshelfdate,0,19)}"></c:out>&nbsp;·&nbsp; <a href="<%=request.getContextPath() %>/item/${item.iid}/edit.do">编辑</a> &nbsp;·&nbsp; <a data-toggle="modal" data-target="#modal_del">下架<small>（删）</small>
 						</a> <span style="float: right">&nbsp;&nbsp;&nbsp;</span> <c:choose>
 								<c:when test="${isMyCol }">
 									<span id="span_collect" style="float: right; color: red;" class="glyphicon glyphicon-heart" data-toggle="tooltip" data-placement="right" title="点击取消收藏"></span>

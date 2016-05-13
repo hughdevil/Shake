@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "T_Comment")
@@ -25,6 +26,10 @@ public class Comment {
 	@Column(nullable = false)
 	private int likes;
 
+	// 该字段仅方便前台展示只用，不用持久化
+	@Transient
+	private boolean isMyLike;
+
 	@ManyToOne
 	@JoinColumn(name = "iid")
 	private Item item;
@@ -32,6 +37,14 @@ public class Comment {
 	@ManyToOne
 	@JoinColumn(name = "uid")
 	private User user;
+
+	public boolean getIsMyLike() {
+		return isMyLike;
+	}
+
+	public void setIsMyLike(boolean isMyLike) {
+		this.isMyLike = isMyLike;
+	}
 
 	public User getUser() {
 		return user;

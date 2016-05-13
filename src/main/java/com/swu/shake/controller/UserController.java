@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sun.tools.internal.ws.processor.model.Request;
+import com.swu.shake.log.UserLog;
 import com.swu.shake.model.Item;
 import com.swu.shake.model.Pager;
 import com.swu.shake.model.Role;
@@ -30,6 +32,7 @@ import com.swu.shake.service.UserService;
 import com.swu.shake.util.FileUtility;
 import com.swu.shake.util.MD5Util;
 import com.swu.shake.util.MsgException;
+import com.swu.shake.util.TimeUtil;
 
 //标识为控制层
 @Controller
@@ -81,47 +84,6 @@ public class UserController {
 	}
 
 	/**
-	 * 废弃，登录采用Moral
-	 * 
-	 * @param request
-	 * @param session
-	 * @return
-	 * @throws Exception
-	 */
-	// @RequestMapping(value = "/user/login", method = RequestMethod.GET)
-	// public ModelAndView userLogin(HttpServletRequest request,
-	// HttpSession session) throws Exception {
-	// ModelAndView mav = new ModelAndView();// 新建视图
-	// mav.setViewName("/user/login");
-	// mav.addObject("user", new User());
-	// return mav;
-	// }
-	//
-	// @RequestMapping(value = "/user/login", method = RequestMethod.POST)
-	// public @ResponseBody User userLoginDo(HttpServletRequest request,
-	// HttpSession session, @RequestBody User user) throws Exception {
-	// String name = user.getName();
-	// String unPassword = user.getPassword();
-	// String password = MD5Util.getMD5(unPassword);
-	// User u = userService.login(name, password);
-	// if (null != u) {
-	// session.setAttribute("user", u);
-	// }
-	// return u;
-	// }
-
-	/**
-	 * user.pwd从这里返回 null代表两次密码不一致
-	 * 
-	 * @param request
-	 * @return
-	 */
-	public String checkPwd(HttpServletRequest request) {
-		return request.getParameter("psw").equals(request.getParameter("repsw"))
-				? md5Util.getMD5(request.getParameter("psw")) : null;
-	}
-
-	/**
 	 * 返回的User少pwd
 	 * 
 	 * @param request
@@ -130,8 +92,7 @@ public class UserController {
 	 * @return
 	 * @throws IOException
 	 */
-	public User getUser(HttpServletRequest request, HttpSession session, CommonsMultipartFile headpic)
-			throws IOException {
+	public User getUser(HttpServletRequest request, HttpSession session, CommonsMultipartFile headpic) throws IOException {
 		User user = new User();
 		String uname = request.getParameter("uname");
 		// 1
@@ -170,8 +131,7 @@ public class UserController {
 
 			String curpath = session.getServletContext().getRealPath("/");
 			Date uploadDate = new Date();
-			String fileName = "upload/pic/" + dateformat.format(uploadDate)
-					+ MD5Util.getMD5(uploadDate.toString() + headpic.getOriginalFilename()) + suffix;
+			String fileName = "upload/pic/" + dateformat.format(uploadDate) + MD5Util.getMD5(uploadDate.toString() + headpic.getOriginalFilename()) + suffix;
 			String path = curpath + fileName;
 			logger.info("path:" + path);
 			FileUtility.saveUploadFile(headpic.getInputStream(), path);
@@ -195,10 +155,14 @@ public class UserController {
 			if (u.getRole() != null && u.getRole().getRlevel() >= AUTHORISE_ADMIN) {
 				session.setAttribute("isADMIN", true);
 			}
-			return "redirect:/item/post.do";
+			logger.info(new UserLog(u.getUid(), u.getName(), u.getUid(), u.getName(), "LOGIN", UserLog.SUCCESS, "", TimeUtil.getUSDate()).toString());
+			// return "redirect:/item/post.do";
+			request.setAttribute("message", "登录成功,马上跳转到首页");
+			request.setAttribute("jumpUri", "/item/post");
+			return "/comm/successJ";
 		} else {
-			System.out.println("==================");
-			request.setAttribute("message", "登录失败");
+			request.setAttribute("message", "登录失败，用户名不存在或密码不正确");
+			logger.info(new UserLog(0, name, 0, name, "LOGIN", UserLog.FAILLURE, "", TimeUtil.getUSDate()).toString());
 			return "/comm/failure";
 		}
 	}
@@ -209,37 +173,57 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/user/register", method = RequestMethod.POST)
-	public ModelAndView register(HttpServletRequest request, HttpSession session,
-			@RequestParam(value = "hearpic", required = false) CommonsMultipartFile headpic) throws IOException {
+	public ModelAndView register(HttpServletRequest request, HttpSession session, @RequestParam(value = "hearpic", required = false) CommonsMultipartFile headpic)
+			throws IOException {
 		ModelAndView mav = new ModelAndView();
+		String upwd = request.getParameter("psw");
 		String uname = request.getParameter("uname");
-		String upwd = this.checkPwd(request);
-		if (null == upwd) {
-			request.setAttribute("message", "两次密码不一致");
-			mav.setViewName("/comm/failure");
-		} else {
-			User user = this.getUser(request, session, headpic);
-			user.setPassword(upwd);
-			user.setRegDate(new Date());
 
+		String message = "";
+		String jumpUri = "";
+		String viewName = "";
+
+		// 密码格式校验不用
+		// 因为：本身密码就属于约束正常的前台用户，确保密码的复杂度
+		// 对于恶意用户，绕过前台，就算限制也然并软
+		if (null == upwd) {
+			message = "密码为空，请重新注册。马上跳转到注册页面";
+			jumpUri = "/user/register";
+			viewName = "/comm/failureJ";
+			logger.info(new UserLog(0, uname, 0, "", "REGISTER", UserLog.FAILLURE, "", TimeUtil.getUSDate()).toString());
+		} else {
 			try {
-				userService.register(user);
+				User user = this.getUser(request, session, headpic);
+				user.setPassword(md5Util.getMD5(upwd));
+				user.setRegDate(new Date());
+				User newUser = userService.register(user);
+				logger.info(new UserLog(newUser.getUid(), uname, newUser.getUid(), uname, "REGISTER", UserLog.SUCCESS, "", TimeUtil.getUSDate()).toString());
+
+				message = "请登录";
+				viewName = "/comm/success";
+
 			} catch (MsgException e) {
-				request.setAttribute("message", "用户名已经存在");
-				mav.setViewName("/comm/failure");
-				return mav;
+				message = "用户名已经存在,请重新注册";
+				jumpUri = "/user/register";
+				viewName = "/comm/failureJ";
+
+				logger.info(new UserLog(0, uname, 0, uname, "REGISTER", UserLog.FAILLURE, "", TimeUtil.getUSDate()).toString());
 			}
-			mav.setViewName("/comm/success");
 		}
+		request.setAttribute("message", message);
+		request.setAttribute("jumpUri", jumpUri);
+		mav.setViewName(viewName);
 		return mav;
+
 	}
 
 	@RequestMapping(value = "/user/logout")
-	public String logout(HttpSession session) {
+	public String logout(HttpSession session, HttpServletRequest request) {
 		String viewName = "";
 		session.removeAttribute("user");
 		session.removeAttribute("isADMIN");
-		viewName = "redirect:/item/post.do";
+		viewName = "/comm/success";
+		request.setAttribute("message", "当前用户已登出");
 		return viewName;
 	}
 
@@ -263,7 +247,7 @@ public class UserController {
 		String message = "";
 		User curuser = (User) session.getAttribute("user");
 		if (null == curuser) {
-			message = "未登录";
+			message = "未登录，请先登录";
 			viewName = "/comm/failure";
 		} else {
 			viewName = "/user/repwd";
@@ -276,29 +260,45 @@ public class UserController {
 	public String repwd(HttpSession session, HttpServletRequest request) {
 		String viewName = "";
 		String message = "";
+		String jumpUri = "";
+
 		User curuser = (User) session.getAttribute("user");
 		if (null == curuser) {
-			message = "未登录";
+			message = "未登录，请先登录";
 			viewName = "/comm/failure";
 		} else {
-			String oldpwd = md5Util.getMD5(request.getParameter("oldpsw"));
-			if (oldpwd.equals(curuser.getPassword())) {
-				String upwd = checkPwd(request);
-				if (upwd != null) {
-					viewName = "/comm/success";
-					curuser.setPassword(upwd);
-					session.setAttribute("user", curuser);
-					userService.modifyPwd(curuser);
+			String oldpwd = request.getParameter("oldpsw");
+			String upwd = request.getParameter("psw");
+			if (null == oldpwd || null == upwd) {
+				session.removeAttribute("user");
+				session.removeAttribute("isADMIN");
 
-				} else {
-					message = "两次新密码不一致";
-					viewName = "/comm/failure";
-				}
-			} else {
-				message = "旧密码错误";
+				message = "请重新登录";
 				viewName = "/comm/failure";
+
+				logger.warn(new UserLog(curuser.getUid(), "", curuser.getUid(), "", "repwd", UserLog.FAILLURE, "", TimeUtil.getUSDate()).toString());
+
+			} else if (md5Util.getMD5(oldpwd).equals(curuser.getPassword())) {
+				curuser.setPassword(md5Util.getMD5(upwd));
+
+				userService.modifyPwd(curuser);
+
+				// 修改成功后要重新登录
+				session.removeAttribute("user");
+				session.removeAttribute("isADMIN");
+				message = "请重新登录";
+				viewName = "/comm/success";
+
+				logger.info(new UserLog(curuser.getUid(), "", curuser.getUid(), "", "REPWD", UserLog.SUCCESS, "", TimeUtil.getUSDate()).toString());
+			} else {
+				message = "旧密码错误,请重试";
+				jumpUri = "/user/repwd";
+				viewName = "/comm/failureJ";
+
+				logger.warn(new UserLog(curuser.getUid(), "", curuser.getUid(), "", "REPWD", UserLog.FAILLURE, "", TimeUtil.getUSDate()).toString());
 			}
 		}
+		request.setAttribute("jumpUri", jumpUri);
 		request.setAttribute("message", message);
 		return viewName;
 
@@ -315,7 +315,7 @@ public class UserController {
 		User curuser = (User) session.getAttribute("user");
 		boolean candel = false;
 		if (null == curuser) {
-			message = "未登录";
+			message = "未登录，请先登录";
 			viewName = "/comm/failure";
 		} else {
 			viewName = "/user/home";
@@ -324,12 +324,16 @@ public class UserController {
 
 			// 判断是否有删除选项
 			Role role = showuser.getRole();
-			if (curuser.getRole() != null && role != null) {
-				candel = curuser.getRole().getRlevel() > role.getRlevel() ? true : false;
+			if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_SITER) {
+				if (role == null) {
+					candel = true;
+				} else {
+					candel = curuser.getRole().getRlevel() > role.getRlevel() ? true : false;
+				}
+			} else {
+				candel = false;
 			}
-			if (role == null) {
-				candel = true;
-			}
+
 			List<Item> items = itemService.getSomebodyItemsByPage(uid, pager.getStartRow(), PAGE_SIZE);
 			model.addAttribute("pager", pager);
 			model.addAttribute("uid", uid);
@@ -342,8 +346,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/user/{uid}/home", params = "page", method = RequestMethod.GET)
-	public String home(HttpSession session, HttpServletRequest request, @PathVariable(value = "uid") int uid,
-			Model model) {
+	public String home(HttpSession session, HttpServletRequest request, @PathVariable(value = "uid") int uid, Model model) {
 		int curpage = Integer.parseInt(request.getParameter("page"));
 		Long count = itemService.getCountByUid(uid);
 		Pager pager = new Pager(count, PAGE_SIZE, curpage);
@@ -353,7 +356,7 @@ public class UserController {
 		User curuser = (User) session.getAttribute("user");
 		boolean candel = false;
 		if (null == curuser) {
-			message = "未登录";
+			message = "未登录，请先登录";
 			viewName = "/comm/failure";
 		} else {
 			viewName = "/user/home";
@@ -362,12 +365,16 @@ public class UserController {
 
 			// 判断是否有删除选项
 			Role role = showuser.getRole();
-			if (curuser.getRole() != null && role != null) {
-				candel = curuser.getRole().getRlevel() > role.getRlevel() ? true : false;
+			if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_SITER) {
+				if (role == null) {
+					candel = true;
+				} else {
+					candel = curuser.getRole().getRlevel() > role.getRlevel() ? true : false;
+				}
+			} else {
+				candel = false;
 			}
-			if (role == null) {
-				candel = true;
-			}
+
 			List<Item> items = itemService.getSomebodyItemsByPage(uid, pager.getStartRow(), PAGE_SIZE);
 			model.addAttribute("pager", pager);
 			model.addAttribute("uid", uid);
@@ -383,10 +390,11 @@ public class UserController {
 	public String edit(HttpSession session, @PathVariable(value = "uid") int uid, Model model) {
 		String viewName = "";
 		String message = "";
+		String jumpUri = "";
 		User curuser = (User) session.getAttribute("user");
 		boolean isCuruser = false;
 		if (null == curuser) {
-			message = "未登录";
+			message = "未登录，请先登录";
 			viewName = "/comm/failure";
 		} else if (uid == curuser.getUid()) {
 			// 前台显示的是当前用户信息
@@ -409,34 +417,36 @@ public class UserController {
 			// 前台显示的是从数据库里查询出来的USER
 			User user = userService.getUserById(uid);
 			Role role = user.getRole();
-
-			String email = user.getEmail();
-			String[] strs = email.split("@");
-			if (strs.length >= 2) {
-				model.addAttribute("mail", strs[0]);
-				model.addAttribute("mailtype", strs[1]);
-			}
-
 			// role == null是无角色，所以可以随便修改
 			// role不为null时，并且当前用户角色等级大于被修改的才可以修改
 			if (role == null || (role != null && role.getRlevel() < curuser.getRole().getRlevel())) {
-				viewName = "/user/edit";
+
+				String email = user.getEmail();
+				String[] strs = email.split("@");
+				if (strs.length >= 2) {
+					model.addAttribute("mail", strs[0]);
+					model.addAttribute("mailtype", strs[1]);
+				}
 
 				// 此时还可已修改这个用户的等级
 				List<Role> roles = roleService.getRoleByLevel(curuser.getRole().getRlevel());
 				model.addAttribute("roles", roles);
 				model.addAttribute("upuser", user);
+				viewName = "/user/edit";
 
 			} else {
 				message = "您无权限修改该用户资料";
-				viewName = "/comm/failure";
+				viewName = "/comm/failureJ";
+				jumpUri = "/user/" + uid + "/home";
 			}
 		} else {
 			message = "请勿修改他人资料资料";
-			viewName = "/comm/failure";
+			viewName = "/comm/failureJ";
+			jumpUri = "/user/" + uid + "/home";
 		}
 		model.addAttribute("iscuruser", isCuruser);
 		model.addAttribute("message", message);
+		model.addAttribute("jumpUri", jumpUri);
 		return viewName;
 	}
 
@@ -446,6 +456,7 @@ public class UserController {
 		ModelAndView mav = new ModelAndView();
 		String viewName = "";
 		String message = "";
+		String jumpUri = "";
 		User curuser = (User) session.getAttribute("user");
 		CommonsMultipartFile headpic = null;
 		if (null != headpics) {
@@ -454,7 +465,7 @@ public class UserController {
 		}
 
 		if (null == curuser) {
-			message = "未登录";
+			message = "未登录，请先登录";
 			viewName = "/comm/failure";
 		} else if (uid == curuser.getUid()) {
 			String upwd = md5Util.getMD5(request.getParameter("psw"));
@@ -467,11 +478,17 @@ public class UserController {
 					message = "修改错误，请稍后再试";
 					viewName = "/comm/failure";
 				} else {
-					viewName = "/comm/success";
+					viewName = "/comm/successJ";
+					jumpUri = "/user/" + uid + "/home";
+					message = "马上跳转到个人页面";
+					logger.info(new UserLog(uid, "", uid, "", "EDIT", UserLog.SUCCESS, "", TimeUtil.getUSDate()).toString());
 				}
 			} else {
-				message = "您的确认密码错误";
-				viewName = "/comm/failure";
+				message = "确认密码错误,马上返回修改页面";
+				viewName = "/comm/failureJ";
+				jumpUri = "/user/" + uid + "/edit";
+				logger.info(new UserLog(uid, "", uid, "", "EDIT", UserLog.FAILLURE, "", TimeUtil.getUSDate()).toString());
+
 			}
 
 			// 判断有无必要查询这个用户资料
@@ -490,19 +507,25 @@ public class UserController {
 					message = "修改错误，请稍后再试";
 					viewName = "/comm/failure";
 				} else {
-					viewName = "/comm/success";
+					viewName = "/comm/successJ";
+					jumpUri = "/user/" + uid + "/home";
+					message = "马上跳转到个人页面";
+					logger.info(new UserLog(curuser.getUid(), "", user.getUid(), "", "EDIT", UserLog.SUCCESS, "", TimeUtil.getUSDate()).toString());
 				}
 
 			} else {
 				message = "您无权限修改该用户资料";
-				viewName = "/comm/failure";
+				viewName = "/comm/failureJ";
+				jumpUri = "/user/" + uid + "/home";
+				logger.warn(new UserLog(curuser.getUid(), "", uid, "", "EDIT", UserLog.FAILLURE, "", TimeUtil.getUSDate()).toString());
 			}
 
 		} else {
 			message = "请勿修改他人资料";
-			viewName = "/comm/failure";
+			jumpUri = "/user/" + uid + "/home";
+			viewName = "/comm/failureJ";
 		}
-
+		mav.addObject("jumpUri", jumpUri);
 		mav.addObject("message", message);
 		mav.setViewName(viewName);
 		return mav;
@@ -512,30 +535,41 @@ public class UserController {
 	public String del(HttpSession session, @PathVariable(value = "uid") int uid, Model model) {
 		String viewName = "";
 		String message = "";
+		String jumpUri = "";
 		User curuser = (User) session.getAttribute("user");
 		if (null == curuser) {
-			message = "未登录";
+			message = "未登录，请先登录";
 			viewName = "/comm/failure";
 		} else {
 			Role role = userService.getUserById(uid).getRole();
-			if ((curuser.getRole() != null && role == null && curuser.getRole().getRlevel() > AUTHORISE_SITER)
-					|| (curuser.getRole() != null && role != null
-							&& curuser.getRole().getRlevel() > role.getRlevel())) {
-				try {
-					userService.remove(uid);
-					viewName = "/comm/success";
-				} catch (Exception e) {
-					message = "系统出错，我们可爱的程序猿正在积极努力的调试中";
-					viewName = "/comm/failure";
-					logger.error(message, e);
+			if (curuser.getRole() != null && curuser.getRole().getRlevel() >= AUTHORISE_SITER) {
+				if (role == null || (role != null && curuser.getRole().getRlevel() > role.getRlevel())) {
+					try {
+						userService.remove(uid);
+						viewName = "/comm/success";
+						logger.info(new UserLog(curuser.getUid(), "", uid, "", "del", UserLog.SUCCESS, "", TimeUtil.getUSDate()).toString());
+					} catch (Exception e) {
+						message = "系统出错，我们可爱的程序猿正在积极努力的调试中";
+						viewName = "/comm/failure";
+						logger.error(message, e);
+					}
+				} else {
+					message = "权限小于对方，不能删除";
+					viewName = "/comm/failureJ";
+					jumpUri = "/user/" + uid + "/home";
+					logger.warn(new UserLog(curuser.getUid(), "", uid, "", "DEL", UserLog.FAILLURE, "", TimeUtil.getUSDate()).toString());
 				}
 			} else {
-				message = "权限不够，不能删除";
-				viewName = "/comm/failure";
+				message = "非站务，不能删除";
+				viewName = "/comm/failureJ";
+				jumpUri = "/user/" + uid + "/home";
+				logger.warn(new UserLog(curuser.getUid(), "", uid, "", "DEL", UserLog.FAILLURE, "", TimeUtil.getUSDate()).toString());
 			}
 		}
 
+		model.addAttribute("jumpUri", jumpUri);
 		model.addAttribute("message", message);
 		return viewName;
 	}
+
 }

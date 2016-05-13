@@ -8,6 +8,9 @@ body {
 }
 </style>
 
+<script type="text/javascript" src=" <%=request.getContextPath()%>/js/drag_login.js"></script>
+<link href="<%=request.getContextPath()%>/css/drag.css" rel="stylesheet" media="screen">
+
 
 <nav class="navbar navbar-inverse navbar-static-top navbar-fixed-top" role="navigation">
 	<div class="container container-fluid">
@@ -110,12 +113,21 @@ body {
 							<input type="password" id="password" name="password" class="form-control" placeholder="Password" />
 						</div>
 					</div>
+					<div class="form-group">
+						<div class="col-sm-6 col-sm-offset-1">
+							<div id="drag"></div>
+						</div>
+					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					<button type="submit" class="btn btn-primary">Sign in</button>
+					<button id="button_login" type="submit" class="btn btn-primary" disabled="disabled">Sign in</button>
 				</div>
 			</form>
 		</div>
 	</div>
 </div>
+
+<script type="text/javascript">
+	$('#drag').drag();
+</script>

@@ -9,13 +9,13 @@ import com.swu.shake.AbstractTest;
 import com.swu.shake.model.User;
 import com.swu.shake.util.HibernateUtil;
 
-public class BaseDaoTest extends AbstractTest{
-	
+public class BaseDaoTest extends AbstractTest {
+
 	@Autowired
 	HibernateUtil hibernateUtil;
-	
+
 	@Test
-	public void test(){
+	public void test() {
 		System.out.println("1111111111");
 		String hql = "from User";
 		List<User> users = hibernateUtil.exeQuery(hql);
